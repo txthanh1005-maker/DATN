@@ -1,0 +1,424 @@
+%--------------------------------------------------------------
+% HANOI UNIVERSITY OF SCIENCE AND TECHNOLOGY
+% School of Electrical and Electronic Engineering
+% Department of Electrical Engineering
+%
+% GRADUATION THESIS
+% Title: Peer-to-Peer (P2P) Energy Trading Framework for
+%        Multi-Microgrid Systems Using ADMM-Based Distributed
+%        Optimization and Second-Order Cone Programming (SOCP)
+%
+% Student : Trinh Xuan Thanh
+% Year    : 2025
+%--------------------------------------------------------------
+
+\documentclass{thesis_1side}
+
+%% ============================================================
+%% PACKAGES
+%% ============================================================
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[utf8]{inputenc}
+\usepackage[T5]{fontenc}
+\usepackage[utf8]{vietnam}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{mathptmx}              % Times New Roman
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage[fontsize=13pt]{scrextend}
+\usepackage{indentfirst}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{subcaption}
+\usepackage{enumitem}
+\usepackage{cite}
+\usepackage{tabularx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{bm}
+
+%% ============================================================
+%% BEGIN DOCUMENT
+%% ============================================================
+\begin{document}
+
+%% ============================================================
+%% COVER PAGE
+%% ============================================================
+\begin{center}
+    \vspace{12pt}
+    \textbf{\fontsize{15pt}{0pt}\selectfont{}
+        HANOI UNIVERSITY OF SCIENCE AND TECHNOLOGY \\
+        \vspace{3pt}
+        SCHOOL OF ELECTRICAL AND ELECTRONIC ENGINEERING}
+    \vspace{0.5cm}
+
+    % LOGO
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=2cm,height=3cm]{logoBK.png}
+    \end{figure}
+
+    % THESIS TYPE
+    \vspace{48pt}
+    \fontsize{25pt}{0pt}\selectfont{} \textbf{GRADUATION THESIS}
+    \vspace{24pt}
+
+    % THESIS TITLE
+    \textbf{\fontsize{17pt}{0pt}\selectfont{}
+        PEER-TO-PEER (P2P) ENERGY TRADING FRAMEWORK FOR
+        MULTI-MICROGRID SYSTEMS USING ADMM-BASED DISTRIBUTED
+        OPTIMIZATION AND SECOND-ORDER CONE PROGRAMMING (SOCP)}
+    \vspace{18pt}
+
+    % STUDENT NAME
+    \fontsize{14pt}{0pt}\selectfont{} \textbf{TRINH XUAN THANH}
+    \vspace{3pt}
+
+    % EMAIL
+    \fontsize{14pt}{0pt}\selectfont{} thanh.tx[MSSV]@sis.hust.edu.vn
+    \vspace{12pt}
+
+    % MAJOR
+    \fontsize{14pt}{0pt}\selectfont{} \textbf{Major: Electrical Engineering}
+\end{center}
+\vspace{48pt}
+
+% SUPERVISOR / DEPARTMENT INFO
+\begin{table}[H]
+    \centering
+    \begin{tabular}{l l c}
+        \textbf{Supervisor:}    & Assoc. Prof. Dr. Nguyen Duc Tuyen \vspace{6pt} & \\
+                                & \vspace{3pt} & \fontsize{10pt}{0pt}\selectfont{} Supervisor's signature \\
+        \textbf{Department:}    & Electrical Engineering \vspace{3pt}\\
+        \textbf{School:}        & Electrical and Electronic Engineering
+    \end{tabular}
+\end{table}
+
+% DATE
+\begin{center}
+    \vspace{48pt}
+    \fontsize{14pt}{0pt}\selectfont{} Hanoi, June 2025
+\end{center}
+
+\thispagestyle{empty}
+    \cleardoublepage
+
+%% ============================================================
+%% THESIS ASSIGNMENT
+%% ============================================================
+\section*{THESIS ASSIGNMENT}
+    \thispagestyle{empty}
+
+\begin{table}[htbp]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{llcllllll}
+Full name: & Trinh Xuan Thanh & & & & & & Class: & Electrical [XX] -- K[XX] \\
+Student ID: & [MSSV]          & & & & & & &
+\end{tabular}%
+}
+\end{table}
+
+\noindent Thesis title: \textit{Peer-to-Peer (P2P) Energy Trading Framework for Multi-Microgrid Systems
+Using ADMM-Based Distributed Optimization and Second-Order Cone Programming (SOCP).}
+
+\begin{sloppypar}
+\begin{enumerate}[label=\Roman*.]
+    \item Review the state-of-the-art in peer-to-peer (P2P) energy trading within
+          multi-microgrid systems; analyze the role of distributed energy resources
+          (DERs), physical grid constraints, and privacy requirements.
+    \item Present the theoretical background on power flow models (from LinDistFlow
+          to SOCP relaxation) and distributed optimization algorithms (ADMM).
+    \item Develop a mathematical model for local microgrid energy management,
+          including operational constraints for DGs, BESSs, renewable sources,
+          and the objective function for cost minimization.
+    \item Propose a distributed P2P coordination algorithm combining ADMM consensus
+          with dynamic penalty and SOCP relaxation; derive the locational marginal
+          price (LMP) from ADMM dual variables.
+    \item Simulate and analyze results for two case studies (3-MG and
+          4-MG cross-connected systems); evaluate economic performance, voltage
+          regulation, network losses, and convergence behavior.
+\end{enumerate}
+\end{sloppypar}
+
+\vspace{6pt}
+    \hspace{7cm} Hanoi, \ldots\ldots / \ldots\ldots / 2025
+
+    \hspace{8.6cm} Supervisor
+
+\vspace{2cm}
+    \hspace{7.8cm} Assoc. Prof. Dr. Nguyen Duc Tuyen
+
+\thispagestyle{empty}
+    \clearpage
+        \thispagestyle{empty}
+
+%% ============================================================
+%% ACKNOWLEDGEMENTS
+%% ============================================================
+\section*{ACKNOWLEDGEMENTS}
+
+First and foremost, I would like to express my sincere gratitude to
+\textbf{Assoc. Prof. Dr. Nguyen Duc Tuyen} for his dedicated supervision,
+invaluable guidance, and continuous encouragement throughout the entire course
+of this thesis. His insightful feedback and deep expertise in power systems
+have been the cornerstone of this work.
+
+I am deeply grateful to all faculty members of the \textbf{Department of
+Electrical Engineering}, School of Electrical and Electronic Engineering,
+Hanoi University of Science and Technology (HUST), for imparting knowledge
+and creating a stimulating academic environment over the past five years.
+
+My heartfelt thanks also go to the members of the \textbf{100RE Lab} for their
+collegiality, knowledge sharing, and moral support during the research process.
+Working alongside such a motivated group has been both a privilege and an
+inspiration.
+
+Finally, I owe my deepest appreciation to my \textbf{family}, whose unwavering
+support, trust, and encouragement have been my greatest source of strength and
+motivation throughout my academic journey.
+
+I acknowledge that the thesis may still contain shortcomings, and I sincerely
+welcome any constructive feedback from professors and readers.
+
+\vspace{0.5cm}
+    \hspace{9.1cm} The Author
+
+\vspace{0.5cm}
+    \hspace{10cm} Thanh
+
+\vspace{0.5cm}
+    \hspace{9.0cm} Trinh Xuan Thanh
+
+\thispagestyle{empty}
+    \clearpage
+
+%% ============================================================
+%% ABSTRACT
+%% ============================================================
+\section*{ABSTRACT}
+    \thispagestyle{empty}
+
+The rapid penetration of renewable energy sources into distribution networks
+has driven the emergence of microgrids (MGs) as a fundamental building block
+of future smart grids. Multi-microgrid (Multi-MG) systems offer significant
+potential for peer-to-peer (P2P) energy trading, enabling economic dispatch
+and energy autonomy among prosumers. However, existing coordination frameworks
+commonly adopt a single-bus MG abstraction, which neglects the physical
+constraints of the distribution network---including voltage magnitude limits,
+line thermal limits, and the nonlinear coupling between active power, reactive
+power, and voltage (P-Q-V). Furthermore, centralized approaches compromise
+the privacy of individual microgrid operators.
+
+This thesis proposes a fully distributed P2P energy trading framework for
+multi-microgrid systems that simultaneously addresses both the physical and
+informational challenges. The framework integrates: (1) a \textbf{Second-Order
+Cone Programming (SOCP) relaxation} of the Branch Flow Model (BFM) to
+accurately capture multi-bus AC network physics within each microgrid, and
+(2) an \textbf{ADMM (Alternating Direction Method of Multipliers) consensus
+algorithm with a dynamic penalty parameter} to decompose the global optimization
+problem into privacy-preserving local subproblems. A key feature of the
+proposed approach is that the \textbf{Locational Marginal Price (LMP)} emerges
+endogenously from the ADMM dual variables, providing a physically meaningful
+and cost-reflective pricing signal without requiring a centralized market
+operator.
+
+Simulation results on two test cases---a three-microgrid radial system and a
+four-microgrid cross-connected network---demonstrate that the proposed framework
+achieves superior economic performance, maintains voltage profiles within
+permissible bounds, minimizes network losses, and converges reliably. Compared
+to single-bus and linearized (LinDistFlow) benchmarks, the SOCP-based approach
+eliminates physically infeasible dispatch schedules and provides accurate
+reactive power coordination.
+
+\vspace{6pt}
+    \hspace{9.1cm} The Author
+
+\vspace{0.5cm}
+    \hspace{10cm} Thanh
+
+\vspace{0.5cm}
+    \hspace{9.0cm} Trinh Xuan Thanh
+
+\thispagestyle{empty}
+    \clearpage
+
+%% ============================================================
+%% DECLARATION OF ORIGINALITY
+%% ============================================================
+\section*{DECLARATION OF ORIGINALITY}
+    \thispagestyle{empty}
+
+I, \textbf{Trinh Xuan Thanh}, Student ID: \textbf{[MSSV]}, Class: Electrical
+[XX] -- K[XX], hereby declare that the work presented in this thesis, entitled
+\textit{``Peer-to-Peer (P2P) Energy Trading Framework for Multi-Microgrid
+Systems Using ADMM-Based Distributed Optimization and Second-Order Cone
+Programming (SOCP)''}, is the product of my own research carried out under the
+supervision of Assoc. Prof. Dr. Nguyen Duc Tuyen. All data reported are
+truthful. All cited material complies with intellectual property regulations
+and is fully referenced. I accept full responsibility for the content of this
+thesis.
+
+\vspace{6pt}
+    \hspace{8.6cm} The Author
+
+\vspace{2cm}
+    \hspace{9.0cm} Trinh Xuan Thanh
+
+\thispagestyle{empty}
+    \clearpage
+        \thispagestyle{empty}
+
+%% ============================================================
+%% TABLE OF CONTENTS
+%% ============================================================
+\tableofcontents
+    \thispagestyle{empty}
+        \newpage
+            \thispagestyle{empty}
+
+%% ============================================================
+%% LIST OF SYMBOLS AND ABBREVIATIONS
+%% ============================================================
+\pagenumbering{roman}
+\section*{LIST OF SYMBOLS AND ABBREVIATIONS}
+    \phantomsection\addcontentsline{toc}{section}{\numberline{} LIST OF SYMBOLS AND ABBREVIATIONS}
+
+% [TODO] Update Tables 1-4 based on ATC/MPC
+
+%% ============================================================
+%% LIST OF FIGURES
+%% ============================================================
+{\let\oldnumberline\numberline
+    \renewcommand{\numberline}{Figure~\oldnumberline}
+        \listoffigures}
+            \phantomsection\addcontentsline{toc}{section}{\numberline{} LIST OF FIGURES}
+\newpage
+
+%% ============================================================
+%% LIST OF TABLES
+%% ============================================================
+{\let\oldnumberline\numberline
+    \renewcommand{\numberline}{Table~\oldnumberline}
+        \listoftables}
+            \phantomsection\addcontentsline{toc}{section}{\numberline{} LIST OF TABLES}
+\newpage
+
+%% ============================================================
+%%                  MAIN BODY
+%% ============================================================
+\pagenumbering{arabic}
+
+%% -----------------------------------------------------------
+%% CHAPTER 1. INTRODUCTION
+%% -----------------------------------------------------------
+\input{chapters/chapter1}
+
+\newpage
+
+%% -----------------------------------------------------------
+%% CHAPTER 2. THEORETICAL BACKGROUND
+%% -----------------------------------------------------------
+\input{chapters/chapter2}
+
+\newpage
+
+% [TODO] Rewrite Chapter 3 (Model) based on ATC/MPC
+% [TODO] Rewrite Chapter 4 (Algorithm) based on ATC/MPC
+
+%% -----------------------------------------------------------
+%% CHAPTER 5. SIMULATION AND RESULTS ANALYSIS
+%% -----------------------------------------------------------
+\section*{CHAPTER 5. SIMULATION AND RESULTS ANALYSIS}
+    \addcontentsline{toc}{section}{\numberline{}CHAPTER 5. SIMULATION AND RESULTS ANALYSIS}
+
+\setcounter{section}{5}
+    \setcounter{subsection}{0}
+        \setcounter{figure}{0}
+            \setcounter{table}{0}
+
+% [TODO -- Task 7]: Full chapter content will be written here.
+
+\subsection{System Data and Simulation Setup}
+% [TODO -- Task 7]: Content will be written here.
+
+\subsection{Case 1: Main Grid Connected to 3 Microgrids}
+
+\subsubsection{Economic Performance and Algorithm Convergence}
+% [TODO -- Task 7]: Content will be written here.
+
+\subsubsection{Spatiotemporal Power Dispatch and Renewable Integration}
+% [TODO -- Task 7]: Content will be written here.
+
+\subsubsection{Technical Trade-off Analysis: Network Losses and Storage Optimization}
+% [TODO -- Task 7]: Content will be written here.
+
+\subsubsection{Voltage Profile Analysis and LMP Mechanism}
+% [TODO -- Task 7]: Content will be written here.
+
+\subsection{Case 2: Four Cross-Connected Microgrids}
+
+\subsubsection{Economic Performance and Energy Autonomy}
+% [TODO -- Task 7]: Content will be written here.
+
+\subsubsection{Renewable Integration and Power Coordination}
+% [TODO -- Task 7]: Content will be written here.
+
+\subsubsection{Network Losses, Storage Efficiency, and Voltage Stability}
+% [TODO -- Task 7]: Content will be written here.
+
+\newpage
+
+%% -----------------------------------------------------------
+%% CHAPTER 6. CONCLUSION
+%% -----------------------------------------------------------
+\section*{CHAPTER 6. CONCLUSION}
+    \addcontentsline{toc}{section}{\numberline{}CHAPTER 6. CONCLUSION}
+
+\setcounter{section}{6}
+    \setcounter{subsection}{0}
+
+% [TODO -- Task 8]: Conclusion content will be written here,
+% summarizing key contributions, results, and future directions.
+
+\newpage
+
+%% ============================================================
+%% LIST OF SCIENTIFIC PUBLICATIONS
+%% ============================================================
+\section*{LIST OF SCIENTIFIC PUBLICATIONS}
+    \addcontentsline{toc}{section}{\numberline{}LIST OF SCIENTIFIC PUBLICATIONS}
+
+\begin{itemize}
+    % TODO: Fill in with actual publications
+    \item \textbf{Trinh Xuan Thanh}, [Co-author(s)], Nguyen Duc Tuyen,
+          \textit{``[Paper Title]''}, [Journal/Conference Name], 2025
+          (Under Review / Accepted / Published).
+\end{itemize}
+
+\newpage
+
+%% ============================================================
+%% REFERENCES
+%% ============================================================
+\phantomsection\addcontentsline{toc}{section}{\numberline{}REFERENCES}
+
+% NOTE: Run `bibtex DATN` then compile twice to generate reference list.
+% File: references.bib  (Task 2 will populate this with >= 50 entries)
+\bibliography{references}
+\newpage
+
+%% ============================================================
+%% APPENDIX (if applicable)
+%% ============================================================
+% \section*{APPENDIX}
+%     \phantomsection\addcontentsline{toc}{section}{\numberline{} APPENDIX}
+% Appendix content (if any) will be placed here.
+
+\newpage
+\thispagestyle{empty}
+\end{document}

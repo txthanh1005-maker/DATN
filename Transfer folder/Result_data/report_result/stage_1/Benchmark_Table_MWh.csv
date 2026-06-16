@@ -1,0 +1,4 @@
+Model,Pure Cost (cents),Pure Gap (%),True Economic Cost (cents),Eco Gap (%),Shedding (MWh)
+Base Fault (Cô lập),179695.79,5.02%,1722260.04,272.41%,15.426
+Perfect Foresight (Lý tưởng),171100.35,Baseline,462462.02,Baseline,2.9138
+Current Method (MPC),179007.53,4.62%,470294.9,1.69%,2.9129

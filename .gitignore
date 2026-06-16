@@ -1,0 +1,36 @@
+# LaTeX auxiliary / build files
+*.aux
+*.bbl
+*.blg
+*.lof
+*.log
+*.lot
+*.out
+*.toc
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.pdfsync
+
+# LaTeX backup files
+*.bak
+*.bak*
+*.sav
+*.backup
+
+# Large reference documents of previous students (exclude from public repo)
+ĐỒ_ÁN_TỐT_NGHIỆP___*.pdf
+ĐỒ_ÁN_TỐT_NGHIỆP___*.md
+
+# Python cache and temporary files (if any run locally)
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/
+
+# IDE and OS junk
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+desktop.ini
