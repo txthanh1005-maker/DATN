@@ -13,15 +13,19 @@
 - The physical grid limits (e.g., bounds for PV, Wind, BESS, DG, Voltage, Trading Limits) described in `System_Architecture_and_Data.md` remain valid.
 - The system comprises MG0 (Main Grid) and 4 MGs (MG1: heavy load, MG2: solar only, MG3: light load/savior, MG4: heavy load and high PV).
 - The SOCP relaxation constraints still apply to the AC power flow model in the local microgrid operations.
+- **Physics & Grid Modeling Approximations:** Reactive power ($Q$) is assumed NOT to be exported across tie-lines ($Q_{tie} = 0$). Global active power balancing ($P_{tie}$) is handled explicitly at the coordinator (ATC) level, not in the local SOCP equations. BESS end-of-day targets and main grid limits are managed via objective penalty relaxations in ATC during fault scenarios, so strict edge boundaries are not hit or required in local hard constraints.
 - The user has already backed up the old ADMM LaTeX version.
 
 ## 3. Tech Stack & Structure
 - **Core Technology:** LaTeX (using `thesis_1side.cls`).
 - **Mathematical Framework:** Analytical Target Cascading (ATC), Model Predictive Control (MPC), Second-Order Cone Programming (SOCP).
-- **Report Structure (3-Layer Core): read from workspace\Model & Algorithmlogic.md**
-  - **Lớp 1 (Chapter 2): System Architecture & Parameters** (Network topology, energy components, input datasets from Excel).
-  - **Lớp 2 (Chapter 3): Optimal Power Flow & ATC** (Non-linear AC-OPF, SOCP relaxation, ATC mechanism for P2P trading).
-  - **Lớp 3 (Chapter 4): Model Predictive Control** (Rolling Horizon, integration of MPC and ATC, Emergency Mode).
+- **Report Structure (Bottom-Up Approach):**
+  - **Chapter 3: Local Microgrid Optimization & Spatial Coordination**
+    - **Base Level (SOCP):** Basic AC-OPF equations, SOCP relaxation. Phân tích rõ 2 trạng thái: Normal (Exact) và Emergency (Inexact do cắt tải/nghẽn mạch).
+    - **Mid Level (ATC):** Thuật toán phân rã ATC chạy vòng lặp phối hợp P2P trên một khung thời gian $h$ bất kỳ ($h=24$ cho Day-Ahead hoặc $h=5$ cho Intraday/Emergency).
+  - **Chapter 4: Temporal Coordination - Model Predictive Control (MPC)**
+    - **Top Level (MPC):** Logic cuộn thời gian (Rolling Horizon).
+    - **Tích hợp:** Cách MPC gọi thuật toán ATC(h) để đối phó với Emergency (đứt gãy lưới chính, sụt giảm PV/WT).
 - **Template Reference:** The structure and formatting must follow `ĐỒ_ÁN_TỐT_NGHIỆP___TUẤN_ANH.md` as the gold standard.
 
 ## 4. Work Breakdown (The Plan Filter)
@@ -32,7 +36,7 @@
  4. **Phase 4 (Literature Filter & Chapter 1):** Audit `chapter1.tex` to separate relevant fundamental papers from outdated ones (ADMM specific), and add theoretical background for ATC and MPC.
 
 ## 5. Boundaries
-- **ALWAYS DO:** Reference `Transfer folder` files before making any mathematical claims in LaTeX. Check `agy-memory/SESSION_STATE.md` for project context.
+- **ALWAYS DO:** Reference `Transfer folder` files before making any mathematical claims in LaTeX. Check `agy-memory/SESSION_STATE.md` for project context. **CRITICAL:** Every mathematical formula written in LaTeX MUST strictly follow the symbols defined in `workspace/Nomenclature.md`. Do not invent new mathematical symbols.
 - **ASK FIRST:** Before permanently deleting any cited paper from `references.bib`, present a list of proposed removals to the User (Tư lệnh) for final approval.
 - **FORBIDDEN:** Do not modify any Python files in `Transfer folder` or execute them. The focus is strictly on drafting the LaTeX report. Do not fabricate results; all results must be derived from `Result_data` or `SESSION_STATE.md`.
 
@@ -44,6 +48,7 @@
 - **Equations:** Every equation must be numbered using the standard `equation` environment.
 - **Grouped Equations:** Use `subequations` (e.g., 1a, 1b) for equations that share similar properties or belong to a specific block.
 - **Bibliography:** All references must be strictly organized within a `.bib` file (e.g., `references.bib`).
+- **Abbreviations:** All abbreviations must be organized in `workspace/Abbreviations.md` for agents to read prior to writing, and implemented properly in LaTeX (e.g., via a list of abbreviations). **Strict Rule:** Once an abbreviation is defined (e.g., Wind Turbines (WT)), do not repeat the full phrase in subsequent texts; use only the abbreviation.
 
 ## 8. Testing Strategy
 - **Success Condition:** The document must pass the 4-layer compilation sequence without any Fatal Errors.

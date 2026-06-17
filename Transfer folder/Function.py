@@ -637,14 +637,11 @@ def up_time_constraint(model): #* (4m)
       check = 0
       H = getattr(model, 'H', 24)
       for phi in range(int(time), int(time + model.Time_up_DG - 1)+1):
-        # print(phi)
         if (int(time + model.Time_up_DG - 1)<= H - 1):
           lhs += model.I_DG[node,phi]
           check =1
-          # print(model.I_DG[node,phi])
       if (check ==1):
-        rhs = model.Time_up_DG * model.On_cost_DG[node,phi]
-      if (check ==1):
+        rhs = model.Time_up_DG * model.On_cost_DG[node,time]
         model.up_time.add(lhs >= rhs)
   return
 def down_time_constraint(model): #* (4n) 
@@ -653,19 +650,16 @@ def down_time_constraint(model): #* (4n)
     for time in model.time:
       lhs = 0 
       check = 0
-      phi_bat =0
       H = getattr(model, 'H', 24)
       for phi in range(int(time),int(time + model.Time_down_DG - 1) + 1):
         if (int(time + model.Time_down_DG - 1)<= H - 1):
-          lhs += (1- model.I_DG[node,phi])
-          check =1
-      if (check ==1):
-        # denominator = 1 + exp(-200 * (model.I_DG[node,phi] - model.I_DG[node,phi-1] - 0.000001))
-        # phi_bat = 1 / denominator
-        # rhs = model.Time_down_DG * phi_bat
-        rhs = model.Time_down_DG * model.On_cost_DG[node,phi]
-        
-      if (check ==1):
+          lhs += (1 - model.I_DG[node,phi])
+          check = 1
+      if (check == 1):
+        if time > 0:
+            rhs = model.Time_down_DG * (model.I_DG[node, time-1] - model.I_DG[node, time])
+        else:
+            rhs = 0
         model.down_time.add(lhs >= rhs)
   return
 def Spinning_reserve_constraints(model): #*(4kl)
@@ -674,14 +668,14 @@ def Spinning_reserve_constraints(model): #*(4kl)
     lhs = model.R_DG[time]
     rhs = 0
     for node in model.node_has_DG:
-      rhs += model.P_Qmax_DG - model.P_DG[node,time]*model.I_DG[node,time] 
+      rhs += model.P_Qmax_DG * model.I_DG[node,time] - model.P_DG[node,time]
     model.Spinning_reserve.add(lhs == rhs)
   for time in model.time:
     lhs = model.R_DG[time]
     rhs = 0
     for node in model.node_has_DG:
       rhs += model.P_Qmax_DG
-    model.Spinning_reserve.add(lhs >= 0.2* rhs)
+    model.Spinning_reserve.add(lhs >= 0.2 * rhs)
   return
 
 #* BESS

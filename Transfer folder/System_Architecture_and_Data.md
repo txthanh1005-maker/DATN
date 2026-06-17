@@ -20,7 +20,7 @@ The precise component locations within each MG are defined as follows:
 - **Wind Turbine (WT) Node**: 32
 - **Battery Energy Storage System (BESS) Node**: 19
 - **Dispatchable Generator (DG) Node**: 5
-- **Grid Trading Limits**: ±150 kW
+- **Grid Trading Limits**: $\pm 1.5$ MW (1500 kW / 1.5 pu)
 
 ### Microgrid 2 (MG2)
 - **Total Nodes**: 30
@@ -28,7 +28,7 @@ The precise component locations within each MG are defined as follows:
 - **Wind Turbine (WT) Node**: None
 - **Battery Energy Storage System (BESS) Node**: 20
 - **Dispatchable Generator (DG) Node**: 10
-- **Grid Trading Limits**: ±1500 kW
+- **Grid Trading Limits**: $\pm 1.5$ MW (1500 kW / 1.5 pu)
 
 ### Microgrid 3 (MG3)
 - **Total Nodes**: 21
@@ -36,15 +36,16 @@ The precise component locations within each MG are defined as follows:
 - **Wind Turbine (WT) Node**: 1
 - **Battery Energy Storage System (BESS) Node**: 12
 - **Dispatchable Generator (DG) Node**: 9
-- **Grid Trading Limits**: ±150 kW
+- **Grid Trading Limits**: $\pm 1.5$ MW (1500 kW / 1.5 pu)
 
-### Microgrid 4 (MG4)
-- **Total Nodes**: 35
-- **Photovoltaic (PV) Nodes**: 18, 20, 27, 29
+### Microgrid 4 (MG4) - Heavy Load & High PV
+MG4 acts as a dense industrial/residential complex with massive consumption (25 active load nodes) but also heavily relies on distributed solar generation. Its power balance fluctuates aggressively between day and night.
+- **Total Nodes**: 35 (25 load nodes defined in `Node_PQ_data`)
+- **Photovoltaic (PV) Nodes**: 18, 20, 27, 29 (High PV distribution)
 - **Wind Turbine (WT) Node**: None
 - **Battery Energy Storage System (BESS) Node**: 8
-- **Dispatchable Generator (DG) Node**: 22
-- **Grid Trading Limits**: ±150 kW
+- **Dispatchable Generator (DG) Node**: 22 (For critical local backup)
+- **Grid Trading Limits**: $\pm 1.5$ MW (1500 kW / 1.5 pu)
 
 ## 3. Input Data Sources (Nguồn cấp dữ liệu)
 

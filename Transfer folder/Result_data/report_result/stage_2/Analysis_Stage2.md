@@ -1,4 +1,4 @@
-# Stage 2 Analysis: Temporal Dynamics of SOC and Emergency P2P Trading
+7# Stage 2 Analysis: Temporal Dynamics of SOC and Emergency P2P Trading
 
 ## 1. Introduction
 This analysis evaluates the temporal dynamics of the State of Charge (SOC) and Peer-to-Peer (P2P) trading behaviors across four interconnected microgrids (MG1, MG2, MG3, MG4) during a 24-hour operation cycle. We specifically focus on the critical fault window from **t=9 to t=15**, comparing two operational strategies:

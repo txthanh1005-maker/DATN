@@ -288,7 +288,100 @@ thesis.
 \section*{LIST OF SYMBOLS AND ABBREVIATIONS}
     \phantomsection\addcontentsline{toc}{section}{\numberline{} LIST OF SYMBOLS AND ABBREVIATIONS}
 
-% [TODO] Update Tables 1-4 based on ATC/MPC
+\begin{longtable}{@{} p{3cm} p{12cm} @{}}
+\toprule
+\textbf{Abbreviation} & \textbf{Full Form} \\
+\midrule
+\multicolumn{2}{@{}l}{\textbf{1. Methods \& Algorithms}} \\
+\midrule
+ATC & Analytical Target Cascading \\
+MPC & Model Predictive Control \\
+OPF & Optimal Power Flow \\
+AC-OPF & Alternating Current Optimal Power Flow \\
+SOCP & Second-Order Cone Programming \\
+ADMM & Alternating Direction Method of Multipliers \\
+\midrule
+\multicolumn{2}{@{}l}{\textbf{2. Energy Systems \& Components}} \\
+\midrule
+MG & Microgrid \\
+P2P & Peer-to-Peer \\
+PV & Photovoltaic \\
+WT & Wind Turbine \\
+BESS & Battery Energy Storage System \\
+DG & Diesel Generator \\
+SOC & State of Charge \\
+ESS & Energy Storage System \\
+RES & Renewable Energy Sources \\
+\midrule
+\multicolumn{2}{@{}l}{\textbf{3. Metrics \& Units}} \\
+\midrule
+VOLL & Value of Lost Load \\
+pu & Per-unit \\
+MWh & Megawatt-hour \\
+MW & Megawatt \\
+\bottomrule
+\end{longtable}
+
+\vspace{0.5cm}
+\noindent \textit{Note: Subscripts $i, j$ denote node or line indices, and $t$ denotes the time interval. They are omitted in descriptions for brevity.}
+
+\begin{longtable}{@{} p{3.5cm} p{11.5cm} @{}}
+\toprule
+\textbf{Symbol} & \textbf{Description} \\
+\midrule
+\multicolumn{2}{@{}l}{\textbf{1. Sets \& Indices}} \\
+\midrule
+$\mathcal{T}$ & Set of time scheduling intervals \\
+$\mathcal{N}, \mathcal{M}$ & Sets of buses/nodes in the network, and Microgrids \\
+$\mathcal{C}, \mathcal{E}$ & Sets of line configurations, and distribution lines \\
+$\mathcal{N}^{PV}, \mathcal{N}^{WT}$ & Sets of nodes equipped with PV and Wind Turbines \\
+$\mathcal{N}^{DG}, \mathcal{N}^{BESS}$ & Sets of nodes equipped with Diesel Generators and BESS \\
+$\mathcal{N}^{trade}$ & Set of nodes with P2P tie-lines \\
+$\Omega(i)$ & Set of child nodes connected to node $i$ \\
+\midrule
+\multicolumn{2}{@{}l}{\textbf{2. Parameters}} \\
+\midrule
+$S_{base}, U_{base}$ & System base apparent power and voltage \\
+$Z_{base}, I_{base}$ & System base impedance and current \\
+$R_{ij}, X_{ij}, C_{ij}$ & Resistance, reactance, and capacitance of line $(i,j)$ \\
+$P_{load}, Q_{load}$ & Active and reactive power demand \\
+$\pi_{buy}, \pi_{sell}$ & Electricity prices for purchasing/selling to the main grid \\
+$P_{PV}^{\text{peak}}, P_{WT}^{\text{peak}}$ & Maximum active power generation of PV and WT \\
+$Q_{PV}, Q_{WT}$ & Reactive power output limits of PV and WT \\
+$S_{PV}, S_{WT}$ & Apparent power capacities of PV and WT \\
+$\pi_{trade}$ & P2P trading price between MGs \\
+$\lambda, \rho$ & Lagrange multiplier and penalty parameter for ADMM \\
+$P_{target}$ & Target active power trading amount provided by DSO \\
+$\alpha_{DG}, \beta_{DG}, \gamma_{DG}$ & Fixed, linear, and quadratic cost coefficients of DG \\
+$C_{start,DG}$ & Cold start cost of DG \\
+$P_{DG}^{\text{min}}, P_{DG}^{\text{max}}$ & Minimum and maximum active power limits of DG \\
+$R_{DG}^{\text{ramp}}$ & Ramp rate limit of DG \\
+$T_{up}^{DG}, T_{down}^{DG}$ & Minimum up and down time of DG \\
+$C_{BESS}, \eta_{bess}$ & Degradation cost coefficient and round-trip efficiency of BESS \\
+$P_{bess}^{\text{max}}$ & Maximum charging/discharging power of BESS \\
+$SOC^{\text{min}}, SOC^{\text{max}}$ & Minimum and maximum State of Charge limits of BESS \\
+$SOC^{\text{ini}}$ & Initial State of Charge of BESS \\
+$Cap_{bess}$ & Energy capacity of BESS \\
+\midrule
+\multicolumn{2}{@{}l}{\textbf{3. Decision Variables}} \\
+\midrule
+$P_{line}, Q_{line}$ & Active and reactive power flow on line $(i,j)$ \\
+$V^2, I^2$ & Squared voltage magnitude and squared current magnitude \\
+$P_{PV}, P_{WT}$ & Scheduled active power generation of PV and WT \\
+$P_{DG}, Q_{DG}$ & Active and reactive power generation of DG \\
+$I_{DG}, v_{DG}$ & ON/OFF status and startup binary variables of DG \\
+$R_{DG}$ & Spinning reserve of DG \\
+$P_{bess}^{\text{char}}, P_{bess}^{\text{dis}}$ & Charging and discharging power of BESS \\
+$SOC$ & State of Charge of BESS \\
+$I_{bess}^{\text{char}}, I_{bess}^{\text{dis}}$ & Binary indicators for charging and discharging modes of BESS \\
+$P_{shed}$ & Total active power load shedding \\
+$P_{shed}^{\text{normal}}, P_{shed}^{\text{critical}}$ & Normal and critical load shedding amounts \\
+$P_{tie}$ & Active power traded via P2P tie-lines \\
+$P_{grid}^{buy}, P_{grid}^{sell}$ & Active power purchased from and sold to the main grid \\
+$P_{grid}^{paid}, P_{grid}^{free}$ & Compensated and uncompensated active power sold to the grid \\
+$s_{SOC}$ & Slack variable for end-of-horizon SOC penalty \\
+\bottomrule
+\end{longtable}
 
 %% ============================================================
 %% LIST OF FIGURES
@@ -327,7 +420,13 @@ thesis.
 
 \newpage
 
-% [TODO] Rewrite Chapter 3 (Model) based on ATC/MPC
+%% -----------------------------------------------------------
+%% CHAPTER 3. SYSTEM ARCHITECTURE AND MATHEMATICAL FORMULATION
+%% -----------------------------------------------------------
+\input{chapters/chapter3}
+
+\newpage
+
 % [TODO] Rewrite Chapter 4 (Algorithm) based on ATC/MPC
 
 %% -----------------------------------------------------------
