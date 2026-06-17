@@ -12,6 +12,7 @@
 | $i \in \mathcal{N}^{DG}$ | `model.node_has_DG` | Set of nodes equipped with Diesel Generators (DG). |
 | $i \in \mathcal{N}^{BESS}$| `model.node_has_BESS` | Set of nodes equipped with Battery Energy Storage Systems (BESS).|
 | $i \in \mathcal{N}^{trade}$| `model.node_has_trade`| Set of nodes with tie-lines for P2P trading with other MGs. |
+| $(i,j) \in \mathcal{L}^{trade}$ | `model.node_has_trade` (Mapped) | Set of directional tie-lines connecting MG $i$ to MG $j$. |
 | $j \in \Omega(i)$ | `model.child_of` | Set of child nodes connected to node $i$. |
 | $m \in \mathcal{M}$ | `MG` | Set of Microgrids. |
 
@@ -36,9 +37,9 @@
 | $Q_{WT,i,t}$ | `model.Q_Wind` | Reactive power output limit of WT at node $i$, time $t$. |
 | $S_{WT,i,t}$ | `model.S_Wind` | Apparent power capacity of WT at node $i$, time $t$. |
 | $\pi_{trade,t}$ | `model.trading_cost`| Trading cost/price between MGs at time $t$. |
-| $\lambda_{i,t}$ | `model.lamda_ATC` | Lagrange multiplier for active power trading at node $i$, time $t$. |
-| $\rho_{i,t}$ | `model.rho_ATC` | Penalty parameter (ADMM) for active power trading at node $i$, time $t$. |
-| $P_{target,i,t}$ | `model.P_target` | Target active power trading amount provided by DSO at node $i$, time $t$. |
+| $\lambda_{ij,t}$ | `model.lamda_ATC` | Lagrange multiplier for active power traded from MG $i$ to MG $j$ at time $t$. |
+| $\rho_{ij,t}$ | `model.rho_ATC` | Penalty parameter (ADMM) for active power traded from MG $i$ to MG $j$ at time $t$. |
+| $P_{target,ij,t}$ | `model.P_target` | Target active power traded from MG $i$ to MG $j$ provided by DSO at time $t$. |
 | $\alpha_{DG}$ | `model.alpha_DG` | Fixed cost coefficient of DG. |
 | $\beta_{DG}$ | `model.beta_DG` | Linear cost coefficient of DG. |
 | $\gamma_{DG}$ | `model.theta_DG` | Quadratic cost coefficient of DG. |
@@ -83,7 +84,7 @@
 | $P_{shed,i,t}$ | `model.P_shed` | Total active power load shedding at node $i$, time $t$. |
 | $P_{shed,i,t}^{normal}$ | `model.P_shed_normal`| Normal load shedding at node $i$, time $t$. |
 | $P_{shed,i,t}^{critical}$ | `model.P_shed_critical`| Critical load shedding at node $i$, time $t$. |
-| $P_{tie,i,t}$ | `model.P_trade` | Active power traded via tie-lines with other MGs at node $i$, time $t$. |
+| $P_{tie,ij,t}$ | `model.P_trade` | Active power traded via tie-line from MG $i$ to MG $j$ at time $t$. |
 | $P_{grid,t}^{buy}$ | `model.P_pos` | Active power purchased from the main grid at time $t$. |
 | $P_{grid,t}^{sell}$ | `model.P_neg` | Active power sold to the main grid at time $t$ (non-positive value). |
 | $P_{grid,t}^{paid}$ | `model.P_neg_paid`| Amount of active power sold to the grid that is compensated. |
