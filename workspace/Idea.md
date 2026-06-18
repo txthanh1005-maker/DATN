@@ -36,10 +36,16 @@
 - **6.3 Spatiotemporal Energy Management (Dựa trên Stage 2):** (Hệ thống) Lập luận nhân quả phân tích sâu 3 kịch bản dựa trên EMS và BESS: (1) **Base Fault (Cô lập & Tự lực):** Biết trước lỗi nhưng không có P2P. EMS vắt kiệt BESS, xả dốc đứng, dẫn tới cắt cả Critical Load. (2) **Perfect Foresight (Toàn tri):** Biết trước 24h, có P2P. EMS sạc BESS trước khi lỗi và xả mượt mà. (3) **Current Method (MPC thực chiến):** Không biết khi nào hết lỗi, có P2P. EMS sinh hội chứng "Hoarding" BESS, dè dặt xả và cuống cuồng mua P2P để bù đắp, sinh ra Negative Premium nhưng vẫn bảo vệ 100% Critical Load. Yêu cầu chui sâu phân tích từng tổ hợp ảnh 4-panel (SOC và Active Power) của từng MGs để chứng minh hành vi này.
 - **6.4 Local Power Quality & Voltage Stability (Dựa trên Stage 3):** (Vi mô/Vật lý) Khảo sát Load Shedding tại từng node (cột đen Critical bằng 0). Phân tích vai trò trung chuyển (Transmission Intermediary) của MG4 khiến nó chịu áp lực sụt áp khổng lồ, buộc các máy phát phải bơm Q kịch liệt. Khảo sát Voltage Profile: trong giờ bình thường áp nằm trong soft limits, khi có lỗi mở tung ra hard limits [0.95, 1.05] để tối đa hóa dung lượng truyền tải P2P.
 - **6.5 Algorithmic Performance & Market Dynamics (Dựa trên Stage 4 & 5):** (Thuật toán) Chứng minh tính hội tụ của ATC, CPU time, sự hình thành tín hiệu giá giao dịch nội bộ ($\lambda$) và tổn hao mạng (Power Loss).
-- **6.6 Robustness & Sensitivity Analysis (Dựa trên Stage 6):** (Sức bền/Stress Test) Bổ sung phân tích sâu về ma trận 3 tầng (3-Level Stress Test Matrix):
-  - **Level 1 (Temporal Depth):** Kéo dài sự cố 11 tiếng để chứng minh hiệu quả pre-charging của MPC.
-  - **Level 2 (Spatial Depth):** Chồng chéo sự cố (Mất Grid + PV Loss) để chứng minh hiện tượng Scarcity Pricing và tự vệ hệ thống.
-  - **Level 3 (Spatiotemporal Depth):** Siêu thảm họa tổ hợp, kiểm tra Ultimate Resilience Limit và chứng minh 100% Critical Load được bảo vệ dưới áp lực cực đoan.
+- **6.6 Robustness & Sensitivity Analysis (The Stress Test Matrix):** Phân tích sức bền của hệ thống qua ma trận 4 kịch bản lỗi dưới góc độ 3 Lăng kính Kỹ thuật (Metrics). **Tiêu chuẩn mục tiêu khi viết: Phải tuân thủ nghiêm ngặt Mạch logic Nhân quả Top-Down:**
+  - **6.6.1 (Nguyên nhân khởi nguồn - Tầng Lưới): Active Power Routing & Network Endurance**
+    - *Hình ảnh:* `Stage6_P2P.png`.
+    - *Nội dung:* Sự thiếu hụt công suất lan rộng ép mạng lưới phải vắt kiệt công suất truyền tải P2P (mở rộng dải màu), đẩy các đường Tie-line lên sát giới hạn nhiệt. Dòng điện (I) tăng đột biến.
+  - **6.6.2 (Hệ quả Vật lý - Tầng Áp): Voltage Stability & Security Margins**
+    - *Hình ảnh:* `Stage6_Voltage.png`.
+    - *Nội dung:* Dòng tải (I) khổng lồ dội xuống mạng lưới sinh ra độ sụt áp nghiêm trọng ($I \times Z$). Đường bao điện áp (Voltage Envelope) bị kéo tụt đâm thủng Soft Cap, lùi về sát vùng tử địa Hard Cap (0.90 p.u.).
+  - **6.6.3 (Quyết định Sinh tử - Tầng Kinh tế & Mục tiêu): Autonomous Critical Load Prioritization & Economic Cost**
+    - *Hình ảnh:* `Stage6_CostShedding.png` và `Robustness_Cost_vs_Shedding copy.png`.
+    - *Nội dung:* Để ngăn điện áp ở 6.6.2 thủng đáy, thuật toán buộc phải hy sinh: Cắt đứt phụ tải thường (Normal Load Shedding tăng phi mã, đẩy Cost lên cao) nhằm giảm tải dòng $I$. **Cú chốt hạ:** Sự tàn nhẫn này đổi lại Bằng chứng thép là Critical Load Shedding vĩnh viễn bị khóa chặt ở `0.0 MWh` (Hoàn thành mục tiêu 100%).
 
 ## 4. Ranh giới (Boundaries)
 - **Luôn luôn:** Diễn giải kết quả thông qua lăng kính "Contributions" đã định hình (Tuyệt đối không dừng lại ở việc mô tả biểu đồ tăng giảm đơn thuần). Bám sát các con số cốt lõi (như 15.4260 MWh vs 2.9130 MWh).

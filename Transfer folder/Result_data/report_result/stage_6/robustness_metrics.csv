@@ -1,0 +1,5 @@
+Case,Pure Cost,Total Cost,Normal Shed Load,Crit Shed Load
+Base Case,179117.63,470406.92,2.913,0
+Temporal Stress,189831.84,823511.41,6.3369,0
+Spatial Stress,221123.05,627859.33,4.0674,0
+Spatiotemporal Extreme,238119.13,1234746.79,9.9664,0
