@@ -1,56 +1,43 @@
-# MASTER PLAN: Upgrade DATN Report to ATC & MPC Framework
+# Spec: Kế hoạch Phân tích Kết quả & Viết Chapter 6 (Top-Down Approach)
 
-## 1. Objective & Success Criteria
-- **Objective:** Update the existing LaTeX report (`DATN.tex`) from the outdated ADMM/SOCP algorithm to the new **Analytical Target Cascading (ATC)** and **Model Predictive Control (MPC)** rolling horizon architecture.
+## 1. Mục tiêu (Objective & Success Criteria)
+- **Objective:** Lập kế hoạch và triển khai viết Chapter 6 (Results and Discussion) dựa trên 5 Stage kết quả mô phỏng trong `Transfer folder/Result_data/report_result/`.
+- Áp dụng phương pháp tiếp cận **Top-Down**: Đi từ vĩ mô (Kinh tế tổng thể) xuống vi mô (Điều phối kỹ thuật tại MG) và cuối cùng là hiệu năng thuật toán & tín hiệu thị trường.
+- **Liên kết chặt chẽ với những đóng góp cốt lõi (Contributions):**
+  1. Bảo vệ 100% Critical Load (Security).
+  2. The Denominator Effect (Tiệm cận hoàn hảo với Perfect Foresight).
+  3. Synergistic Negative Premium (Mạng P2P giải phóng năng lượng tái tạo, tăng sức chống chịu nhưng lại giảm chi phí).
 - **Success Criteria:**
-  1. Old tables and obsolete ADMM mathematical models (Chapters 3 & 4) are completely replaced with a 3-layer architecture (Chapter 2: System Architecture, Chapter 3: AC-OPF/ATC, Chapter 4: MPC).
-  2. Literature review (Chapter 1) is carefully filtered: retain core papers, remove ADMM-specific papers, and incorporate new ATC/MPC literature.
-  3. Results (Chapter 5) strictly follow the 5-stage architecture found in `Transfer folder/Result_data/report_result` (Stage 1 to 5: Macro Economics, Resilience, Algorithmic Scalability, Scarcity Pricing, etc.).
-  4. The document compiles successfully without errors (`DATN.pdf` generated).
+  - Hoàn thành bộ khung sườn (Outline) cho Chapter 6 thể hiện rõ mạch logic Top-Down.
+  - Phân chia các Task rõ ràng để xử lý dần các Stage 1-5, nhúng hình ảnh và diễn giải vào file LaTeX.
+  - Nhận được sự đồng thuận của Tư lệnh về hướng đi trước khi tạo ACTION_PLAN.md.
 
-## 2. Assumptions
-- The core Python code in the `Transfer folder` is considered the absolute "Source of Truth" for any algorithm or scenario parameter.
-- The physical grid limits (e.g., bounds for PV, Wind, BESS, DG, Voltage, Trading Limits) described in `System_Architecture_and_Data.md` remain valid.
-- The system comprises a Utility Grid and 4 MGs (MG1: heavy load, MG2: solar only, MG3: light load/savior, MG4: heavy load and high PV).
-- The SOCP relaxation constraints still apply to the AC power flow model in the local microgrid operations.
-- **Physics & Grid Modeling Approximations:** Reactive power ($Q$) is assumed NOT to be exported across tie-lines ($Q_{tie} = 0$). Global active power balancing ($P_{tie}$) is handled explicitly at the coordinator (ATC) level, not in the local SOCP equations. BESS end-of-day targets and main grid limits are managed via objective penalty relaxations in ATC during fault scenarios, so strict edge boundaries are not hit or required in local hard constraints.
-- The user has already backed up the old ADMM LaTeX version.
+## 2. Giả định (Assumptions)
+- Dữ liệu ở `Transfer folder/Result_data` là dữ liệu chuẩn cuối cùng (Supreme Source of Truth), không cần chạy lại mô phỏng Python.
+- Các file phân tích gốc như `Analysis_Stage1_Report.md` chứa logic cốt lõi sẽ được dùng làm nền tảng lý luận trong bài luận.
+- Định dạng báo cáo tuân thủ chuẩn LaTeX IEEE / Thesis hiện tại của dự án.
 
-## 3. Tech Stack & Structure
-- **Core Technology:** LaTeX (using `thesis_1side.cls`).
-- **Mathematical Framework:** Analytical Target Cascading (ATC), Model Predictive Control (MPC), Second-Order Cone Programming (SOCP).
-- **Report Structure (Bottom-Up Approach):**
-  - **Chapter 3: Local Microgrid Optimization**
-    - **Base Level (SOCP):** Basic AC-OPF equations, SOCP relaxation. Phân tích rõ 2 trạng thái: Normal (Exact) và Emergency (Inexact do cắt tải/nghẽn mạch).
-  - **Chapter 4: Spatial Coordination - Analytical Target Cascading (ATC)**
-    - **Mid Level (ATC):** Thuật toán phân rã ATC chạy vòng lặp phối hợp P2P trên một khung thời gian $h$ bất kỳ ($h=24$ cho Day-Ahead hoặc $h=5$ cho Intraday/Emergency).
-  - **Chapter 5: Temporal Coordination - Model Predictive Control (MPC)**
-    - **Top Level (MPC):** Logic cuộn thời gian (Rolling Horizon).
-    - **Tích hợp:** Cách MPC gọi thuật toán ATC(h) để đối phó với Emergency (đứt gãy lưới chính, sụt giảm PV/WT).
-- **Template Reference:** The structure and formatting must follow `ĐỒ_ÁN_TỐT_NGHIỆP___TUẤN_ANH.md` as the gold standard.
+## 3. Cấu trúc Top-Down dự kiến cho Chapter 6 (Tech Stack & Structure)
+- **6.0 (Pre-flight Task): Khảo sát Dàn trang Ảnh (Image Layout Survey):** Nháp thử cấu trúc layout LaTeX (ví dụ: hình ảnh 4-panel cho 4 MGs, hình ảnh side-by-side) bằng `\begin{figure}` hoặc `subfigure` để đảm bảo không bị vỡ bố cục trước khi nhúng toàn bộ data.
+- **6.1 System Configuration & Simulation Scenarios:** (Tổng quan) **Di dời toàn bộ nội dung Section 3.1 (Peer-to-Peer Interconnection Topology) xuống đây**. Bổ sung thêm thông số cấu hình mạng lưới (dung lượng các nguồn, tải) và định nghĩa chi tiết 3 kịch bản so sánh (Base Fault, Perfect Foresight, Current MPC). 
+- **Tránh từ ngữ cảm xúc:** Dùng ngôn ngữ khoa học, lạnh lùng (aggressively -> heavily, frantically -> rapidly, savior -> supporting MGs).
 
-## 4. Work Breakdown (The Plan Filter)
-*As explicitly requested, the order of execution has been swapped to prioritize the Model/Algorithm and Results before adjusting the Literature.*
-1. **Phase 1 (System Architecture - Chapter 2):** Draft Chapter 2 defining the 4-MG topology, system limits, and data sources (from `System_Architecture_and_Data.md`).
-2. **Phase 2 (Model & Algorithm - Chapters 3, 4, 5):** Rebuild Chapters 3, 4, and 5 using the 3-layer logic, variables, and constraints from `main.py` and `workspace/Model & Algorithmlogic.md`.
-3. **Phase 3 (Results - Chapter 6):** Draft Chapter 6 structured exactly according to the 5-Stage Architecture stored in `Transfer folder/Result_data/report_result/` (e.g., Stage 1: Macro Economics, Stage 4: Algorithmic Scalability, Stage 5: Scarcity Pricing \lambda).
- 4. **Phase 4 (Literature Filter & Chapter 1):** Audit `chapter1.tex` to separate relevant fundamental papers from outdated ones (ADMM specific), and add theoretical background for ATC and MPC.
+## 4. Phase 4: Algorithmic Scalability & Market Dynamics (Stage 4 & 5)
+- **Objective:** Prove the computational robustness and economic intelligence of the decentralized MPC-ATC framework.
+- **Stage 4 (Algorithmic Convergence - Section 6.5):**
+  - **CPU Time:** So sánh Perfect Foresight (Monolithic bottleneck, ~584s) và MPC (Rolling horizon, ~413s total). Nhấn mạnh max CPU time của 1 bước MPC khi xảy ra sự cố chỉ là ~91s (tại t=10), hoàn toàn đáp ứng được thời gian thực (Real-Time Feasibility).
+  - **ATC Convergence:** Phân tích sự hội tụ của thuật toán ATC (Decentralized Coordination). Dù có sự cố đứt gãy lưới, các Microgrid vẫn đàm phán thành công mức giao dịch P2P, residual decay về 0.0 chỉ trong 3-4 steps.
+- **Stage 5 (Scarcity Pricing - Section 6.6):**
+  - Đổi tên mục thành "Scarcity Pricing Dynamics (Stage 5)".
+  - Phân tích tín hiệu giá nội bộ $\lambda$ (ATC multipliers). Giờ bình thường giá ổn định. Giờ có sự cố (Fault window t=9 đến t=15), giá $\lambda$ tăng vọt tạo thành "Scarcity Pricing" (Giá khan hiếm).
+  - **Market Signaling:** Sự leo thang của giá $\lambda$ tự động tạo động lực kinh tế cho các MG thặng dư (MG2, MG3) xả BESS xuất điện để tối đa hóa lợi nhuận P2P, đồng thời ép các MG thâm hụt (MG1, MG4) mua điện với giá cao để bảo vệ Critical Load. Đây là minh chứng hệ thống không chỉ là Electrical Controller mà còn là một thị trường tự vận hành.
 
-## 5. Boundaries
-- **ALWAYS DO:** Reference `Transfer folder` files before making any mathematical claims in LaTeX. Check `agy-memory/SESSION_STATE.md` for project context. **CRITICAL:** Every mathematical formula written in LaTeX MUST strictly follow the symbols defined in `workspace/Nomenclature.md`. Do not invent new mathematical symbols.
-- **ASK FIRST:** Before permanently deleting any cited paper from `references.bib`, present a list of proposed removals to the User (Tư lệnh) for final approval.
-- **FORBIDDEN:** Do not modify any Python files in `Transfer folder` or execute them. The focus is strictly on drafting the LaTeX report. Do not fabricate results; all results must be derived from `Result_data` or `SESSION_STATE.md`.
+- **6.2 Macro-Economic Assessment & System Resilience (Dựa trên Stage 1):** (Vĩ mô) Phân tích True Economic Cost, Energy Mix. Bàn luận sâu về "100% Critical Load Protected" và "Negative Premium".
+- **6.3 Spatiotemporal Energy Management (Dựa trên Stage 2):** (Hệ thống) Lập luận nhân quả phân tích sâu 3 kịch bản dựa trên EMS và BESS: (1) **Base Fault (Cô lập & Tự lực):** Biết trước lỗi nhưng không có P2P. EMS vắt kiệt BESS, xả dốc đứng, dẫn tới cắt cả Critical Load. (2) **Perfect Foresight (Toàn tri):** Biết trước 24h, có P2P. EMS sạc BESS trước khi lỗi và xả mượt mà. (3) **Current Method (MPC thực chiến):** Không biết khi nào hết lỗi, có P2P. EMS sinh hội chứng "Hoarding" BESS, dè dặt xả và cuống cuồng mua P2P để bù đắp, sinh ra Negative Premium nhưng vẫn bảo vệ 100% Critical Load. Yêu cầu chui sâu phân tích từng tổ hợp ảnh 4-panel (SOC và Active Power) của từng MGs để chứng minh hành vi này.
+- **6.4 Local Power Quality & Voltage Stability (Dựa trên Stage 3):** (Vi mô/Vật lý) Khảo sát Load Shedding tại từng node (cột đen Critical bằng 0). Phân tích vai trò trung chuyển (Transmission Intermediary) của MG4 khiến nó chịu áp lực sụt áp khổng lồ, buộc các máy phát phải bơm Q kịch liệt. Khảo sát Voltage Profile: trong giờ bình thường áp nằm trong soft limits, khi có lỗi mở tung ra hard limits [0.95, 1.05] để tối đa hóa dung lượng truyền tải P2P.
+- **6.5 Algorithmic Performance & Market Dynamics (Dựa trên Stage 4 & 5):** (Thuật toán) Chứng minh tính hội tụ của ATC, CPU time, sự hình thành tín hiệu giá giao dịch nội bộ ($\lambda$) và tổn hao mạng (Power Loss).
 
-## 6. Commands & Tools
-- **Compiler:** Use local `pdflatex` on the user's machine.
-- **Compilation Sequence:** Must strictly follow the user's defined 4-layer compilation sequence (`pdflatex` $\rightarrow$ `bibtex` $\rightarrow$ `pdflatex` $\rightarrow$ `pdflatex`) to ensure cross-references and citations are accurately updated.
-
-## 7. Code Style
-- **Equations:** Every equation must be numbered using the standard `equation` environment.
-- **Grouped Equations:** Use `subequations` (e.g., 1a, 1b) for equations that share similar properties or belong to a specific block.
-- **Bibliography:** All references must be strictly organized within a `.bib` file (e.g., `references.bib`).
-- **Abbreviations:** All abbreviations must be organized in `workspace/Abbreviations.md` for agents to read prior to writing, and implemented properly in LaTeX (e.g., via a list of abbreviations). **Strict Rule:** Once an abbreviation is defined (e.g., Wind Turbines (WT)), do not repeat the full phrase in subsequent texts; use only the abbreviation.
-
-## 8. Testing Strategy
-- **Success Condition:** The document must pass the 4-layer compilation sequence without any Fatal Errors.
-- **Auditing:** Output math and formulas must be cross-checked by `test-engineer` or `domain_reviewer` against `main.py` before any task is marked as `[x] DONE`.
+## 4. Ranh giới (Boundaries)
+- **Luôn luôn:** Diễn giải kết quả thông qua lăng kính "Contributions" đã định hình (Tuyệt đối không dừng lại ở việc mô tả biểu đồ tăng giảm đơn thuần). Bám sát các con số cốt lõi (như 15.4260 MWh vs 2.9130 MWh).
+- **Hỏi ý kiến trước (ASK FIRST):** Bố cục lại số lượng hình ảnh nếu có quá nhiều hình trong 1 Section làm vỡ cấu trúc LaTeX.
+- **Nghiêm cấm (FORBIDDEN):** Tự ý bịa số liệu. Mọi con số phải trích xuất chuẩn xác từ các file `.md` và `.csv` trong folder `report_result`.

@@ -8,32 +8,25 @@ Nâng cấp và chuyển đổi toàn bộ báo cáo Đồ án Tốt nghiệp (D
 
 ## Progress & Changelog
 **Các Tác Vụ Gần Đây (Compacted):**
-- **Hoàn thiện Section 3.4 & 3.6 (AC-OPF & Final Formulation):** Tái cấu trúc thành công mô hình toán học Local SOCP. Đã rẽ nhánh rõ ràng thành 2 dạng thức: Formulation I (Normal Mode - tối ưu kinh tế) và Formulation II (Emergency Mode - tối ưu sinh tồn). 
-- **Tổng quát hóa Mô hình Sự cố:** Áp dụng biến chỉ báo $\Gamma_E(t)$ và tập hợp lỗi $\Omega_{fault}$ để xử lý chung mọi tình huống đứt gãy thành phần (đứt lưới, sập nguồn, v.v.), thay vì giới hạn ở lỗi lưới chính. Tích hợp chặt chẽ cơ chế cắt tải (cả P và Q tỉ lệ thuận) và mở khóa dự phòng DG.
-- **Hoàn thành Section 3.5 (SOCP Relaxation):** Trình bày quá trình lồi hóa SOCP và chứng minh tính Exactness vững chắc của mạng hình tia nhờ $F_{loss}$ và cơ chế PV Curtailment tự do.
-- **Pivot Cấu trúc (Bottom-Up Approach):** Đã chuyển đổi phương pháp tiếp cận Chapter 3 và 4 (Local -> Spatial -> Temporal). Gộp thành công Section 3.2 và 3.3. Đã cập nhật `Idea.md`.
-- **Review & Refine Chapter 3 (Local SOCP):** Đã qua kiểm duyệt (Passed) bởi Domain Reviewer và English Teacher. Chốt giả định vật lý (Q_tie=0, xử lý giới hạn bằng hàm phạt ở ATC) và tinh chỉnh văn phong học thuật khách quan.
-- **Khởi tạo Chapter 4 (ATC) & Hoàn thành Task 3.4.1:** Đã trình bày tổng quan ATC và bài toán Coordinator. Khắc phục thành công 4 lỗi toán học (dấu $P_{sell}$, $\lambda$ update, Adaptive Residual Balancing cho $\rho$) theo Python codebase. Đã thống nhất danh pháp đổi MG0 thành Utility Grid.
-- **Hoàn thành Task 3.4.2:** Đã viết Section 4.3 tích hợp hàm phạt ATC vào Local SOCP. Chốt quy tắc "Ánh xạ Không gian" (Spatial Mapping) trong Nomenclature.md: sử dụng biến $P_{tie,ij,t}$ để mô tả dòng điện định hướng, giải quyết hoàn toàn sự lệch pha giữa Toán học vô hướng và Lập trình Python (vốn chỉ định nghĩa `P_trade[node]`). Loại bỏ hoàn toàn chuẩn L2 sai lệch.
-- **Hoàn thành Task 3.4.3 & Tái cấu trúc Section 4.2:** Trình bày thành công thuật toán lặp ATC tại Section 4.4. Đã phát hiện và tiêu diệt triệt để tàn dư toán học ADMM lỗi thời ở Section 4.2. Đồng bộ hóa 100% định nghĩa Primal/Dual Residual giữa báo cáo LaTeX và logic code Python.
-- **Nghiệm thu toàn diện Chapter 4 (Holistic Review):** Tiến hành đợt càn quét (Deep Fix) khắc phục 4 lỗi toán học (Global penalty sum, sai dấu lambda, lệch pha chỉ số k). Kiểm duyệt văn phong học thuật và biên dịch pdflatex (4 lớp) đạt 100% PASS. Đóng băng hoàn toàn Chapter 4 (Spatial Coordination).
+- **Chuẩn hóa Algorithm 1 (Lưu đồ điều khiển):** Đã đóng băng Chapter 5.
+- **Lập Spec & Kế Hoạch Chapter 6:** Phê duyệt chiến thuật Top-Down Approach (Vĩ mô -> Vi mô -> Thuật toán) để viết Chương 6 dựa trên 5 Stage kết quả mô phỏng. Link chặt chẽ kết quả với 3 đóng góp lõi: 100% Critical Load Protected, The Denominator Effect, Negative Premium.
+- **Hoàn thành Task 1 (Khảo sát Layout ảnh - Stage 0):** Đã thiết lập thành công layout 4-panel (2x2 subfigure) trong `chapter6.tex`. Vượt qua bài kiểm tra biên dịch (PASS 100%) với cấu hình ảnh chuẩn mực, không vỡ trang.
+- **Hoàn thành Task 2 (System Configuration - Section 6.1):** Đã di dời thành công "Peer-to-Peer Interconnection Topology" từ Chương 3 sang Chương 6. Cài cắm định nghĩa 3 kịch bản: Base Fault, Perfect Foresight, Current MPC. Biên dịch trơn tru, không sinh ra lỗi mất liên kết. Toàn bộ nền tảng (Foundation) của Chapter 6 đã vững chắc.
+- **Hoàn thành Task 3 (Macro-Economic Assessment - Section 6.2):** Biên dịch thành công Stage 1 (PDF tăng lên 49 trang). Đã nhúng bảng Benchmark và 2 hình ảnh. Văn bản tiếng Anh chuẩn học thuật, đã làm bật 3 Key Contributions: 100% Critical Load Protected, The Denominator Effect (1.69%), và Resilience with Synergistic Negative Premium.
+
 ## Key Decisions
-1. **Kiến trúc Bottom-Up (Chapter 3, 4, 5):**
-   - **Chapter 3 (Local Optimization):** Đi từ các phương trình cơ bản AC-OPF, thiết lập SOCP Relaxation (Giải thích rạch ròi trạng thái Normal/Exact và Emergency/Inexact).
-   - **Chapter 4 (Spatial Coordination):** Tách riêng bài toán phối hợp không gian ATC(h) với khung thời gian linh hoạt (24h hoặc 5h) thành một chương độc lập.
-   - **Chapter 5 (Temporal Coordination):** Giới thiệu logic MPC. Trình bày cách quy trình 3 giai đoạn của MPC tích hợp thuật toán lõi ATC SOCP (ở Chapter 4) để xử lý các tình huống Emergency.
-2. **Kiến trúc 5 Tầng Bài Báo (The Holy Trinity + Market Depth):** Cấu trúc mở rộng từ 4 lên 5 tầng. Bổ sung Tầng 5 tập trung sâu vào ranh giới thị trường: Biểu đồ Giá ATC ($\lambda$) minh họa tín hiệu thị trường P2P dưới áp lực đứt gãy kết nối.
-3. **Quy tắc Đơn vị (Critical Unit Rule):** Dữ liệu Pyomo chuẩn hóa `S_base = 1MVA` -> 1 pu = 1 MWh/MW.
-4. **Luận điểm "100% Critical Load Protected" & "Negative Premium":** Tiền phạt đền bù cắt tải MPC trung bình bằng đúng 100,000 cents/MWh (không có tải ưu tiên bị cắt).
-5. **Quy chuẩn Code LaTeX:** Bắt buộc dùng môi trường `equation`/`subequations`. Quản lý trích dẫn tách bạch qua file `.bib`. Mọi code đều phải được kiểm duyệt toán học (domain_reviewer) chéo với `main.py`.
-6. **Quản lý Thuật ngữ & Viết tắt:** Mọi từ viết tắt (Abbreviations) PHẢI được định nghĩa và lưu trữ tại `workspace/Abbreviations.md`. Bắt buộc chỉ dùng từ viết tắt từ sau khi định nghĩa.
-7. **Kỷ luật Ký hiệu Toán học (Nomenclature Rule):** MỖI LẦN viết công thức toán học, BẮT BUỘC phải tham chiếu và tuân thủ 100% các ký hiệu đã chốt trong `workspace/Nomenclature.md`.
-8. **Kế thừa Section 3.3:** Section 3.4 sẽ KHÔNG viết lại các ràng buộc linh kiện (DG, BESS, PV, WT) do đã được mô tả chi tiết ở Section 3.3.
-9. **Technical Relaxations (Theo phản biện 17/06/2026):** $Q_{tie} = 0$ (không xuất khẩu Q). Các giới hạn cân bằng $P_{tie}$ toàn cục, ranh giới an toàn của BESS và Main Grid được kiểm soát linh hoạt qua hàm phạt trong thuật toán điều phối ATC thay vì dùng hard constraints ở mô hình Local SOCP.
+1. **Kiến trúc Top-Down (Chapter 6):** Sử dụng `Transfer folder/Result_data/report_result` để viết kết quả.
+2. **Kiến trúc Bottom-Up (Chapter 3, 4, 5):** Giữ nguyên quy hoạch cấu trúc toán học từ Local -> Spatial -> Temporal.
+3. **Di dời Section 3.1 sang 6.1:** Đưa cấu trúc mạng Topology vật lý (4 MGs) xuống 6.1 để kết hợp với kịch bản mô phỏng, tạo bước đệm hoàn hảo trước khi phân tích kết quả.
+4. **Quy tắc Đơn vị:** Dữ liệu Pyomo chuẩn hóa `S_base = 1MVA` -> 1 pu = 1 MWh/MW.
+5. **Quy chuẩn Code LaTeX:** Môi trường `equation`/`subequations`. Quản lý trích dẫn `.bib`. Dùng lệnh `subfigure` cho tổ hợp ảnh.
+
+- **Hoàn thành Task 4 (Phase 3: Micro-System Dynamics - Stage 2):** Đã xóa văn bản cũ và kiến tạo lại toàn bộ Section 6.3. Phân tích sâu 3 kịch bản: Base Fault (cô lập, vắt kiệt BESS), Perfect Foresight (toàn tri, sạc trước), và Proposed MPC (hội chứng Hoarding do rolling horizon, phụ thuộc mạng lưới P2P cứu trợ). Đã bảo vệ thành công luận điểm 100% Critical Load Protected và Negative Premium. Reviewer đánh giá PASS. Đã qua vòng lọc của Sĩ quan Ngôn ngữ, chuẩn hóa 100% từ vựng sang Academic English (IEEE Standard).
+- **Hoàn thành Task 5 (Local Power Quality & Stability - Stage 3):** Đã hoàn tất Section 6.4. Chứng minh 100% Critical Load Protected qua biểu đồ Load Shedding. Lập luận vật lý sắc bén về vai trò "Trạm trung chuyển" của MG4 buộc hệ thống bơm mạnh Reactive Power để bù sụt áp. Phân tích cơ chế nới lỏng điện áp từ Soft Limits sang Hard Limits [0.95, 1.05] p.u. để mở đường truyền P2P. Đã rà soát văn phong IEEE, kiểm định AC-OPF thành công. Hàng loạt hình ảnh và reference được chuẩn hóa.
+- **Hoàn thành Task 6 (Algorithmic Convergence & Market Dynamics - Stage 4 & 5):** Đã hoàn tất Section 6.5 và 6.6. Chứng minh Real-Time Feasibility với CPU Time tối đa 91s. ATC hội tụ hoàn hảo trong 3-4 steps. Khẳng định Scarcity Pricing Dynamics: Giá $\lambda$ tự động leo thang tạo tín hiệu thị trường, ép MG thâm hụt mua điện và kích thích MG thặng dư xả BESS. Đã loại bỏ hoàn toàn các văn phong cảm xúc, đạt chuẩn IEEE.
 
 ## Next Steps
-- Chuyển sang **Phase 4 (Temporal Coordination - Chapter 5)**.
-- Kích hoạt **Task 4.5.1 (Write Section 5.1 - Khung thời gian MPC)**: Trình bày logic cuộn thời gian (Rolling Horizon) của MPC qua 3 giai đoạn (Day-ahead, Intraday, Real-time) và cách cập nhật trạng thái (SOC, dự báo).
+- **HOÀN TẤT CHIẾN DỊCH (PROJECT COMPLETE):** Chapter 6 đã hoàn thành toàn bộ 5 Stage. Báo cáo lại cho Tư lệnh và tiến hành nghiệm thu tổng thể. Cần chạy `run_latex.bat` để build ra file PDF cuối cùng nếu Tư lệnh yêu cầu.
 
 ## Critical Context
 **Cấu hình mạng (Topology P2P):** 1 Utility Grid & 4 Microgrids.
@@ -41,9 +34,6 @@ Nâng cấp và chuyển đổi toàn bộ báo cáo Đồ án Tốt nghiệp (D
 - **MG2 (Solar-only, 30 nodes):** Liên kết MG3, MG4.
 - **MG3 (Nhẹ tải/Dư thừa, 21 nodes):** Cứu tinh. Liên kết MG1, MG2, MG4.
 - **MG4 (Nặng tải & Nhiều PV, 35 nodes):** Lưới phức hợp với biên độ dao động công suất mạnh. Liên kết với MG1, MG2, MG3.
-**Cơ chế hoạt động kép:**
-- *Day-ahead Scheduling:* Tối ưu hóa lợi ích kinh tế (24h).
-- *Emergency MPC:* Chạy cuốn (rolling horizon) khung 5 giờ, kích hoạt cơ chế cách ly lỗi (N-2), bù phản kháng, và chia sẻ P2P.
 
 ## Folder Structure Summary
 - **Tài liệu đặc tả và Memory**: `agy-memory/`, `workspace/`
@@ -52,7 +42,4 @@ Nâng cấp và chuyển đổi toàn bộ báo cáo Đồ án Tốt nghiệp (D
 ## Asset Pointers
 - `D:\Latex\DATN\workspace\Idea.md`
 - `D:\Latex\DATN\workspace\ACTION_PLAN.md`
-- `D:\Latex\DATN\workspace\Abbreviations.md`
-- `D:\Latex\DATN\workspace\Nomenclature.md`
-- `D:\Latex\DATN\Transfer folder\System_Architecture_and_Data.md`
-- `D:\Latex\DATN\chapters\chapter4.tex`
+- `D:\Latex\DATN\chapters\chapter6.tex`

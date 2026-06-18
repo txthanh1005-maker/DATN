@@ -6,28 +6,6 @@
 \setcounter{figure}{0}
 \setcounter{table}{0}
 
-\subsection{Peer-to-Peer Interconnection Topology}
-
-The physical architecture of the proposed energy management system comprises one Main Grid (MG0) and four interconnected Microgrids (MG1, MG2, MG3, and MG4). These Microgrids (MGs) form a Peer-to-Peer (P2P) trading network, establishing a cooperative environment that facilitates active power exchange. This P2P interconnection is specifically designed to enhance system resilience, allowing the MGs to support one another through internal power transfers, especially when isolated from the Main Grid. To ensure grid stability and respect physical tie-line capacities, the power exchange between any connected MGs is strictly constrained within a trading limit of $\pm 1.5$ MW (1.5 pu, given a system base power of 1 MVA).
-
-The overarching network topology is illustrated in Figure \ref{fig:p2p_topology}. The distinctive physical characteristics and load-generation profiles of each MG are systematically detailed as follows:
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=\textwidth]{chapters/Imagine/ALL_MG_fixed.png}
-    \caption{Peer-to-Peer interconnection topology of the multi-microgrid system.}
-    \label{fig:p2p_topology}
-\end{figure}
-
-\begin{itemize}
-    \item \textbf{Microgrid 1 (MG1) - Heavy Load with Diverse Generation:} Comprising 36 nodes, MG1 operates as a heavily loaded center within the network. It features a diverse generation portfolio, integrating multiple Renewable Energy Sources (RES) including Photovoltaic (PV) systems and a Wind Turbine (WT), alongside a Battery Energy Storage System (BESS) and a Diesel Generator (DG). MG1 maintains physical P2P tie-lines with MG3 and MG4.
-    
-    \item \textbf{Microgrid 2 (MG2) - Solar-Only Provider:} Characterized by a 30-node radial network, MG2 is a solar-only MG, devoid of wind generation. Thanks to its concentrated PV capacity, it acts as the major energy provider to the entire P2P network during the daytime. It incorporates BESS and DG units for stability and is directly connected to MG3 and MG4.
-    
-    \item \textbf{Microgrid 3 (MG3) - Light Load Savior:} As the smallest network with 21 nodes, MG3 operates with relatively light load demands but possesses excess generation capabilities. This structural advantage allows MG3 to act as the primary savior for the network, frequently exporting surplus power to support neighboring MGs. It is interconnected with MG1, MG2, and MG4.
-    
-    \item \textbf{Microgrid 4 (MG4) - Dense Complex with High PV:} With a total of 35 nodes, MG4 is defined by both heavy load demands and high PV capacity. It contains 25 active load nodes, making it a dense industrial and residential complex with massive power consumption. However, it heavily relies on four highly distributed PV nodes. This specific configuration causes aggressive power fluctuations, as the massive consumption drastically outweighs generation during non-sunlight hours. MG4 is interconnected with MG1, MG2, and MG3 to mitigate these aggressive internal imbalances.
-\end{itemize}
 
 \subsection{System Parameters, Sets, and Indices}
 
