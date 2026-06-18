@@ -10,7 +10,7 @@
 
 The physical architecture of the proposed energy management system comprises one Main Grid (MG0) and four interconnected Microgrids (MG1, MG2, MG3, and MG4). These Microgrids (MGs) form a Peer-to-Peer (P2P) trading network, establishing a cooperative environment that facilitates active power exchange. This P2P interconnection is specifically designed to enhance system resilience, allowing the MGs to support one another through internal power transfers, especially when isolated from the Main Grid. To ensure grid stability and respect physical tie-line capacities, the power exchange between any connected MGs is strictly constrained within a trading limit of $\pm 1.5$ MW (1.5 pu, given a system base power of 1 MVA).
 
-The overarching network topology is illustrated in Figure \ref{fig:p2p_topology}. The distinctive physical characteristics and load-generation profiles of each MG are systematically detailed as follows:
+The physical network topology (Figure \ref{fig:p2p_topology}) integrates four distinct MGs:
 
 \begin{figure}[htbp]
     \centering
@@ -20,13 +20,13 @@ The overarching network topology is illustrated in Figure \ref{fig:p2p_topology}
 \end{figure}
 
 \begin{itemize}
-    \item \textbf{Microgrid 1 (MG1) - Heavy Load with Diverse Generation:} Comprising 36 nodes, MG1 operates as a heavily loaded center within the network. It features a diverse generation portfolio, integrating multiple Renewable Energy Sources (RES) including Photovoltaic (PV) systems and a Wind Turbine (WT), alongside a Battery Energy Storage System (BESS) and a Diesel Generator (DG). MG1 maintains physical P2P tie-lines with MG3 and MG4.
+    \item \textbf{Microgrid 1 (MG1):} 36-node network with diverse generation (PV, WT, BESS, DG). Maintains physical P2P tie-lines with MG3 and MG4.
     
-    \item \textbf{Microgrid 2 (MG2) - Solar-Only Provider:} Characterized by a 30-node radial network, MG2 is a solar-only MG, devoid of wind generation. Thanks to its concentrated PV capacity, it acts as the major energy provider to the entire P2P network during the daytime. It incorporates BESS and DG units for stability and is directly connected to MG3 and MG4.
+    \item \textbf{Microgrid 2 (MG2):} 30-node radial solar-only network with BESS and DG. Directly connected to MG3 and MG4.
     
-    \item \textbf{Microgrid 3 (MG3) - Light Load Savior:} As the smallest network with 21 nodes, MG3 operates with relatively light load demands but possesses excess generation capabilities. This structural advantage allows MG3 to act as the primary savior for the network, frequently exporting surplus power to support neighboring MGs. It is interconnected with MG1, MG2, and MG4.
+    \item \textbf{Microgrid 3 (MG3):} 21-node network with excess generation capabilities. Interconnected with MG1, MG2, and MG4.
     
-    \item \textbf{Microgrid 4 (MG4) - Dense Complex with High PV:} With a total of 35 nodes, MG4 is defined by both heavy load demands and high PV capacity. It contains 25 active load nodes, making it a dense industrial and residential complex with massive power consumption. However, it heavily relies on four highly distributed PV nodes. This specific configuration causes aggressive power fluctuations, as the massive consumption drastically outweighs generation during non-sunlight hours. MG4 is interconnected with MG1, MG2, and MG3 to mitigate these aggressive internal imbalances.
+    \item \textbf{Microgrid 4 (MG4):} 35-node complex with high consumption and PV capacity. Interconnected with MG1, MG2, and MG3.
 \end{itemize}
 
 \subsubsection{System Parameters and DER Allocation}
@@ -120,14 +120,13 @@ Table \ref{tab:benchmark_stage1} summarizes the macro-economic benchmark results
     \small \textit{Note: The minute disparity in load shedding between Perfect Foresight (2.9138 MWh) and the Current Method (2.9129 MWh) is mathematically negligible and stems exclusively from numerical solver convergence tolerances rather than algorithmic inferiority.}
 \end{table}
 
+The benchmark analysis, visually supported by Figure \ref{fig:cost_vs_shedding}, reveals three core signature contributions of the proposed decentralized Model Predictive Control (MPC) framework:
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.85\textwidth]{"Transfer folder/Result_data/report_result/stage_1/Stage1_Cost_vs_Shedding.png"}
     \caption{Macro-economic comparison demonstrating the true economic cost versus total load shedding.}
     \label{fig:cost_vs_shedding}
 \end{figure}
-
-The benchmark analysis, visually supported by Figure \ref{fig:cost_vs_shedding}, reveals three core signature contributions of the proposed decentralized Model Predictive Control (MPC) framework:
 
 \subsubsection{100\% Critical Load Protected}
 The primary objective during emergency operation is the minimization of unserved energy, specifically shielding critical infrastructure. Under the isolated Base Fault scenario, the lack of cooperative Peer-to-Peer (P2P) sharing forces the system to shed $15.4260$ MWh of load due to localized power depletion. Implementing the decentralized MPC drastically reduces this shedding to merely $2.9129$ MWh, closely mirroring the ideal performance of the Perfect Foresight model ($2.9138$ MWh). 
@@ -137,7 +136,7 @@ Mathematically, the financial data confirms the complete protection of critical 
 \subsubsection{The Denominator Effect: Shifting the Optimality Gap}
 Although the proposed MPC operates under a decentralized architecture with a limited rolling horizon, its generation dispatch expenses (Pure Cost) stand at $179,007.53$ cents, maintaining an Optimality Gap of $4.62\%$ relative to the centralized Perfect Foresight benchmark ($171,100.35$ cents). 
 
-More importantly, when evaluating the overarching system resilience through the \textit{True Economic Gap}, the disparity collapses to a mere $1.69\%$. In absolute terms, the financial discrepancy between MPC and Perfect Foresight is almost entirely attributed to minor generator dispatch inefficiencies rather than failure to serve loads. This phenomenon highlights that enforcing strict physical boundaries on the Foresight model reveals the true proximity of the MPC to theoretical perfection. The short-sightedness of the rolling horizon slightly compromises optimal generation but does not degrade the energy security capability, proving that the MPC is nearly perfect in preserving resilience.
+More importantly, when evaluating the overarching system resilience through the \textit{True Economic Gap}, the disparity collapses to a mere $1.69\%$. This performance gap highlights a crucial operational phenomenon: The short-sightedness of the rolling horizon slightly compromises the optimal economic dispatch of generation resources, but it fundamentally does not degrade the system's energy security capability. This behavior is mathematically driven by the objective function's weighting. The penalty factor for load shedding (Value of Lost Load, VOLL = 100,000 cents/MWh) is orders of magnitude higher than the marginal cost of standard generation ($\sim 16$ cents). Therefore, even with only a 1-hour look-ahead window, the objective gradient heavily prioritizes immediate BESS discharge and P2P sharing to avert shedding at all costs. The MPC's myopic nature only leads to suboptimal fuel purchasing schedules, but it will never elect to shed load unless physical capacities are entirely exhausted.
 
 \begin{figure}[htbp]
     \centering
@@ -153,7 +152,7 @@ This remarkable capability to provide resilience at a Negative Premium stems fro
 
 \subsection{Micro-System Dynamics}
 
-This section investigates the active power flow and SOC trajectories across the four microgrids. By examining the dynamic responses of the three distinct operational strategies, we uncover the behavioral mechanisms that drive the macro-economic outcomes. The analysis focuses heavily on the interplay between proactive pre-charging and reactive emergency sharing during the severe compounded fault window ($t=9$ to $t=15$).
+
 
 \begin{figure}[H]
     \centering
@@ -267,9 +266,16 @@ The computational robustness of the proposed framework is evaluated by analyzing
 
 As depicted in Figure \ref{fig:atc_convergence}, the decentralized algorithm determines the peer-to-peer power exchanges through an iterative negotiation process, achieving convergence when the maximum absolute residual falls below the predefined $0.01$ threshold. During the initial onset of the grid isolation ($t=9, t=10$) and the subsequent shock of the PV generation loss ($t=11$), the system experiences violent structural disruptions. When the main grid connection is severed, the entire mathematical topology of the optimization problem shifts; the system loses its infinite slack bus, forcing the distributed agents to autonomously re-establish power balance and voltage references. These sudden topological shifts induce massive initial discrepancies (residuals) between neighboring microgrids. Consequently, the algorithm requires up to 45 iteration steps to negotiate a new power-sharing consensus. 
 
-It is precisely these iteration-heavy structural shocks that drive the maximum CPU time required for a single MPC step to peak at 91 seconds, as shown in Figure \ref{fig:cpu_time}. While a 91-second computation time might initially appear substantial, it is imperative to contextualize this metric within real-world operations. In a practical Energy Management System (EMS) executing on a 1-hour dispatch interval (3600 seconds), a 91-second convergence time represents merely 2.5\% of the operational window. This leaves ample time for downstream control hardware to actuate the commands. Furthermore, this CPU spike is strictly a transient phenomenon representing the absolute worst-case scenario during a structural transition. 
+It is precisely these iteration-heavy structural shocks that drive the maximum CPU time required for a single MPC step to peak at 91 seconds, as shown in Figure \ref{fig:cpu_time}. Although initialization shocks push the maximum CPU time to 91 seconds, this remains well within the 3600-second real-time dispatch interval (accounting for $\sim 2.5\%$), ensuring real-time feasibility. Furthermore, this CPU spike is strictly a transient phenomenon representing the absolute worst-case scenario during a structural transition. 
 
 Once the system adapts to the new islanded topology, the convergence speed accelerates exponentially in the later fault hours ($t=12$ to $t=15$). This acceleration is heavily driven by the algorithm's warm-start mechanism, which capitalizes on the temporal correlation of power systems. By seeding the negotiation process with the converged dual multipliers ($\lambda$) from the previous time step, the algorithm initiates the optimization extremely close to the true optimal solution. Because the network conditions stabilize after the initial shocks, these warm-started parameters are highly accurate, reducing the required iterations to single digits and dropping the CPU time to mere seconds. While the residual decay exhibits minor transient oscillations as agents dynamically adjust their boundary targets, the algorithm successfully forces the residuals below the convergence limit across all fault and recovery hours. This cohesive behavior unequivocally demonstrates the mathematical reliability, extreme computational efficiency, and real-time feasibility of the decentralized architecture under severe emergencies.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{{Transfer folder/Result_data/report_result/stage_4/Stage4_Combined_CPU_Time.png}}
+    \caption{Total and maximum CPU time comparison between Perfect Foresight and MPC.}
+    \label{fig:cpu_time}
+\end{figure}
 
 \begin{figure}[H]
     \centering
@@ -278,15 +284,17 @@ Once the system adapts to the new islanded topology, the convergence speed accel
     \label{fig:atc_convergence}
 \end{figure}
 
-
-
 The internal economic mechanism of the peer-to-peer network is governed by the dynamic trading price $\lambda$, which acts as the primary market signal. As illustrated in Figure \ref{fig:atc_pricing}, the pricing dynamics exhibit a distinct behavior during the compounded fault window. While the ATC algorithm mathematically maintains an independent $\lambda$ variable for each individual tie-line, the graph demonstrates that these prices successfully reach a uniform consensus across the entire network. Under normal grid-connected conditions, this consensus price generally fluctuates between 15 and 16, though it climbs to approximately 16.9 just before the fault due to local peak demand. However, when the system enters isolated operation between $t=9$ and $t=15$, the uniform trading price $\lambda$ abruptly drops and stabilizes at a lower floor of approximately 13.3. 
 
 This sustained low price during a severe emergency reveals a profound AC-OPF phenomenon: the Tie-line Congestion Paradox. Despite extreme, system-wide power shortages---which eventually force MG4 to execute active load shedding (a condition where the local marginal price theoretically skyrockets to the Value of Lost Load)---the consensus trading price $\lambda$ remains remarkably decoupled from these high-priced deficit nodes. 
 
-This counterintuitive pricing behavior is a direct consequence of the physical network constraints. The critical tie-lines connecting the microgrids have finite thermal capacities (1.5 MW limit). As the surplus exporters, MG1 and MG3 aggressively push power to rescue MG2 and MG4 until these tie-lines reach their absolute physical transmission limits. Once multi-path congestion occurs, the network functionally fractures into two distinct zones: a "Surplus Island" (MG1, MG3) and a "Deficit Island" (MG2, MG4). Because no additional power can physically cross the congested boundary to further alleviate the shortages in the Deficit Island, the decentralized ATC market algorithm correctly identifies that any further increase in the consensus price $\lambda$ would not yield any additional transacted energy. 
+This counterintuitive pricing behavior is a direct consequence of the physical network constraints. The critical tie-lines connecting the microgrids have finite thermal capacities (1.5 MW limit). As the surplus exporters, MG1 and MG3 aggressively push power to rescue MG2 and MG4 until these tie-lines reach their absolute physical transmission limits. Once multi-path congestion occurs, the network functionally fractures into two distinct zones: a Surplus Island (MG1, MG3) and a Deficit Island (MG2, MG4).
 
-Consequently, the uniform consensus price $\lambda$ completely severs its connection from the astronomical deficit prices (Value of Lost Load) of the shedding microgrids. Instead, $\lambda$ strictly reflects the marginal cost of the "trapped surplus" generation stranded within the Surplus Island (MG1 and MG3). This price decoupling represents a massive advantage of the AC-OPF-based decentralized market: it proves that the trading mechanism is not a purely financial construct, but is fundamentally anchored to the physical physics of AC power flows. It shields the broader network from localized price explosions while guaranteeing that energy routing is maximized right up to the strict thermal limits. Immediately after the fault clears at $t=16$, the depleted BESS units and accumulated demand trigger a massive recovery surge, removing the congestion and causing the internal price to immediately spike to its peak ($\sim 18.0$) as the system reconnects to the main grid.
+Because no additional power can physically cross the congested boundary to further alleviate the shortages in the Deficit Island, the decentralized ATC market algorithm correctly identifies that any further increase in the consensus price $\lambda$ would not yield any additional transacted energy. Consequently, the uniform consensus price $\lambda$ completely severs its connection from the astronomical deficit prices (Value of Lost Load) of the shedding microgrids.
+
+This market fracturing is not an arbitrary algorithmic behavior, but a rigorous outcome of the Karush-Kuhn-Tucker (KKT) optimality conditions. When a tie-line flow reaches its upper limit ($P_{tie} \le P_{max}$), the corresponding dual variable $\mu$ (the shadow price of transmission capacity) becomes strictly positive ($\mu > 0$). In the Lagrangian formulation, the trading consensus multiplier $\lambda$ negotiated at the boundary is mathematically defined as the internal marginal price minus this congestion shadow price ($\lambda = LMP_{deficit} - \mu$). Therefore, $\lambda$ remains decoupled and strictly reflects the marginal cost of the "trapped surplus" generation stranded within the Surplus Island. The astronomical price spike at the deficit nodes is entirely absorbed by the transmission rent $\mu$. \footnote{Note: $\lambda$ represents the ATC boundary negotiation multiplier (the unconstrained trading signal), NOT the actual internal Locational Marginal Prices (LMPs). While $\lambda$ synchronizes across the network, the internal LMPs within MG4 implicitly skyrocket to VOLL, reflecting the physical reality of the localized deficit.}
+
+This price decoupling represents a massive advantage of the AC-OPF-based decentralized market: it proves that the trading mechanism is not a purely financial construct, but is fundamentally anchored to the physical physics of AC power flows. It shields the broader network from localized price explosions while guaranteeing that energy routing is maximized right up to the strict thermal limits. Immediately after the fault clears at $t=16$, the depleted BESS units and accumulated demand trigger a massive recovery surge, removing the congestion and causing the internal price to immediately spike to its peak ($\sim 18.0$) as the system reconnects to the main grid.
 
 \begin{figure}[H]
     \centering

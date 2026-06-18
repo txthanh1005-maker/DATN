@@ -9,31 +9,27 @@ Nâng cấp và chuyển đổi toàn bộ báo cáo Đồ án Tốt nghiệp (D
 ## Progress & Changelog
 **Các Tác Vụ Gần Đây (Compacted):**
 - **Chuẩn hóa Algorithm 1 (Lưu đồ điều khiển):** Đã đóng băng Chapter 5.
-- **Lập Spec & Kế Hoạch Chapter 6:** Phê duyệt chiến thuật Top-Down Approach (Vĩ mô -> Vi mô -> Thuật toán) để viết Chương 6 dựa trên 5 Stage kết quả mô phỏng. Link chặt chẽ kết quả với 3 đóng góp lõi: 100% Critical Load Protected, The Denominator Effect, Negative Premium.
-- **Hoàn thành Task 1 (Khảo sát Layout ảnh - Stage 0):** Đã thiết lập thành công layout 4-panel (2x2 subfigure) trong `chapter6.tex`. Vượt qua bài kiểm tra biên dịch (PASS 100%) với cấu hình ảnh chuẩn mực, không vỡ trang.
-- **Hoàn thành Task 2 (System Configuration - Section 6.1):** Đã di dời thành công "Peer-to-Peer Interconnection Topology" từ Chương 3 sang Chương 6. Cài cắm định nghĩa 3 kịch bản: Base Fault, Perfect Foresight, Current MPC. Biên dịch trơn tru, không sinh ra lỗi mất liên kết. Toàn bộ nền tảng (Foundation) của Chapter 6 đã vững chắc.
-- **Hoàn thành Task 3 (Macro-Economic Assessment - Section 6.2):** Biên dịch thành công Stage 1 (PDF tăng lên 49 trang). Đã nhúng bảng Benchmark và 2 hình ảnh. Văn bản tiếng Anh chuẩn học thuật, đã làm bật 3 Key Contributions: 100% Critical Load Protected, The Denominator Effect (1.69%), và Resilience with Synergistic Negative Premium.
+- **Hoàn thành Task 4 (Phase 3: Micro-System Dynamics - Stage 2):** Phân tích sâu 3 kịch bản: Base Fault, Perfect Foresight, và Proposed MPC.
+- **Hoàn thành Task 5 (Local Power Quality & Stability - Stage 3):** Hoàn tất Section 6.4. Lập luận vật lý về "Trạm trung chuyển" của MG4 buộc hệ thống bơm mạnh Reactive Power để bù sụt áp $I^2X$.
+- **Hoàn thành Task 6 (Algorithmic Convergence & Market Dynamics - Stage 4 & 5):** Hoàn tất Section 6.5 và 6.6. Khẳng định CPU Time tối đa 91s.
+- **[QUAN TRỌNG] Hoàn tất Deep Logic Audit (Red Teaming):** Đã kích hoạt 4 vòng rà soát `deep-logic-audit`. Cập nhật skill lọc "Fluff" (loại bỏ văn kể lể) và ép buộc "Core Algorithmic Proof". Đã đắp thêm các chứng minh Toán học Tối ưu hóa (Hàm mục tiêu VOLL, Điều kiện KKT, Biến đối ngẫu $\mu$) vào Chapter 6 để bảo vệ luận điểm. Hội đồng Cố vấn đánh giá: [PASS XUẤT SẮC] trên toàn bộ 5 Sections.
 
 ## Key Decisions
 1. **Kiến trúc Top-Down (Chapter 6):** Sử dụng `Transfer folder/Result_data/report_result` để viết kết quả.
-2. **Kiến trúc Bottom-Up (Chapter 3, 4, 5):** Giữ nguyên quy hoạch cấu trúc toán học từ Local -> Spatial -> Temporal.
-3. **Di dời Section 3.1 sang 6.1:** Đưa cấu trúc mạng Topology vật lý (4 MGs) xuống 6.1 để kết hợp với kịch bản mô phỏng, tạo bước đệm hoàn hảo trước khi phân tích kết quả.
-4. **Quy tắc Đơn vị:** Dữ liệu Pyomo chuẩn hóa `S_base = 1MVA` -> 1 pu = 1 MWh/MW.
-5. **Quy chuẩn Code LaTeX:** Môi trường `equation`/`subequations`. Quản lý trích dẫn `.bib`. Dùng lệnh `subfigure` cho tổ hợp ảnh.
-
-- **Hoàn thành Task 4 (Phase 3: Micro-System Dynamics - Stage 2):** Đã xóa văn bản cũ và kiến tạo lại toàn bộ Section 6.3. Phân tích sâu 3 kịch bản: Base Fault (cô lập, vắt kiệt BESS), Perfect Foresight (toàn tri, sạc trước), và Proposed MPC (hội chứng Hoarding do rolling horizon, phụ thuộc mạng lưới P2P cứu trợ). Đã bảo vệ thành công luận điểm 100% Critical Load Protected và Negative Premium. Reviewer đánh giá PASS. Đã qua vòng lọc của Sĩ quan Ngôn ngữ, chuẩn hóa 100% từ vựng sang Academic English (IEEE Standard).
-- **Hoàn thành Task 5 (Local Power Quality & Stability - Stage 3):** Đã hoàn tất Section 6.4. Chứng minh 100% Critical Load Protected qua biểu đồ Load Shedding. Lập luận vật lý sắc bén về vai trò "Trạm trung chuyển" của MG4 buộc hệ thống bơm mạnh Reactive Power để bù sụt áp. Phân tích cơ chế nới lỏng điện áp từ Soft Limits sang Hard Limits [0.95, 1.05] p.u. để mở đường truyền P2P. Đã rà soát văn phong IEEE, kiểm định AC-OPF thành công. Hàng loạt hình ảnh và reference được chuẩn hóa.
-- **Hoàn thành Task 6 (Algorithmic Convergence & Market Dynamics - Stage 4 & 5):** Đã hoàn tất Section 6.5 và 6.6. Chứng minh Real-Time Feasibility với CPU Time tối đa 91s. ATC hội tụ hoàn hảo trong 3-4 steps. Khẳng định Scarcity Pricing Dynamics: Giá $\lambda$ tự động leo thang tạo tín hiệu thị trường, ép MG thâm hụt mua điện và kích thích MG thặng dư xả BESS. Đã loại bỏ hoàn toàn các văn phong cảm xúc, đạt chuẩn IEEE.
+2. **Quy tắc Đơn vị:** Dữ liệu Pyomo chuẩn hóa `S_base = 1MVA` -> 1 pu = 1 MWh/MW.
+3. **Nâng cấp Radar Kiểm duyệt:** Skill `deep-logic-audit` giờ đây là tiêu chuẩn vàng để ép buộc phân tích phải có nền tảng Toán học/Vật lý (Ví dụ: Định luật KKT, $I^2X$), không chấp nhận lối văn miêu tả "Nhìn biểu đồ đoán kết quả".
+4. **Chốt hạ Mạch Logic Chapter 6:** Hệ thống hoàn toàn vận hành dựa trên cơ sở vật lý AC (Tie-line congestion paradox, Parasitic shift, Wheeling hub penalty). Giá thị trường nội bộ $\lambda$ bị giới hạn bởi biến đối ngẫu truyền tải $\mu$, giải thích nguyên lý chia cắt thị trường khi nghẽn mạch.
 
 ## Next Steps
-- **HOÀN TẤT CHIẾN DỊCH (PROJECT COMPLETE):** Chapter 6 đã hoàn thành toàn bộ 5 Stage. Báo cáo lại cho Tư lệnh và tiến hành nghiệm thu tổng thể. Cần chạy `run_latex.bat` để build ra file PDF cuối cùng nếu Tư lệnh yêu cầu.
+- **CHIẾN DỊCH CHƯƠNG 6 ĐÃ HOÀN TẤT THẮNG LỢI.**
+- Trạng thái: Chờ lệnh mới từ Tư lệnh (Ví dụ: Chuyển sang rà soát tổng thể Toàn bộ Luận văn, format lại References, hoặc viết Chapter 7 Kết luận).
 
 ## Critical Context
 **Cấu hình mạng (Topology P2P):** 1 Utility Grid & 4 Microgrids.
-- **MG1 (Nặng tải, 36 nodes):** Liên kết MG4, MG3.
-- **MG2 (Solar-only, 30 nodes):** Liên kết MG3, MG4.
-- **MG3 (Nhẹ tải/Dư thừa, 21 nodes):** Cứu tinh. Liên kết MG1, MG2, MG4.
-- **MG4 (Nặng tải & Nhiều PV, 35 nodes):** Lưới phức hợp với biên độ dao động công suất mạnh. Liên kết với MG1, MG2, MG3.
+- **MG1 (Nặng tải, 36 nodes):** Gã khổng lồ xuất khẩu (Surplus Island). Liên kết MG4, MG3.
+- **MG2 (Solar-only, 30 nodes):** Hố đen (Massive Sink) khi mất PV.
+- **MG3 (Nhẹ tải/Dư thừa, 21 nodes):** Cứu tinh xuất khẩu. Liên kết MG1, MG2, MG4.
+- **MG4 (Nặng tải & Nhiều PV, 35 nodes):** Trạm trung chuyển (Transit Corridor) chịu phạt tổn hao $I^2X$.
 
 ## Folder Structure Summary
 - **Tài liệu đặc tả và Memory**: `agy-memory/`, `workspace/`
@@ -43,3 +39,4 @@ Nâng cấp và chuyển đổi toàn bộ báo cáo Đồ án Tốt nghiệp (D
 - `D:\Latex\DATN\workspace\Idea.md`
 - `D:\Latex\DATN\workspace\ACTION_PLAN.md`
 - `D:\Latex\DATN\chapters\chapter6.tex`
+- `D:\Latex\DATN\.agents\skills\deep-logic-audit\SKILL.md`
