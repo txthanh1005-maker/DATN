@@ -1,244 +1,108 @@
-\section*{CHAPTER 3. SYSTEM ARCHITECTURE AND MATHEMATICAL FORMULATION}
-\addcontentsline{toc}{section}{\numberline{}CHAPTER 3. SYSTEM ARCHITECTURE AND MATHEMATICAL FORMULATION}
-
+\section*{CHAPTER 3. SPATIAL COORDINATION - ANALYTICAL TARGET CASCADING}
+\addcontentsline{toc}{section}{\numberline{}CHAPTER 3. SPATIAL COORDINATION - ANALYTICAL TARGET CASCADING}
 \setcounter{section}{3}
 \setcounter{subsection}{0}
-\setcounter{figure}{0}
-\setcounter{table}{0}
+\setcounter{equation}{0}
 
+\subsection{ATC Overview}
+The operation of multi-microgrid (Multi-MG) systems entails a complex spatial coordination problem. MGs to transmit all their local, potentially sensitive information---such as load demand, renewable generation profiles, BESS constraints---to a central operator. This paradigm not only creates computational bottlenecks for large-scale systems but also severely compromises the privacy of independent MG operators.
 
-\subsection{System Parameters, Sets, and Indices}
-
-To ensure realistic simulations and validate the proposed mathematical models, the system parameters and input datasets are constructed based on physical configurations. The foundational global parameters and component data specifications are detailed as follows:
-
+To resolve these physical and informational challenges, ATC. ATC is a distributed optimization technique originally developed for multidisciplinary design optimization, which perfectly aligns with the hierarchical structure of modern distribution networks. By decomposing the global optimal power flow problem, ATC divides the Multi-MG system into a two-level hierarchical architecture:
 \begin{itemize}
-    \item \textbf{Global System Settings:} The multi-microgrid network is normalized using a system base apparent power ($S_{base}$) of 1 MVA. The operational scheduling is performed over a day-ahead time horizon denoted by $\mathcal{T}$, comprising 24 intervals with a discrete time step of $\Delta t = 1$ hour.
-    
-    \item \textbf{Peer-to-Peer Trading Limits:} To respect the physical thermal capacities of the interconnected cables, the active power exchanged via tie-lines ($P_{tie,i,t}$) between interconnected microgrids is strictly bounded within a trading limit of $\pm 1.5$ MW (equivalent to 1.5 pu).
-    
-    \item \textbf{Value of Lost Load (VOLL):} In severe emergency scenarios, load shedding may be unavoidable. However, to guarantee the absolute protection of critical loads, the penalty cost (VOLL) associated with critical load shedding ($P_{shed,i,t}^{\text{critical}}$) is assigned a strict penalty (e.g., 100,000 cents/MWh). This heavy penalty strictly forces the optimization engine to ensure 100\% continuous supply to critical demands.
-    
-    \item \textbf{Input Data Profiles and Network Attributes:} The dynamic 24-hour profiles for active ($P_{load,i,t}$) and reactive ($Q_{load,i,t}$) power demand, alongside the maximal generation capacities for renewable sources ($P_{PV,i,t}^{\text{peak}}$ and $P_{WT,i,t}^{\text{peak}}$), are derived from physical load and source datasets. Furthermore, the structural network parameters, including the resistance ($R_{ij}$) and reactance ($X_{ij}$) of all internal distribution lines and tie-lines, are directly derived from detailed line configuration data to accurately reflect the real-world network topology.
+    \item \textbf{Coordinator Level (Upper Level):} DSO or Utility Grid serves as the central coordinator. The DSO assigns the optimal target variables $P_{target,ij,t}$ (conceptually acting as the ideal tie-line reference) P2P consensus.
+    \item \textbf{Local Microgrid Level (Lower Level):} Each individual MG operates as an independent autonomous entity. Utilizing the target signals provided by the coordinator, SOCP problem to determine its optimal internal asset dispatch and the scheduled tie-line power exchange $P_{tie,ij,t}$.
 \end{itemize}
 
-To formulate the mathematical models of the proposed multi-microgrid system, several key sets and indices are defined. The operational time horizon is discretized into a set of intervals denoted by $\mathcal{T}$. Let $\mathcal{M}$ denote the set of all microgrids in the network. Within the system, the distribution network is represented by a set of nodes $\mathcal{N}$ and a set of connecting distribution lines (branches) $\mathcal{E}$. The specific sets of nodes equipped with distributed energy resources are defined as follows: $\mathcal{N}^{PV}$ for Photovoltaic systems, $\mathcal{N}^{WT}$ for Wind Turbines, $\mathcal{N}^{DG}$ for Diesel Generators, and $\mathcal{N}^{BESS}$ for Battery Energy Storage Systems. 
+Through an iterative exchange of limited boundary variables (the target power $P_{target,ij,t}$ and the tie-line response $P_{tie,ij,t}$) alongside penalty multipliers, the ATC algorithm guides the multi-microgrid system toward a globally optimal equilibrium without exposing any internal constraints or local asset states. For mathematical clarity regarding directional power flow, the active power traded via the tie-line connecting MG $i$ to MG $j$ at time $t$ is denoted as $P_{tie,ij,t}$.
 
-Furthermore, the set of boundary nodes that possess tie-lines enabling physical Peer-to-Peer active power trading with neighboring microgrids is denoted by $\mathcal{N}^{trade}$. For the radial topology of the distribution network, $\Omega(i)$ represents the set of all child nodes directly connected to a parent node $i$, and $\mathcal{C}$ defines the set of available line configurations. Throughout the formulation, subscripts $i$ and $j$ refer to spatial node or branch indices, whereas the subscript $t$ refers to the discrete time step.
+\subsection{The Coordinator Problem (Utility Grid)}
+At the top level of the ATC hierarchy, the Coordinator (Utility Grid) P2P consensus. The coordinator's optimization problem formulates the target variable $P_{target,ij,t}$ that the lower-level MGs must track, yielding the optimal target $P_{target,ij,t} = \left( P_{tie,ij,t} - P_{tie,ji,t} \right) / 2$.
 
-\subsection{Mathematical Modeling of Energy Components}
-
-This section details the mathematical formulation governing the operational constraints of the various energy components deployed within the microgrid network.
-
-\subsubsection{Renewable Energy Sources and Loads}
-The integration of RES, specifically PV systems and WT, alongside power loads, constitutes the primary non-dispatchable elements of the network. The active power output from PV and WT units is strictly bounded by their available forecasted generation peaks at any given time step $t$. The active power limits are formulated as follows:
-\begin{subequations}
-\begin{align}
-    0 \le P_{PV,i,t} &\le P_{PV,i,t}^{\text{peak}}, \quad \forall i \in \mathcal{N}^{PV}, \forall t \label{eq:pv_limit} \\
-    0 \le P_{WT,i,t} &\le P_{WT,i,t}^{\text{peak}}, \quad \forall i \in \mathcal{N}^{WT}, \forall t \label{eq:wt_limit}
-\end{align}
-\end{subequations}
-where $P_{PV,i,t}$ and $P_{WT,i,t}$ denote the scheduled active power of the PV and WT at node $i$ during time $t$, respectively. $P_{PV,i,t}^{\text{peak}}$ and $P_{WT,i,t}^{\text{peak}}$ represent their maximum available active power based on weather conditions.
-
-For the load demand, both active ($P_{L,i,t}$) and reactive ($Q_{L,i,t}$) power are treated as fixed parameters unless load shedding is activated during emergency operations.
-
-\subsubsection{Battery Energy Storage System (BESS)}
-The BESS provides essential flexibility by charging during surplus periods and discharging during generation shortages. To prevent simultaneous charging and discharging, binary indicators $u_{ch,i,t}$ and $u_{dis,i,t}$ are introduced. The operational constraints for the BESS are defined as:
-\begin{subequations}
-\begin{align}
-    0 \le P_{ch,i,t} &\le u_{ch,i,t} P_{BESS}^{\text{max}}, \quad \forall i \in \mathcal{N}^{BESS}, \forall t \label{eq:bess_char_limit} \\
-    0 \le P_{dis,i,t} &\le u_{dis,i,t} P_{BESS}^{\text{max}}, \quad \forall i \in \mathcal{N}^{BESS}, \forall t \label{eq:bess_dis_limit} \\
-    u_{ch,i,t} + u_{dis,i,t} &\le 1, \quad \forall i \in \mathcal{N}^{BESS}, \forall t \label{eq:bess_binary_limit}
-\end{align}
-\end{subequations}
-where $P_{ch,i,t}$ and $P_{dis,i,t}$ are the charging and discharging power, respectively, bounded by the maximum capacity $P_{BESS}^{\text{max}}$.
-
-The state-of-charge ($SOC$) of the battery updates dynamically across consecutive time intervals, constrained by the energy capacity ($E_{BESS}$) and the round-trip efficiency ($\eta_{BESS}$):
-\begin{subequations}
-\begin{align}
-    SOC_{i,t} &= SOC_{i,t-1} + \frac{P_{ch,i,t}\eta_{BESS} - P_{dis,i,t}/\eta_{BESS}}{E_{BESS}}, \quad \forall t > 0 \label{eq:soc_update} \\
-    SOC^{\text{min}} &\le SOC_{i,t} \le SOC^{\text{max}}, \quad \forall t \label{eq:soc_limit} \\
-    SOC_{i,0} &= SOC_{i,24} = SOC^{\text{ini}} \label{eq:soc_equal}
-\end{align}
-\end{subequations}
-Equation \eqref{eq:soc_equal} ensures the energy neutrality of the BESS over a 24-hour daily cycle, setting the initial and final $SOC$ to a predefined level $SOC^{\text{ini}}$.
-
-\subsubsection{Dispatchable Generator (DG)}
-DGs operate as controllable power sources, governed by their minimum and maximum output boundaries. The operational status of the DG is indicated by a binary variable $u_{DG,i,t}$. To ensure the technical limits of the Diesel generators, additional constraints including reactive power limits, startup status, minimum operating times, and spinning reserve are defined as follows:
-\begin{subequations}
-\begin{align}
-    u_{DG,i,t} P_{DG}^{\text{min}} \le P_{DG,i,t} &\le u_{DG,i,t} P_{DG}^{\text{max}}, \quad \forall i \in \mathcal{N}^{DG}, \forall t \label{eq:dg_active_limit} \\
-    (P_{DG,i,t})^2 + (Q_{DG,i,t})^2 &\le (S_{DG}^{\text{max}})^2 u_{DG,i,t}, \quad \forall i \in \mathcal{N}^{DG}, \forall t \label{eq:dg_apparent_limit} \\
-    u_{DG,i,t} Q_{DG}^{\text{min}} \le Q_{DG,i,t} &\le u_{DG,i,t} Q_{DG}^{\text{max}}, \quad \forall i \in \mathcal{N}^{DG}, \forall t \label{eq:dg_q_limit} \\
-    v_{DG,i,t} &\ge u_{DG,i,t} - u_{DG,i,t-1}, \quad \forall i \in \mathcal{N}^{DG}, \forall t \label{eq:dg_startup} \\
-    \sum_{\tau=t}^{t+T_{up}^{DG}-1} u_{DG,i,\tau} &\ge T_{up}^{DG} v_{DG,i,t}, \quad \forall i \in \mathcal{N}^{DG}, \forall t \label{eq:dg_uptime} \\
-    \sum_{\tau=t}^{t+T_{down}^{DG}-1} (1 - u_{DG,i,\tau}) &\ge T_{down}^{DG} (u_{DG,i,t-1} - u_{DG,i,t}), \quad \forall i \in \mathcal{N}^{DG}, \forall t \label{eq:dg_downtime} \\
-    R_{DG,t} &= \sum_{i \in \mathcal{N}^{DG}} \left( u_{DG,i,t} P_{DG}^{\text{max}} - P_{DG,i,t} \right), \quad \forall t \label{eq:dg_reserve_def} \\
-    R_{DG,t} &\ge 0.2 \sum_{i \in \mathcal{N}^{DG}} P_{DG}^{\text{max}}, \quad \forall t \label{eq:dg_reserve_req}
-\end{align}
-\end{subequations}
-where $P_{DG,i,t}$ and $Q_{DG,i,t}$ are the active and reactive power of the DG, respectively, and $S_{DG}^{\text{max}}$ represents its maximum apparent power. $v_{DG,i,t}$ denotes the startup state, and $R_{DG,t}$ represents the spinning reserve. The minimum up and down times are defined by $T_{up}^{DG}$ and $T_{down}^{DG}$.
-
-Additionally, the variation in the DG's power output between consecutive time intervals is bounded by its ramp-up and ramp-down limits to prevent mechanical stress:
-\begin{equation}
-    -R_{DG} \le P_{DG,i,t} - P_{DG,i,t-1} \le R_{DG}, \quad \forall t > 0 \label{eq:dg_ramp_limit}
+The objective function of the coordinator is formulated to penalize the mismatch between the coordinator's target $P_{target,ij,t}$ and the previous iteration's optimal tie-line scheduled power $P_{tie,ij,t}^{*,k}$ submitted by the local MGs, subject to strict reciprocity ($P_{target,ij,t} + P_{target,ji,t} = 0$). The optimization problem is given by:
+\begin{equation} \label{eq:ATC_Utility_Grid_Obj}
+\begin{aligned}
+\min \quad & \sum_{t \in \mathcal{T}} \sum_{(i,j) \in \mathcal{L}^{trade}} \left[ \lambda_{ij,t}^k \left( P_{tie,ij,t}^{*,k} - P_{target,ij,t} \right) + \frac{\rho_{ij,t}^k}{2} \left( P_{target,ij,t} - P_{tie,ij,t}^{*,k} \right)^2 \right] \\
+\text{s.t.} \quad & P_{target,ij,t} + P_{target,ji,t} = 0
+\end{aligned}
 \end{equation}
-where $R_{DG}$ is the maximum allowable ramping rate.
-
-\subsection{AC Optimal Power Flow Formulation}
-\label{subsec:ac_opf}
-
-The core mathematical engine for the multi-microgrid system relies on the non-linear Alternating Current Optimal Power Flow (AC-OPF) model. Operating at the foundational level of the hierarchy, the local AC-OPF problem is formulated to robustly handle both standard operation and unexpected fault scenarios (such as generator failures, extreme renewable drops, or main grid blackouts). To manage this, the system utilizes a binary emergency indicator $\Gamma_E(t) \in \{0, 1\}$ to seamlessly toggle between normal operation ($\Gamma_E(t) = 0$) and an emergency fault state ($\Gamma_E(t) = 1$), ensuring operational continuity and optimal economic dispatch under any physical condition.
-
-\subsubsection{Economic and Loss Functions}
-\label{subsubsec:economic_loss_functions}
-
-The primary objective of the local microgrid operator is to minimize the total operational cost over the scheduling horizon $\mathcal{T}$. To generalize the optimization problem across varying grid conditions, the fundamental objective function unifies standard economic costs and load shedding penalty costs.
-
-The total operational cost function $\mathcal{F}^{OPF}$ is expressed as:
-\begin{equation}
-    \mathcal{F}^{OPF} = F_{grid} + F_{DG} + F_{BESS} + F_{loss} + F_{shed}
-    \label{eq:total_cost_function}
-\end{equation}
-
-The individual economic and operational cost components are detailed as follows:
-
-\begin{subequations}
-\label{eq:cost_components}
-\begin{align}
-    F_{grid} &= \sum_{t \in \mathcal{T}} \left( \pi_{buy,t} P_{grid,t}^{buy} + \pi_{sell,t} P_{grid,t}^{sell} \right) \label{eq:cost_grid} \\
-    F_{DG} &= \sum_{t \in \mathcal{T}} \sum_{i \in \mathcal{N}^{DG}} \left( \alpha_{DG} u_{DG,i,t} + (\beta_{DG} + \kappa_{DG}) P_{DG,i,t} + \gamma_{DG} (P_{DG,i,t})^2 + C_{start,DG} v_{DG,i,t} \right) \label{eq:cost_dg} \\
-    F_{BESS} &= \sum_{t \in \mathcal{T}} \sum_{i \in \mathcal{N}^{BESS}} C_{BESS} \left( \eta_{BESS} P_{ch,i,t} + \frac{P_{dis,i,t}}{\eta_{BESS}} \right) \label{eq:cost_bess} \\
-    F_{loss} &= \sum_{t \in \mathcal{T}} \sum_{(i,j) \in \mathcal{E}} \omega_{loss} I_{ij,t}^2 \label{eq:cost_loss} \\
-    F_{shed} &= \sum_{t \in \mathcal{T}} \sum_{i \in \mathcal{N}} \left( C_{shed}^{normal} P_{shed,i,t}^{normal} + C_{shed}^{critical} P_{shed,i,t}^{critical} \right) \label{eq:cost_shed}
-\end{align}
-\end{subequations}
-
-Here, $F_{grid}$ represents the cost of purchasing electricity and the revenue from selling power to the main grid. $F_{DG}$ represents the operational cost of Diesel Generators, encompassing fixed, linear, and quadratic fuel costs, linear Operation and Maintenance (O\&M) costs (represented by coefficient $\kappa_{DG}$), and startup costs. $F_{BESS}$ calculates the degradation cost of the battery storage system proportional to its charging and discharging energy. To promote localized consumption and minimize distribution losses, $F_{loss}$ acts as a virtual penalty on the squared current magnitude flowing through the distribution lines, scaled by a factor $\omega_{loss}$. 
-
-Finally, $F_{shed}$ leverages static, prohibitively high VOLL multipliers ($C_{shed}^{normal}$, $C_{shed}^{critical}$) to strictly penalize load curtailment and prioritize critical load preservation. 
-
-\subsubsection{Operational Modes and Fault Scenarios}
-\label{subsubsec:operational_modes}
-
-Rather than embedding fault logic directly into the physical equations (such as the DistFlow boundaries), the system isolates unexpected events as explicit operational constraints. Depending on the operational state, denoted by a binary emergency indicator $\Gamma_E(t) \in \{0, 1\}$, specific mathematical conditions are enforced to reflect either standard operation or component failures.
-
-To protect against severe power deficits during faults, the load shedding limits are strictly defined by their physical capacity. Additionally, to maintain a constant power factor, the reactive power shed is constrained to be strictly proportional to the active power shed:
-\begin{subequations}
-\begin{align}
-    P_{shed,j,t} &= P_{shed,j,t}^{normal} + P_{shed,j,t}^{critical} \label{eq:shed_total} \\
-    0 \le P_{shed,j,t}^{normal} &\le 0.8 P_{load,j,t} \label{eq:shed_normal_limit} \\
-    0 \le P_{shed,j,t}^{critical} &\le 0.2 P_{load,j,t} \label{eq:shed_critical_limit} \\
-    Q_{shed,j,t} &= P_{shed,j,t} \frac{Q_{load,j,t}}{P_{load,j,t}} \label{eq:shed_q_ratio}
-\end{align}
-\end{subequations}
-
-The transition between modes is mathematically handled as follows:
-
+where:
 \begin{itemize}
-    \item \textbf{Normal Mode ($\Gamma_E(t) = 0$):} The microgrid operates with all components fully available. Due to the prohibitive VOLL penalties ($C_{shed}^{critical} \gg C_{shed}^{normal} \gg \text{cost}_{buy}$) in the objective function \eqref{eq:cost_shed}, the shedding variables are naturally forced to zero by the optimizer. The system maintains its standard security margins, including the required spinning reserve:
-    \begin{equation}
-        R_{DG,t} \ge 0.2 \sum_{i \in \mathcal{N}^{DG}} P_{DG}^{\text{max}} \label{eq:normal_reserve}
-    \end{equation}
-
-    \item \textbf{Emergency Mode ($\Gamma_E(t) = 1$):} The system experiences a severe disruption, which could encompass a main grid blackout, a local generator trip, or an extreme drop in renewable generation. The failed component $k$ is mathematically isolated by forcing its power output and exchange variables to zero:
-    \begin{equation}
-        P_{k,t} = 0, \quad Q_{k,t} = 0 \quad \forall k \in \Omega_{fault} \label{eq:fault_generic}
-    \end{equation}
-    where $\Omega_{fault}$ represents the set of components experiencing an outage (e.g., the main grid interconnection, specific DGs, or PV units). 
-    
-    To counteract the resulting power deficit, the standard spinning reserve constraint \eqref{eq:normal_reserve} is intentionally relaxed. This relaxation allows the remaining dispatchable generators to fully utilize their 20\% locked reserve capacity to maintain grid stability. If the internal generation remains insufficient, the solver is permitted to shed load according to \eqref{eq:shed_normal_limit}-\eqref{eq:shed_critical_limit}, strongly guided by the economic prioritization in $F_{shed}$ to preserve critical loads.
+    \item $P_{target,ij,t}$ is the decision variable representing the optimal trading target determined by the coordinator for the power flow from node $i$ to node $j$ at time $t$.
+    \item $P_{tie,ij,t}^{*,k}$ is the fixed local tie-line power exchange from $i$ to $j$ scheduled by the lower-level MG at the current iteration $k$.
+    \item $\lambda_{ij,t}^k$ is the linear Lagrange multiplier (shadow price) for active power trading at iteration $k$.
+    \item $\rho_{ij,t}^k$ is the quadratic penalty multiplier at iteration $k$, strictly penalizing the spatial deviation between the target and the local response.
 \end{itemize}
 
-
-\subsubsection{Distribution Power Flow Constraints}
-\label{subsubsec:distflow}
-
-The power flow within the radial network of the microgrids is modeled using the original non-linear Branch Flow Model (DistFlow) equations. The active and reactive power balance, voltage drop, and branch current definitions are formulated as follows:
-
-\begin{subequations} \label{eq:distflow_original}
+After solving the optimal target $P_{target,ij,t}^{*, k}$ and receiving the updated $P_{tie,ij,t}^{*, k}$ from the lower-level MGs, the coordinator updates the penalty multipliers for the next iteration to drive the deviation to zero. The update equations for the multipliers ($\lambda$ and $\rho$) are defined as follows:
+\begin{subequations} \label{eq:ATC_multiplier_updates}
 \begin{align}
-    & \begin{aligned} \label{eq:P_balance}
-        P_{line,ij,t} - R_{ij} I_{ij,t}^2 &+ P_{DG,j,t} + P_{PV,j,t} + P_{WT,j,t} + P_{dis,j,t} - P_{ch,j,t} \\
-        &+ P_{tie,j,t} + P_{shed,j,t} - P_{load,j,t} = \sum_{k \in \Omega(j)} P_{line,jk,t}
-    \end{aligned} \quad \forall j \in \mathcal{N}, \forall t \in \mathcal{T} \\
-    & \begin{aligned} \label{eq:Q_balance}
-        Q_{line,ij,t} - X_{ij} I_{ij,t}^2 &+ Q_{DG,j,t} \\
-        &+ Q_{shed,j,t} - Q_{load,j,t} = \sum_{k \in \Omega(j)} Q_{line,jk,t}
-    \end{aligned} \quad \forall j \in \mathcal{N}, \forall t \in \mathcal{T} \\
-    & V_{j,t}^2 = V_{i,t}^2 - 2(R_{ij}P_{line,ij,t} + X_{ij}Q_{line,ij,t}) + (R_{ij}^2 + X_{ij}^2)I_{ij,t}^2 \quad \forall (i,j) \in \mathcal{E}, \forall t \in \mathcal{T} \label{eq:voltage_drop} \\
-    & I_{ij,t}^2 = \frac{P_{line,ij,t}^2 + Q_{line,ij,t}^2}{V_{i,t}^2} \quad \forall (i,j) \in \mathcal{E}, \forall t \in \mathcal{T} \label{eq:current_def} \\
-    & (V^{\text{min}})^2 \leq V_{j,t}^2 \leq (V^{\text{max}})^2 \quad \forall j \in \mathcal{N}, \forall t \in \mathcal{T} \label{eq:voltage_limit} \\
-    & 0 \leq I_{ij,t}^2 \leq (I^{\text{max}})^2 \quad \forall (i,j) \in \mathcal{E}, \forall t \in \mathcal{T} \label{eq:current_limit}
+    \lambda_{ij,t}^{k+1} &= \lambda_{ij,t}^k + \rho_{ij,t}^k \left( P_{tie,ij,t}^{*, k} - P_{target,ij,t}^{*, k} \right) \label{eq:ATC_lambda_update} \\
+    \rho_{ij,t}^{k+1} &= 
+    \begin{cases} 
+      \tau \rho_{ij,t}^k & \text{if } (r_{ij,t}^k)^2 > \mu (s_{ij,t}^k)^2 \\
+      \rho_{ij,t}^k / \tau & \text{if } (s_{ij,t}^k)^2 > \mu (r_{ij,t}^k)^2 \\
+      \rho_{ij,t}^k & \text{otherwise}
+    \end{cases} \label{eq:ATC_rho_update}
+\end{align}
+\end{subequations}
+where the primal residual (mismatch) is defined as $r_{ij,t}^k = P_{tie,ij,t}^{*,k} + P_{tie,ji,t}^{*,k}$, and the dual residual (speed) is defined as $s_{ij,t}^k = \rho_{ij,t}^k \left| P_{tie,ij,t}^{*,k} - P_{tie,ij,t}^{*,k-1} \right|$. The parameters are set as $\tau = 1.5$ and $\mu = 10$. This Adaptive Residual Balancing approach dynamically adjusts the penalty parameter to maintain a balance between primal and dual feasibility, significantly accelerating the convergence of the Analytical Target Cascading algorithm.
+
+\subsection{The Local Microgrid Problem with ATC}
+ATC architecture, MGs receive the updated penalty multipliers ($\lambda_{ij,t}^k, \rho_{ij,t}^k$) and the optimal reference target ($P_{target,ij,t}^{k-1}$) broadcasted by the central Coordinator (Utility Grid). To align their local schedules with the global consensus, each MG integrates an Augmented Lagrangian penalty function into its base optimization objective.
+
+The base objectives of each MG, defined as $\mathcal{F}_{normal}^{OPF}$ for grid-connected modes and $\mathcal{F}_{emergency}^{OPF}$ for islanded states (as previously established in Section 3.6), are mathematically penalized for any spatial discrepancy. The Augmented Lagrangian penalty function corresponding to the active power deviation along the tie-lines is formulated as follows:
+\begin{equation} \label{eq:ATC_Penalty_Function}
+F_{penalty, i}^{ATC} = \sum_{t \in \mathcal{T}} \sum_{j \in \mathcal{N}_i} \left[ \lambda_{ij,t}^k \left( P_{tie,ij,t} - P_{target,ij,t}^{k-1} \right) + \frac{\rho_{ij,t}^k}{2} \left( P_{tie,ij,t} - P_{target,ij,t}^{k-1} \right)^2 \right]
+\end{equation}
+where $\mathcal{N}_i$ represents the set of neighboring Microgrids directly connected to MG $i$.
+
+The incorporation of this penalty effectively bridges the gap between the decentralized operation and the global targets. The newly modified local ATC objective function, which each MG $i$ aims to minimize autonomously, is therefore defined as:
+\begin{equation} \label{eq:ATC_Global_Objective}
+\mathcal{F}_{ATC, i}^{OPF} = \mathcal{F}_i^{OPF} + F_{penalty, i}^{ATC}
+\end{equation}
+where $\mathcal{F}_i^{OPF}$ represents either $\mathcal{F}_{normal}^{OPF}$ or $\mathcal{F}_{emergency}^{OPF}$ depending on the prevailing operational condition of the network for MG $i$.
+
+Consequently, SOCP model subject to its complete set of local operational and physical constraints defined in Chapter 3. Upon convergence of its local optimization, the MG transmits only the resulting scheduled tie-line active power exchange, $P_{tie,ij,t}$, back to the Utility Grid Coordinator for the subsequent ATC iteration.
+
+\subsection{ATC Iterative Algorithm and Convergence}
+ATC algorithm is an iterative process that alternates between solving the local MG optimization problems and updating the coordinator's target variables and penalty multipliers. The step-by-step procedure at iteration $k$ is detailed as follows:
+
+\textbf{Step 1: Initialization.} Set the iteration counter $k = 1$. Initialize the Lagrange multipliers $\lambda_{ij,t}^1 = 0$, the penalty parameters $\rho_{ij,t}^1 = \rho_0$, the initial tie-line power schedules $P_{tie,ij,t}^0 = 0$, and the initial targets $P_{target,ij,t}^0 = 0$ for all directional tie-lines $(i,j) \in \mathcal{L}^{trade}$ and time intervals $t \in \mathcal{T}$.
+
+\textbf{Step 2: Local Microgrid Optimization.} Each MG autonomously solves its penalized optimal power flow problem as defined in \eqref{eq:ATC_Global_Objective}, utilizing the target variables from the previous iteration $P_{target,ij,t}^{k-1}$. The optimal tie-line active power exchange $P_{tie,ij,t}^k$ is determined and subsequently transmitted to the Coordinator.
+
+\textbf{Step 3: Coordinator Update.} Upon receiving the tie-line power schedules from all interacting MGs, the Coordinator updates the target variables, multipliers, and adaptive penalty parameters to enforce P2P consensus. 
+First, the primal residual $r_{ij,t}^k$ and dual residual $s_{ij,t}^k$ are calculated to measure the spatial mismatch and the algorithm's progress:
+\begin{subequations} \label{eq:ATC_residuals}
+\begin{align}
+    r_{ij,t}^k &= P_{tie,ij,t}^k + P_{tie,ji,t}^k \label{eq:ATC_primal_residual} \\
+    s_{ij,t}^k &= \rho_{ij,t}^k \left| P_{tie,ij,t}^k - P_{tie,ij,t}^{k-1} \right| \label{eq:ATC_dual_residual}
 \end{align}
 \end{subequations}
 
-To correctly model the interaction with the main grid, a boundary condition is enforced at the slack bus (denoted as node $j=0$). The branch power injected into the root node from the external network explicitly represents the grid power exchange:
-\begin{subequations} \label{eq:distflow_boundary}
-\begin{align}
-    P_{line,0,t} &= P_{grid,t}^{buy} + P_{grid,t}^{sell} \quad \forall t \in \mathcal{T} \label{eq:boundary_P} \\
-    Q_{line,0,t} &= Q_{grid,t} \quad \forall t \in \mathcal{T} \label{eq:boundary_Q}
-\end{align}
-\end{subequations}
-
-Equations \eqref{eq:P_balance} and \eqref{eq:Q_balance} delineate the active and reactive power balance at node $j$ at time $t$, respectively. The sum of all active power injected into node $j$---including the incoming branch power ($P_{line,ij,t}$), distributed generation ($P_{DG,j,t}$), renewable active power generation ($P_{PV,j,t}, P_{WT,j,t}$), BESS net discharge ($P_{dis,j,t} - P_{ch,j,t}$), P2P trading ($P_{tie,j,t}$), and load shedding ($P_{shed,j,t}$)---must equal the sum of the power flowing out to child branches $\sum P_{line,jk,t}$, the local load demand ($P_{load,j,t}$), and the line active power losses ($R_{ij} I_{ij,t}^2$). By convention, active power sold to the grid ($P_{grid,t}^{sell}$) takes non-positive values. 
-
-Similarly, the reactive power balance in \eqref{eq:Q_balance} accounts for branch flows ($Q_{line,ij,t}$), DG reactive support ($Q_{DG,j,t}$), and reactive load shedding ($Q_{shed,j,t}$). Notably, the renewable energy inverters (PV and WT) are configured to operate at unity power factor, contributing zero reactive power to the system.
-
-Equation \eqref{eq:voltage_drop} governs the voltage drop along branch $(i,j)$, considering the line impedance ($R_{ij}, X_{ij}$) and branch flows. Equation \eqref{eq:current_def} represents the non-linear definition of the squared branch current. Finally, inequalities \eqref{eq:voltage_limit} and \eqref{eq:current_limit} ensure that the squared nodal voltages and branch currents remain within their secure operational limits. Due to the non-linear and non-convex nature of the current definition in \eqref{eq:current_def}, this equation is typically relaxed using Second-Order Cone Programming (SOCP) in optimization solvers.
-
-\subsection{SOCP Relaxation and Exactness}
-\label{subsec:socp_relaxation}
-
-\subsubsection{Convexification and SOC Relaxation}
-The non-linear nature of the AC Optimal Power Flow fundamentally stems from the current magnitude definition in the Branch Flow Model. As originally stated in Equation \eqref{eq:current_def}, the squared branch current is formulated as:
-\begin{equation}
-    I_{ij,t}^2 = \frac{P_{line,ij,t}^2 + Q_{line,ij,t}^2}{V_{i,t}^2} \nonumber
-\end{equation}
-This equality constraint is highly non-convex. To achieve a computationally tractable convex model, this equation is relaxed into a standard Second-Order Cone (SOC) inequality constraint. The SOC relaxation transforms the non-convex feasible region into a convex cone by replacing the equality with an inequality:
-\begin{equation}
-    I_{ij,t}^2 V_{i,t}^2 \ge P_{line,ij,t}^2 + Q_{line,ij,t}^2
-    \label{eq:socp_relaxation}
+Then, the target variable $P_{target,ij,t}^k$ is updated:
+\begin{equation} \label{eq:ATC_target_update_algo}
+    P_{target,ij,t}^k = \frac{P_{tie,ij,t}^k - P_{tie,ji,t}^k}{2}
 \end{equation}
 
-\subsubsection{Exactness in Normal Mode}
-The fundamental premise of substituting an equality with an inequality is predicated on the concept of exactness---the condition where the optimizer natively forces the inequality \eqref{eq:socp_relaxation} to hold with equality. In the \textbf{Normal Mode} of operation, this exactness is inherently guaranteed. As defined in the objective function \eqref{eq:total_cost_function}, the formulation incorporates a dedicated loss penalty component, $F_{loss}$ \eqref{eq:cost_loss}. Because the primary objective of the solver is to minimize the total operational cost, it actively suppresses the squared current variable $I_{ij,t}^2$, strictly driving it towards its theoretical lower bound. Consequently, the inequality holds with equality ($I_{ij,t}^2 V_{i,t}^2 = P_{line,ij,t}^2 + Q_{line,ij,t}^2$), thereby guaranteeing the exactness of the SOCP model and accurately reflecting the true physical state of the distribution grid.
-
-\subsubsection{Robustness against Inexactness in Emergency Mode}
-While exactness is guaranteed under standard operations, the mathematical literature suggests that significant challenges can arise during extreme \textbf{Emergency Modes}. A typical vulnerability occurs during islanded operations with a significant surplus of renewable energy generation. In standard models lacking curtailment mechanisms, if the microgrid cannot export this excess power, the mathematical solver might erroneously exploit the SOCP relaxation gap. It could artificially inflate the current variable $I_{ij,t}^2$ to burn the surplus energy as fictitious line losses, violating the exactness ($I_{ij,t}^2 V_{i,t}^2 > P_{line,ij,t}^2 + Q_{line,ij,t}^2$) and rendering the results physically meaningless.
-
-However, the proposed microgrid formulation is intrinsically designed to effectively counteract this phenomenon. The renewable generation constraints natively allow for free active power curtailment \eqref{eq:pv_limit}. Confronted with excess generation, the solver will preferentially curtail the renewable output at zero cost rather than inflating $I_{ij,t}^2$, which would incur a strict financial penalty via the $F_{loss}$ term scaled by $\omega_{loss}$. This dual mechanism---free curtailment capability combined with a strict virtual loss penalty---ensures that the solver is mathematically prevented from exploiting the relaxation gap. As a result, the model robustly preserves the physical integrity and exactness of the network's power flow equations even amidst extreme emergency and over-generation scenarios.
-
-\subsection{Final Local SOCP Optimization Model}
-\label{subsec:final_local_socp}
-
-Integrating the operational cost components from Section \ref{subsubsec:economic_loss_functions} and the relaxed physical network constraints, the final local optimization problem is formulated as a Second-Order Cone Program (SOCP). Although the problem is implemented and solved as a single unified code using the emergency indicator $\Gamma_E(t)$, from a mathematical presentation perspective, the active objective function and constraints can be categorized into two distinct formulations based on the operational state.
-
-\subsubsection{Formulation I: Normal Operation Mode ($\Gamma_E(t) = 0$)}
-In standard grid-connected mode, load shedding is economically penalized to the point of avoiding load curtailment ($F_{shed} \to 0$). The objective is purely focused on economic costs and loss minimization. The problem is defined as:
-\begin{equation}
-\begin{aligned}
-    \min \quad & \mathcal{F}_{normal}^{OPF} = F_{grid} + F_{DG} + F_{BESS} + F_{loss} \\
-    \text{s.t.} \quad & \text{Component Constraints } \eqref{eq:pv_limit}-\eqref{eq:dg_ramp_limit} \\
-    & \text{Standard Spinning Reserve } \eqref{eq:normal_reserve} \\
-    & \text{DistFlow Boundary Conditions } \eqref{eq:distflow_boundary} \\
-    & \text{Power Balance \& Voltage Constraints } \eqref{eq:P_balance}-\eqref{eq:voltage_drop}, \eqref{eq:voltage_limit}-\eqref{eq:current_limit} \\
-    & \text{SOCP Relaxed Current Constraint } \eqref{eq:socp_relaxation}
-\end{aligned}
-\label{eq:total_objective_normal}
+The Lagrange multipliers are updated using the current tie-line schedule and the updated target:
+\begin{equation} \label{eq:ATC_lambda_update_algo}
+    \lambda_{ij,t}^{k+1} = \lambda_{ij,t}^k + \rho_{ij,t}^k \left( P_{tie,ij,t}^k - P_{target,ij,t}^k \right)
 \end{equation}
 
-\subsubsection{Formulation II: Emergency Mode ($\Gamma_E(t) = 1$)}
-When a generalized fault occurs, power generation or exchange with the affected components $k \in \Omega_{fault}$ completely ceases. Consequently, the operational costs associated with these specific failed components are eliminated from the objective function (as their power outputs are forced to zero). The primary goal of the remaining microgrid transitions from pure economic profit to system resilience, leveraging the unlocked reserve capacity and prioritizing critical load preservation. The problem transitions to:
-\begin{equation}
-\begin{aligned}
-    \min \quad & \mathcal{F}_{emergency}^{OPF} = F_{grid} + F_{DG} + F_{BESS} + F_{loss} + F_{shed} \\
-    \text{s.t.} \quad & \text{Component Constraints } \eqref{eq:pv_limit}-\eqref{eq:dg_ramp_limit} \\
-    & \text{Load Shedding Limits } \eqref{eq:shed_total}-\eqref{eq:shed_q_ratio} \\
-    & \text{Operational Fault Constraints } \eqref{eq:fault_generic} \\
-    & \text{DistFlow Boundary Conditions } \eqref{eq:distflow_boundary} \\
-    & \text{Power Balance \& Voltage Constraints } \eqref{eq:P_balance}-\eqref{eq:voltage_drop}, \eqref{eq:voltage_limit}-\eqref{eq:current_limit} \\
-    & \text{SOCP Relaxed Current Constraint } \eqref{eq:socp_relaxation}
-\end{aligned}
-\label{eq:total_objective_emergency}
+To accelerate convergence, an adaptive penalty strategy is employed. The penalty parameter $\rho_{ij,t}^{k+1}$ is dynamically adjusted based on the ratio of the squared primal and dual residuals:
+\begin{equation} \label{eq:ATC_rho_adaptive}
+    \rho_{ij,t}^{k+1} = 
+    \begin{cases} 
+      \rho_{ij,t}^k \cdot \tau & \text{if } (r_{ij,t}^k)^2 > \mu (s_{ij,t}^k)^2 \\
+      \rho_{ij,t}^k / \tau & \text{if } (s_{ij,t}^k)^2 > \mu (r_{ij,t}^k)^2 \\
+      \rho_{ij,t}^k & \text{otherwise}
+    \end{cases}
 \end{equation}
+where $\mu = 10$ and $\tau = 1.5$ are the adaptive balancing parameters.
 
+\textbf{Step 4: Convergence Check.} The iterative algorithm terminates when both the primal and dual residuals satisfy the convergence tolerance $\epsilon_{stop}$ for three consecutive iterations. Specifically, the convergence criteria are defined as:
+\begin{equation} \label{eq:ATC_convergence_criteria}
+    (r_{ij,t}^k)^2 \le \epsilon_{stop} \quad \text{and} \quad (s_{ij,t}^k)^2 \le \epsilon_{stop} \quad \text{for 3 consecutive steps}
+\end{equation}
+where the stopping tolerance is set to $\epsilon_{stop} = 0.001$. If the criteria are met, the algorithm stops and the final optimal scheduling is achieved. Otherwise, the iteration counter is incremented ($k \leftarrow k+1$) and the process returns to Step 2.

@@ -1,4 +1,12 @@
-# Spec: Kế hoạch Phân tích Kết quả & Viết Chapter 6 (Top-Down Approach)
+# Spec: Kế hoạch Viết Chapter 1 & Chapter 6 (Top-Down Approach)
+
+## 0. Cập nhật Spec cho Chapter 1 (Introduction & Literature Review)
+- **Mục tiêu:** Gộp Chapter 1 và 2 cũ thành một chương Introduction duy nhất, phân rã theo 3 Lăng kính (Physical, Spatial, Temporal).
+- **Ràng buộc Mới (Constraints):**
+  - Tuyệt đối không giao dịch Công suất phản kháng ($Q$). $Q$ chỉ được sinh ra và quản lý nội bộ để đảm bảo an toàn điện áp. 
+  - Gộp các góp ý phản biện: Nhấn mạnh "Dynamic Value of Lost Load (VoLL)", Islanding Physics, và Computational Tractability (Độ phức tạp tính toán của MPC+ATC+SOCP).
+  - Không có "Fluff" trong toán học.
+  - **Quy tắc Trích dẫn (Citation Granularity):** Tuyệt đối băm nhỏ các trích dẫn và cắm sát vào từng luận điểm chi tiết. Giới hạn TỐI ĐA 2 bài báo cho mỗi cụm/câu. Không dồn 1 cục (3-4 bài báo) ở cuối câu dài. Cắt ngắn câu văn, đi trực diện vào bản chất kỹ thuật.
 
 ## 1. Mục tiêu (Objective & Success Criteria)
 - **Objective:** Lập kế hoạch và triển khai viết Chapter 6 (Results and Discussion) dựa trên 5 Stage kết quả mô phỏng trong `Transfer folder/Result_data/report_result/`.
@@ -51,3 +59,40 @@
 - **Luôn luôn:** Diễn giải kết quả thông qua lăng kính "Contributions" đã định hình (Tuyệt đối không dừng lại ở việc mô tả biểu đồ tăng giảm đơn thuần). Bám sát các con số cốt lõi (như 15.4260 MWh vs 2.9130 MWh).
 - **Hỏi ý kiến trước (ASK FIRST):** Bố cục lại số lượng hình ảnh nếu có quá nhiều hình trong 1 Section làm vỡ cấu trúc LaTeX.
 - **Nghiêm cấm (FORBIDDEN):** Tự ý bịa số liệu. Mọi con số phải trích xuất chuẩn xác từ các file `.md` và `.csv` trong folder `report_result`.
+
+---
+
+# Spec: Kế hoạch Viết Chapter 7 (Conclusion & Future Work)
+
+## 1. Mục tiêu (Objective & Success Criteria)
+- Đúc kết toàn bộ giá trị cốt lõi của Luận văn qua 4 trụ cột học thuật sắc bén, triệt tiêu mọi cách diễn đạt dài dòng, sách giáo khoa.
+- Đề xuất các hướng phát triển tương lai (Future Work) nhằm vá trực tiếp các điểm yếu (Pain points) vật lý và thuật toán đã bộc lộ ở Chương 6 (ví dụ: Sập áp do $I^2X$, Hoarding BESS do MPC).
+
+## 2. Cấu trúc nội dung (Tech Stack & Structure)
+### 7.1. Conclusion (4 Trụ cột Học thuật)
+1. **Algorithmic Architecture:** Tích hợp thành công "Bottom-up Spatiotemporal 3-Mode State Machine". Thuật toán ATC đạt tốc độ hội tụ cực nhanh (max 91s) khi lưới bị sốc cấu trúc nhờ Warm-start.
+2. **Physical Resilience & AC-OPF Necessity:** AC-OPF là bắt buộc. Phát hiện dòng điện quá cảnh (transit currents) sinh tổn hao vô công $I^2X$ làm sập áp. Hệ thống đã "cắt tải P chủ động" để triệt tiêu dòng $I$, cứu điện áp khỏi giới hạn 0.90 p.u.
+3. **Market Pricing & Tie-line Congestion Paradox:** Khám phá nghịch lý tắc nghẽn. Giá đồng thuận ATC ($\lambda$) cách ly hoàn toàn khỏi sự bùng nổ giá cục bộ (VOLL) tại các điểm thiếu hụt, tuân thủ đúng giới hạn vật lý KKT của cáp truyền tải.
+4. **Ultimate Security & Graceful Degradation:** Bảo vệ 100% Critical Loads. Đạt lợi ích kép "Negative Premium" nhờ định tuyến P2P giải phóng Stranded Energy, kết hợp cơ chế Graceful Degradation chủ động hy sinh tải thường khi cần thiết.
+
+### 7.2. Future Work (Trị tận gốc Pain Points)
+1. **Overcoming MPC "Hoarding" Syndrome:** Tích hợp Reinforcement Learning (RL) hoặc Adaptive SOC Penalty để BESS xả dứt khoát hơn. Kết hợp Stochastic MPC để trị bất định từ năng lượng tái tạo.
+2. **Hardware & Reactive Power Support:** Tích hợp thiết bị bù vô công động (STATCOM, SVC) hoặc Smart Inverter (Volt-VAR control) để bơm Q, tháo gỡ triệt để việc MG4 phải cắt tải P oan uổng chỉ để giữ áp.
+3. **Dynamic Topology Reconfiguration:** Tích hợp cơ chế điều khiển khóa điện động (Dynamic Switch Control) và cấu hình lại lưới điện thời gian thực để tự động cách ly vùng đứt gãy vật lý, mở ra các lộ tuyến dự phòng nhằm tối ưu hóa dòng công suất.
+
+---
+
+# Spec: Kế hoạch Viết Abstract (Tóm tắt Luận văn)
+
+## 1. Mục tiêu (Objective)
+- Cô đọng toàn bộ giá trị cốt lõi của luận văn trong khoảng 250-300 từ.
+- Phải thể hiện được 3 yếu tố: Vấn đề (Motivation), Cỗ máy giải quyết (Methodology), và Kết quả đột phá (Key Findings).
+
+## 2. Cấu trúc nội dung (Structure)
+- **Background & Motivation (2-3 câu):** Sự yếu ớt của lưới điện phân phối trước các sự cố cực đoan (Extreme Events) và giới hạn của các mô hình quản lý tập trung, tuyến tính cũ.
+- **Methodology (3-4 câu):** Đề xuất kiến trúc Bottom-up kết hợp 3 mũi nhọn: **SOCP** (đảm bảo vật lý thực AC-OPF, chống sập áp), **ATC** (tối ưu hóa phân tán bảo vệ quyền riêng tư), và **MPC** (cuốn chiếu thời gian, thích ứng với bất định).
+- **Key Results (3-4 câu):** Nhấn mạnh các cực trị đạt được:
+  - Bảo vệ thành công **100% Critical Loads**.
+  - Hiện thực hóa **Negative Premium** (giảm chi phí nhờ P2P giải phóng Stranded Energy).
+  - Khám phá **Tie-line Congestion Paradox** (Giá $\lambda$ ATC cách ly khỏi VOLL, tuân thủ giới hạn KKT) và **Voltage Paradox** (Hy sinh tải P để triệt tiêu dòng $I$, ngăn sập áp do $I^2X$).
+- **Conclusion (1-2 câu chốt):** Một khung giao dịch năng lượng tự phục hồi (fault-adaptive), bảo mật và tuân thủ chặt chẽ giới hạn vật lý lưới điện.
