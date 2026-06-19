@@ -113,14 +113,14 @@ The individual economic and operational cost components are detailed as follows:
 \end{align}
 \end{subequations}
 
-Here, $F_{grid}$ represents the cost of purchasing electricity and the revenue from selling power to the main grid. $F_{DG}$ represents the operational cost of Diesel Generators, encompassing fixed, linear, and quadratic fuel costs, linear Operation and Maintenance (O\&M) costs (represented by coefficient $\kappa_{DG}$), and startup costs. $F_{BESS}$ calculates the degradation cost of the battery storage system proportional to its charging and discharging energy. To promote localized consumption and minimize distribution losses, $F_{loss}$ acts as a virtual penalty on the squared current magnitude flowing through the distribution lines, scaled by a factor $\omega_{loss}$. 
+Here, $F_{grid}$ represents the cost of purchasing electricity and the revenue from selling power to the main grid. $F_{DG}$ represents the operational cost of Diesel Generators, encompassing fixed, linear, and quadratic fuel costs, linear Operation and Maintenance (O\&M) costs (represented by coefficient $\kappa_{DG}$), and startup costs. $F_{BESS}$ calculates the degradation cost of the battery storage system proportional to its charging and discharging energy. To promote localized consumption and minimize distribution losses, $F_{loss}$ represents the active power losses along the distribution lines, weighted by a factor $\omega_{loss}$. 
 
 Finally, $F_{shed}$ leverages static, prohibitively high VOLL multipliers ($C_{shed}^{normal}$, $C_{shed}^{critical}$) to strictly penalize load curtailment and prioritize critical load preservation. 
 
 \subsubsection{Operational Modes and Fault Scenarios}
 \label{subsubsec:operational_modes}
 
-Rather than embedding fault logic directly into the physical equations (such as the DistFlow boundaries), the system isolates unexpected events as explicit operational constraints. Depending on the operational state, denoted by a binary emergency indicator $\Gamma_E(t) \in \{0, 1\}$, specific mathematical conditions are enforced to reflect either standard operation or component failures.
+Rather than embedding fault logic directly into the physical equations (such as the DistFlow boundaries), the system isolates unexpected events as explicit operational constraints. Depending on the operational state, denoted by $\Gamma_E(t)$ (introduced in Section \ref{subsec:ac_opf}), specific mathematical conditions are enforced to reflect either standard operation or component failures.
 
 To protect against severe power deficits during faults, the load shedding limits are strictly defined by their physical capacity. Additionally, to maintain a constant power factor, the reactive power shed is constrained to be strictly proportional to the active power shed:
 \begin{subequations}
@@ -135,10 +135,7 @@ To protect against severe power deficits during faults, the load shedding limits
 The transition between modes is mathematically handled as follows:
 
 \begin{itemize}
-    \item \textbf{Normal Mode ($\Gamma_E(t) = 0$):} The microgrid operates with all components fully available. Due to the prohibitive VOLL penalties ($C_{shed}^{critical} \gg C_{shed}^{normal} \gg \text{cost}_{buy}$) in the objective function \eqref{eq:cost_shed}, the shedding variables are naturally forced to zero by the optimizer. The system maintains its standard security margins, including the required spinning reserve:
-    \begin{equation}
-        R_{DG,t} \ge 0.2 \sum_{i \in \mathcal{N}^{DG}} P_{DG}^{\text{max}} \label{eq:normal_reserve}
-    \end{equation}
+    \item \textbf{Normal Mode ($\Gamma_E(t) = 0$):} The microgrid operates with all components fully available. Due to the prohibitive VOLL penalties ($C_{shed}^{critical} \gg C_{shed}^{normal} \gg \text{cost}_{buy}$) in the objective function \eqref{eq:cost_shed}, the shedding variables are naturally forced to zero by the optimizer. The system maintains its standard security margins, including the required spinning reserve as defined in \eqref{eq:dg_reserve_req}.
 
     \item \textbf{Emergency Mode ($\Gamma_E(t) = 1$):} The system experiences a severe disruption, which could encompass a main grid blackout, a local generator trip, or an extreme drop in renewable generation. The failed component $k$ is mathematically isolated by forcing its power output and exchange variables to zero:
     \begin{equation}
@@ -146,7 +143,7 @@ The transition between modes is mathematically handled as follows:
     \end{equation}
     where $\Omega_{fault}$ represents the set of components experiencing an outage (e.g., the main grid interconnection, specific DGs, or PV units). 
     
-    To counteract the resulting power deficit, the standard spinning reserve constraint \eqref{eq:normal_reserve} is intentionally relaxed. This relaxation allows the remaining dispatchable generators to fully utilize their 20\% locked reserve capacity to maintain grid stability. If the internal generation remains insufficient, the solver is permitted to shed load according to \eqref{eq:shed_normal_limit}-\eqref{eq:shed_critical_limit}, strongly guided by the economic prioritization in $F_{shed}$ to preserve critical loads.
+    To counteract the resulting power deficit, the standard spinning reserve constraint \eqref{eq:dg_reserve_req} is intentionally relaxed. This relaxation allows the remaining dispatchable generators to fully utilize their 20\% locked reserve capacity to maintain grid stability. If the internal generation remains insufficient, the solver is permitted to shed load according to \eqref{eq:shed_normal_limit}-\eqref{eq:shed_critical_limit}, strongly guided by the economic prioritization in $F_{shed}$ to preserve critical loads.
 \end{itemize}
 
 
@@ -184,7 +181,7 @@ Equations \eqref{eq:P_balance} and \eqref{eq:Q_balance} delineate the active and
 
 Similarly, the reactive power balance in \eqref{eq:Q_balance} accounts for branch flows ($Q_{line,ij,t}$), DG reactive support ($Q_{DG,j,t}$), and reactive load shedding ($Q_{shed,j,t}$). Notably, the renewable energy inverters (PV and WT) are configured to operate at unity power factor, contributing zero reactive power to the system.
 
-Equation \eqref{eq:voltage_drop} governs the voltage drop along branch $(i,j)$, considering the line impedance ($R_{ij}, X_{ij}$) and branch flows. Equation \eqref{eq:current_def} represents the non-linear definition of the squared branch current. Finally, inequalities \eqref{eq:voltage_limit} and \eqref{eq:current_limit} ensure that the squared nodal voltages and branch currents remain within their secure operational limits. Due to the non-linear and non-convex nature of the current definition in \eqref{eq:current_def}, SOCP in optimization solvers.
+Equation \eqref{eq:voltage_drop} governs the voltage drop along branch $(i,j)$, considering the line impedance ($R_{ij}, X_{ij}$) and branch flows. Equation \eqref{eq:current_def} represents the non-linear definition of the squared branch current. Finally, inequalities \eqref{eq:voltage_limit} and \eqref{eq:current_limit} ensure that the squared nodal voltages and branch currents remain within their secure operational limits. This exact DistFlow model is specifically chosen as it inherently captures the physical radial topology of the microgrids, forming the strict prerequisite for subsequent global optimization. However, due to the non-linear and non-convex nature of the current definition in \eqref{eq:current_def}, this problem requires convexification via SOCP to be mathematically tractable for optimization solvers.
 
 \subsection{SOCP Relaxation and Exactness}
 \label{subsec:socp_relaxation}
@@ -194,7 +191,7 @@ The non-linear nature of the AC Optimal Power Flow fundamentally stems from the 
 \begin{equation}
     I_{ij,t}^2 = \frac{P_{line,ij,t}^2 + Q_{line,ij,t}^2}{V_{i,t}^2} \nonumber
 \end{equation}
-This equality constraint is highly non-convex. To achieve a computationally tractable convex model, SOC inequality constraint. The SOC relaxation transforms the non-convex feasible region into a convex cone by replacing the equality with an inequality:
+This equality constraint is highly non-convex. To achieve a computationally tractable convex model, the SOC relaxation transforms the non-convex feasible region into a convex cone by replacing the equality with an inequality:
 \begin{equation}
     I_{ij,t}^2 V_{i,t}^2 \ge P_{line,ij,t}^2 + Q_{line,ij,t}^2
     \label{eq:socp_relaxation}
@@ -204,22 +201,22 @@ This equality constraint is highly non-convex. To achieve a computationally trac
 The fundamental premise of substituting an equality with an inequality is predicated on the concept of exactness---the condition where the optimizer natively forces the inequality \eqref{eq:socp_relaxation} to hold with equality. In the Normal Mode of operation, this exactness is inherently guaranteed. As defined in the objective function \eqref{eq:total_cost_function}, the formulation incorporates a dedicated loss penalty component, $F_{loss}$ \eqref{eq:cost_loss}. Because the primary objective of the solver is to minimize the total operational cost, it actively suppresses the squared current variable $I_{ij,t}^2$, strictly driving it towards its theoretical lower bound. Consequently, the inequality holds with equality ($I_{ij,t}^2 V_{i,t}^2 = P_{line,ij,t}^2 + Q_{line,ij,t}^2$), thereby guaranteeing the exactness of the SOCP model and accurately reflecting the true physical state of the distribution grid.
 
 \subsubsection{Robustness against Inexactness in Emergency Mode}
-While exactness is guaranteed under standard operations, the mathematical literature suggests that significant challenges can arise during extreme Emergency Modes. A typical vulnerability occurs during islanded operations with a significant surplus of renewable energy generation. In standard models lacking curtailment mechanisms, if the microgrid cannot export this excess power, the mathematical solver might erroneously exploit the SOCP relaxation gap. It could artificially inflate the current variable $I_{ij,t}^2$ to burn the surplus energy as fictitious line losses, violating the exactness ($I_{ij,t}^2 V_{i,t}^2 > P_{line,ij,t}^2 + Q_{line,ij,t}^2$) and rendering the results physically meaningless.
+While exactness is guaranteed under standard operations, the mathematical literature suggests that significant challenges can arise during extreme Emergency Modes. A typical vulnerability occurs during islanded operations with a significant surplus of renewable energy generation. In standard models lacking curtailment mechanisms, if the microgrid cannot export this excess power, the system risks violating the exactness ($I_{ij,t}^2 V_{i,t}^2 > P_{line,ij,t}^2 + Q_{line,ij,t}^2$), which renders the optimization results physically meaningless. This breakdown occurs because the mathematical solver might erroneously exploit the SOCP relaxation gap, artificially inflating the current variable $I_{ij,t}^2$ to burn the surplus energy as fictitious line losses.
 
 However, the proposed microgrid formulation is intrinsically designed to effectively counteract this phenomenon. The renewable generation constraints natively allow for free active power curtailment \eqref{eq:pv_limit}. Confronted with excess generation, the solver will preferentially curtail the renewable output at zero cost rather than inflating $I_{ij,t}^2$, which would incur a strict financial penalty via the $F_{loss}$ term scaled by $\omega_{loss}$. This dual mechanism---free curtailment capability combined with a strict virtual loss penalty---ensures that the solver is mathematically prevented from exploiting the relaxation gap. As a result, the model robustly preserves the physical integrity and exactness of the network's power flow equations even amidst extreme emergency and over-generation scenarios.
 
 \subsection{Final Local SOCP Optimization Model}
 \label{subsec:final_local_socp}
 
-Integrating the operational cost components from Section \ref{subsubsec:economic_loss_functions} and the relaxed physical network constraints, SOCP. Although the problem is implemented and solved as a single unified code using the emergency indicator $\Gamma_E(t)$, from a mathematical presentation perspective, the active objective function and constraints can be categorized into two distinct formulations based on the operational state.
+Integrating the operational cost components from Section \ref{subsubsec:economic_loss_functions} and the relaxed physical network constraints, the final SOCP model is formulated. Although the problem is implemented and solved as a single unified code using the emergency indicator $\Gamma_E(t)$, from a mathematical presentation perspective, the active objective function and constraints can be categorized into two distinct formulations based on the operational state.
 
 \subsubsection{Formulation I: Normal Operation Mode ($\Gamma_E(t) = 0$)}
-In standard grid-connected mode, load shedding is economically penalized to the point of avoiding load curtailment ($F_{shed} \to 0$). The objective is purely focused on economic costs and loss minimization. The problem is defined as:
+In standard grid-connected mode, the load shedding penalty enforces zero curtailment ($F_{shed} \to 0$). The objective is purely focused on economic costs and loss minimization. The problem is defined as:
 \begin{equation}
 \begin{aligned}
     \min \quad & \mathcal{F}_{normal}^{OPF} = F_{grid} + F_{DG} + F_{BESS} + F_{loss} \\
     \text{s.t.} \quad & \text{Component Constraints } \eqref{eq:pv_limit}-\eqref{eq:dg_ramp_limit} \\
-    & \text{Standard Spinning Reserve } \eqref{eq:normal_reserve} \\
+    & \text{Standard Spinning Reserve } \eqref{eq:dg_reserve_req} \\
     & \text{DistFlow Boundary Conditions } \eqref{eq:distflow_boundary} \\
     & \text{Power Balance \& Voltage Constraints } \eqref{eq:P_balance}-\eqref{eq:voltage_drop}, \eqref{eq:voltage_limit}-\eqref{eq:current_limit} \\
     & \text{SOCP Relaxed Current Constraint } \eqref{eq:socp_relaxation}
