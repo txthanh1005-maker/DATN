@@ -66,6 +66,10 @@ Chiến dịch cuối cùng nhằm đồng bộ hóa toàn bộ các phần râu
   - **Trạng thái:** `[x] DONE`
   - **Người thực hiện:** `@latex_writer`
   - **Mô tả:** Tìm toàn bộ chuỗi "xx" trong các file `.tex` và điền số liệu/text/trích dẫn chính xác.
+- **Task 6.5: User Check / Manual Verification**
+  - **Trạng thái:** `[>] IMPLEMENTING`
+  - **Người thực hiện:** Tư lệnh
+  - **Mô tả:** Tư lệnh trực tiếp kiểm tra, xác nhận chất lượng văn bản của Chương 1 và Chương 5 (đặc biệt là các lỗi lặp ý, mảnh câu gãy). Các tác vụ phía dưới chỉ được tiến hành khi Tư lệnh xác nhận hoàn thành Task này.
 - **Task 7: Rà soát căn lề biến số và công thức toán học**
   - **Trạng thái:** `[ ] TODO`
   - **Người thực hiện:** `@domain_reviewer` / `@latex_writer`

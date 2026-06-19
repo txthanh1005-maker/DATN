@@ -5,26 +5,26 @@
 \setcounter{equation}{0}
 
 \subsection{ATC Overview}
-The operation of multi-microgrid (Multi-MG) systems entails a complex spatial coordination problem. MGs to transmit all their local, potentially sensitive information---such as load demand, renewable generation profiles, BESS constraints---to a central operator. This paradigm not only creates computational bottlenecks for large-scale systems but also severely compromises the privacy of independent MG operators.
+The operation of multi-microgrid (Multi-MG) systems entails a complex spatial coordination problem. Traditional centralized operations require MGs to transmit all their local, potentially sensitive information---such as load demand, renewable generation profiles, BESS constraints---to a central operator. This paradigm not only creates computational bottlenecks for large-scale systems but also severely compromises the privacy of independent MG operators.
 
-To resolve these physical and informational challenges, ATC. ATC is a distributed optimization technique originally developed for multidisciplinary design optimization, which perfectly aligns with the hierarchical structure of modern distribution networks. By decomposing the global optimal power flow problem, ATC divides the Multi-MG system into a two-level hierarchical architecture:
+To resolve these physical and informational challenges, the Analytical Target Cascading (ATC) framework is introduced. ATC is a distributed optimization technique originally developed for multidisciplinary design optimization, which perfectly aligns with the hierarchical structure of modern distribution networks. By decomposing the global optimal power flow problem, ATC divides the Multi-MG system into a two-level hierarchical architecture:
 \begin{itemize}
-    \item \textbf{Coordinator Level (Upper Level):} DSO or Utility Grid serves as the central coordinator. The DSO assigns the optimal target variables $P_{target,ij,t}$ (conceptually acting as the ideal tie-line reference) P2P consensus.
-    \item \textbf{Local Microgrid Level (Lower Level):} Each individual MG operates as an independent autonomous entity. Utilizing the target signals provided by the coordinator, SOCP problem to determine its optimal internal asset dispatch and the scheduled tie-line power exchange $P_{tie,ij,t}$.
+    \item \textbf{Coordinator Level (Upper Level):} DSO or Utility Grid serves as the central coordinator. The DSO assigns the optimal target variables $P_{target,ij,t}$ (conceptually acting as the ideal tie-line reference) to achieve P2P consensus.
+    \item \textbf{Local Microgrid Level (Lower Level):} Each individual MG operates as an independent autonomous entity. Utilizing the target signals provided by the coordinator, each local MG solves an SOCP problem to determine its optimal internal asset dispatch and the scheduled tie-line power exchange $P_{tie,ij,t}$.
 \end{itemize}
 
 Through an iterative exchange of limited boundary variables (the target power $P_{target,ij,t}$ and the tie-line response $P_{tie,ij,t}$) alongside penalty multipliers, the ATC algorithm guides the multi-microgrid system toward a globally optimal equilibrium without exposing any internal constraints or local asset states. For mathematical clarity regarding directional power flow, the active power traded via the tie-line connecting MG $i$ to MG $j$ at time $t$ is denoted as $P_{tie,ij,t}$.
 
 \subsection{The Coordinator Problem (Utility Grid)}
-At the top level of the ATC hierarchy, the Coordinator (Utility Grid) P2P consensus. The coordinator's optimization problem formulates the target variable $P_{target,ij,t}$ that the lower-level MGs must track, yielding the optimal target $P_{target,ij,t} = \left( P_{tie,ij,t} - P_{tie,ji,t} \right) / 2$.
-
-The objective function of the coordinator is formulated to penalize the mismatch between the coordinator's target $P_{target,ij,t}$ and the previous iteration's optimal tie-line scheduled power $P_{tie,ij,t}^{*,k}$ submitted by the local MGs, subject to strict reciprocity ($P_{target,ij,t} + P_{target,ji,t} = 0$). The optimization problem is given by:
+At the top level of the ATC hierarchy, the Coordinator (Utility Grid) serves as the central authority to establish P2P consensus. The objective function of the coordinator is formulated to penalize the mismatch between the coordinator's target $P_{target,ij,t}$ and the previous iteration's optimal tie-line scheduled power $P_{tie,ij,t}^{*,k}$ submitted by the local MGs, subject to strict reciprocity ($P_{target,ij,t} + P_{target,ji,t} = 0$). The optimization problem is given by:
 \begin{equation} \label{eq:ATC_Utility_Grid_Obj}
 \begin{aligned}
 \min \quad & \sum_{t \in \mathcal{T}} \sum_{(i,j) \in \mathcal{L}^{trade}} \left[ \lambda_{ij,t}^k \left( P_{tie,ij,t}^{*,k} - P_{target,ij,t} \right) + \frac{\rho_{ij,t}^k}{2} \left( P_{target,ij,t} - P_{tie,ij,t}^{*,k} \right)^2 \right] \\
 \text{s.t.} \quad & P_{target,ij,t} + P_{target,ji,t} = 0
 \end{aligned}
 \end{equation}
+By solving this optimization problem, the coordinator formulates the target variable $P_{target,ij,t}$ that the lower-level MGs must track, yielding the optimal explicit target $P_{target,ij,t} = \left( P_{tie,ij,t}^{*,k} - P_{tie,ji,t}^{*,k} \right) / 2$.
+
 where:
 \begin{itemize}
     \item $P_{target,ij,t}$ is the decision variable representing the optimal trading target determined by the coordinator for the power flow from node $i$ to node $j$ at time $t$.
@@ -45,12 +45,19 @@ After solving the optimal target $P_{target,ij,t}^{*, k}$ and receiving the upda
     \end{cases} \label{eq:ATC_rho_update}
 \end{align}
 \end{subequations}
-where the primal residual (mismatch) is defined as $r_{ij,t}^k = P_{tie,ij,t}^{*,k} + P_{tie,ji,t}^{*,k}$, and the dual residual (speed) is defined as $s_{ij,t}^k = \rho_{ij,t}^k \left| P_{tie,ij,t}^{*,k} - P_{tie,ij,t}^{*,k-1} \right|$. The parameters are set as $\tau = 1.5$ and $\mu = 10$. This Adaptive Residual Balancing approach dynamically adjusts the penalty parameter to maintain a balance between primal and dual feasibility, significantly accelerating the convergence of the Analytical Target Cascading algorithm.
+where the primal residual (mismatch) $r_{ij,t}^k$ and the dual residual (speed) $s_{ij,t}^k$ are explicitly defined to measure the convergence as follows:
+\begin{subequations} \label{eq:ATC_residuals}
+\begin{align}
+    r_{ij,t}^k &= P_{tie,ij,t}^{*,k} + P_{tie,ji,t}^{*,k} \label{eq:ATC_primal_residual} \\
+    s_{ij,t}^k &= \rho_{ij,t}^k \left| P_{tie,ij,t}^{*,k} - P_{tie,ij,t}^{*,k-1} \right| \label{eq:ATC_dual_residual}
+\end{align}
+\end{subequations}
+The balancing parameters are set as $\tau = 1.5$ and $\mu = 10$. This Adaptive Residual Balancing approach dynamically adjusts the penalty parameter to maintain a balance between primal and dual feasibility, significantly accelerating the convergence of the Analytical Target Cascading algorithm.
 
 \subsection{The Local Microgrid Problem with ATC}
-ATC architecture, MGs receive the updated penalty multipliers ($\lambda_{ij,t}^k, \rho_{ij,t}^k$) and the optimal reference target ($P_{target,ij,t}^{k-1}$) broadcasted by the central Coordinator (Utility Grid). To align their local schedules with the global consensus, each MG integrates an Augmented Lagrangian penalty function into its base optimization objective.
+In the ATC architecture, MGs receive the updated penalty multipliers ($\lambda_{ij,t}^k, \rho_{ij,t}^k$) and the optimal reference target ($P_{target,ij,t}^{k-1}$) broadcasted by the central Coordinator (Utility Grid). To align their local schedules with the global consensus, each MG integrates an Augmented Lagrangian penalty function into its base optimization objective.
 
-The base objectives of each MG, defined as $\mathcal{F}_{normal}^{OPF}$ for grid-connected modes and $\mathcal{F}_{emergency}^{OPF}$ for islanded states (as previously established in Section 3.6), are mathematically penalized for any spatial discrepancy. The Augmented Lagrangian penalty function corresponding to the active power deviation along the tie-lines is formulated as follows:
+The base objectives of each MG, defined as $\mathcal{F}_{normal}^{OPF}$ for grid-connected modes and $\mathcal{F}_{emergency}^{OPF}$ for islanded states (as previously established in Chapter 2), are mathematically penalized for any spatial discrepancy. The Augmented Lagrangian penalty function corresponding to the active power deviation along the tie-lines is formulated as follows:
 \begin{equation} \label{eq:ATC_Penalty_Function}
 F_{penalty, i}^{ATC} = \sum_{t \in \mathcal{T}} \sum_{j \in \mathcal{N}_i} \left[ \lambda_{ij,t}^k \left( P_{tie,ij,t} - P_{target,ij,t}^{k-1} \right) + \frac{\rho_{ij,t}^k}{2} \left( P_{tie,ij,t} - P_{target,ij,t}^{k-1} \right)^2 \right]
 \end{equation}
@@ -62,9 +69,33 @@ The incorporation of this penalty effectively bridges the gap between the decent
 \end{equation}
 where $\mathcal{F}_i^{OPF}$ represents either $\mathcal{F}_{normal}^{OPF}$ or $\mathcal{F}_{emergency}^{OPF}$ depending on the prevailing operational condition of the network for MG $i$.
 
-Consequently, SOCP model subject to its complete set of local operational and physical constraints defined in Chapter 3. Upon convergence of its local optimization, the MG transmits only the resulting scheduled tie-line active power exchange, $P_{tie,ij,t}$, back to the Utility Grid Coordinator for the subsequent ATC iteration.
+Consequently, the local problem is formulated as an SOCP model subject to its complete set of local operational and physical constraints defined in Chapter 2. Upon convergence of its local optimization, the MG transmits only the resulting scheduled tie-line active power exchange, $P_{tie,ij,t}$, back to the Utility Grid Coordinator for the subsequent ATC iteration.
 
 \subsection{ATC Iterative Algorithm and Convergence}
+\begin{algorithm}[H]
+\caption{Decentralized Analytical Target Cascading (ATC) Algorithm}
+\label{alg:atc_coordination}
+\begin{algorithmic}[1]
+\State \textbf{Initialization:} Set iteration counter $k \leftarrow 1$.
+\State Initialize multipliers $\lambda_{ij,t}^1 = 0$, $\rho_{ij,t}^1 = \rho_0$ for all $(i,j) \in \mathcal{L}^{trade}, t \in \mathcal{T}$.
+\State Initialize targets $P_{target,ij,t}^0 = 0$ and schedules $P_{tie,ij,t}^0 = 0$.
+\Repeat
+    \State \textbf{// Lower Level: Local MG Optimization (Parallel Execution)}
+    \For{each Microgrid $i \in \mathcal{M}$}
+        \State Receive global signals $P_{target,ij,t}^{k-1}$, $\lambda_{ij,t}^k$, $\rho_{ij,t}^k$ from the Coordinator.
+        \State Solve the penalized local OPF minimizing $\mathcal{F}_{ATC, i}^{OPF}$ via \eqref{eq:ATC_Global_Objective}.
+        \State Extract optimal schedule $P_{tie,ij,t}^k$ and transmit to the Coordinator.
+    \EndFor
+    \State \textbf{// Upper Level: Coordinator Update}
+    \State Calculate primal $r_{ij,t}^k$ and dual $s_{ij,t}^k$ residuals via \eqref{eq:ATC_residuals}.
+    \State Update the optimal target $P_{target,ij,t}^k$ to enforce consensus.
+    \State Update Lagrange multipliers $\lambda_{ij,t}^{k+1}$ via \eqref{eq:ATC_lambda_update}.
+    \State Adjust penalty parameters $\rho_{ij,t}^{k+1}$ via Adaptive Residual Balancing \eqref{eq:ATC_rho_update}.
+    \State $k \leftarrow k + 1$
+\Until{$(r_{ij,t}^{k-1})^2 \le \epsilon_{stop}$ \textbf{and} $(s_{ij,t}^{k-1})^2 \le \epsilon_{stop}$ for 3 consecutive steps.}
+\end{algorithmic}
+\end{algorithm}
+
 ATC algorithm is an iterative process that alternates between solving the local MG optimization problems and updating the coordinator's target variables and penalty multipliers. The step-by-step procedure at iteration $k$ is detailed as follows:
 
 \textbf{Step 1: Initialization.} Set the iteration counter $k = 1$. Initialize the Lagrange multipliers $\lambda_{ij,t}^1 = 0$, the penalty parameters $\rho_{ij,t}^1 = \rho_0$, the initial tie-line power schedules $P_{tie,ij,t}^0 = 0$, and the initial targets $P_{target,ij,t}^0 = 0$ for all directional tie-lines $(i,j) \in \mathcal{L}^{trade}$ and time intervals $t \in \mathcal{T}$.
@@ -72,37 +103,47 @@ ATC algorithm is an iterative process that alternates between solving the local 
 \textbf{Step 2: Local Microgrid Optimization.} Each MG autonomously solves its penalized optimal power flow problem as defined in \eqref{eq:ATC_Global_Objective}, utilizing the target variables from the previous iteration $P_{target,ij,t}^{k-1}$. The optimal tie-line active power exchange $P_{tie,ij,t}^k$ is determined and subsequently transmitted to the Coordinator.
 
 \textbf{Step 3: Coordinator Update.} Upon receiving the tie-line power schedules from all interacting MGs, the Coordinator updates the target variables, multipliers, and adaptive penalty parameters to enforce P2P consensus. 
-First, the primal residual $r_{ij,t}^k$ and dual residual $s_{ij,t}^k$ are calculated to measure the spatial mismatch and the algorithm's progress:
-\begin{subequations} \label{eq:ATC_residuals}
-\begin{align}
-    r_{ij,t}^k &= P_{tie,ij,t}^k + P_{tie,ji,t}^k \label{eq:ATC_primal_residual} \\
-    s_{ij,t}^k &= \rho_{ij,t}^k \left| P_{tie,ij,t}^k - P_{tie,ij,t}^{k-1} \right| \label{eq:ATC_dual_residual}
-\end{align}
-\end{subequations}
+First, the primal residual $r_{ij,t}^k$ and dual residual $s_{ij,t}^k$ are calculated to measure the spatial mismatch and the algorithm's progress. Then, the target variable $P_{target,ij,t}^k$ is updated to drive the consensus. The Lagrange multipliers and adaptive penalty parameters ($\lambda_{ij,t}^{k+1}$ and $\rho_{ij,t}^{k+1}$) are sequentially updated according to the explicit rules defined in \eqref{eq:ATC_lambda_update} and \eqref{eq:ATC_rho_update}.
 
-Then, the target variable $P_{target,ij,t}^k$ is updated:
-\begin{equation} \label{eq:ATC_target_update_algo}
-    P_{target,ij,t}^k = \frac{P_{tie,ij,t}^k - P_{tie,ji,t}^k}{2}
-\end{equation}
+\textbf{Step 4: Convergence Check.} The iterative algorithm terminates when both the primal and dual residuals satisfy the convergence tolerance $\epsilon_{stop}$ (set to $10^{-4}$) for three consecutive iterations. If the criteria are met, the algorithm stops and the final optimal scheduling is achieved. Otherwise, the iteration counter is incremented ($k \leftarrow k+1$) and the process returns to Step 2.
 
-The Lagrange multipliers are updated using the current tie-line schedule and the updated target:
-\begin{equation} \label{eq:ATC_lambda_update_algo}
-    \lambda_{ij,t}^{k+1} = \lambda_{ij,t}^k + \rho_{ij,t}^k \left( P_{tie,ij,t}^k - P_{target,ij,t}^k \right)
-\end{equation}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+        box/.style={draw, rectangle, align=center, minimum width=4.5cm, minimum height=1cm, fill=blue!5},
+        decision/.style={draw, diamond, aspect=1.8, inner sep=2pt, align=center, fill=yellow!10},
+        arrow/.style={-stealth, thick}
+        ]
+        
+        % Nodes Left Column
+        \node[box, rounded corners, fill=green!10] (start) at (-0.5, 0) {Start ATC Algorithm};
+        \node[box] (init) at (-0.5, -2.5) {\textbf{Step 1: Initialization} \\ $k=1, \lambda=0, \rho=\rho_0, P_{target}=0$};
+        \node[box] (bcast) at (-0.5, -5.2) {Broadcast global signals \\ to all MGs};
+        
+        % Nodes Right Column
+        \node[box, fill=orange!10] (local) at (6.0, -5.2) {\textbf{Step 2: MG Optimization} \\ Solve local penalized SOCP \\ Extract $P_{tie}^k$};
+        
+        \node[box] (update) at (6.0, -9.5) {\textbf{Step 3: Coordinator Update} \\ Calculate residuals $r^k, s^k$ \\ Update $P_{target}^k, \lambda^{k+1}, \rho^{k+1}$};
+        
+        % Bottom Left
+        \node[decision] (check) at (-0.5, -9.5) {\textbf{Step 4: Converged?} \\ $r^2, s^2 \le \epsilon_{stop}$?};
+        
+        \node[box, rounded corners, fill=red!10] (stop) at (-0.5, -13.5) {Stop: Equilibrium Achieved};
+        
+        \node[box, minimum width=2.5cm] (iter) at (-4.7, -7.3) {Increment \\ $k \leftarrow k+1$};
+        
+        % Arrows
+        \draw[arrow] (start) -- (init);
+        \draw[arrow] (init) -- (bcast);
+        \draw[arrow] (bcast) -- (local);
+        \draw[arrow] (local) -- (update);
+        \draw[arrow] (update) -- (check);
+        \draw[arrow] (check) -- node[anchor=west] {Yes} (stop);
+        \draw[arrow] (check.west) -| node[anchor=north, near start] {No} (iter.south);
+        \draw[arrow] (iter.north) |- (bcast.west);
+        
+    \end{tikzpicture}
+    \caption{Flowchart of the Decentralized Analytical Target Cascading (ATC) Algorithm.}
+    \label{fig:atc_flowchart}
+\end{figure}
 
-To accelerate convergence, an adaptive penalty strategy is employed. The penalty parameter $\rho_{ij,t}^{k+1}$ is dynamically adjusted based on the ratio of the squared primal and dual residuals:
-\begin{equation} \label{eq:ATC_rho_adaptive}
-    \rho_{ij,t}^{k+1} = 
-    \begin{cases} 
-      \rho_{ij,t}^k \cdot \tau & \text{if } (r_{ij,t}^k)^2 > \mu (s_{ij,t}^k)^2 \\
-      \rho_{ij,t}^k / \tau & \text{if } (s_{ij,t}^k)^2 > \mu (r_{ij,t}^k)^2 \\
-      \rho_{ij,t}^k & \text{otherwise}
-    \end{cases}
-\end{equation}
-where $\mu = 10$ and $\tau = 1.5$ are the adaptive balancing parameters.
-
-\textbf{Step 4: Convergence Check.} The iterative algorithm terminates when both the primal and dual residuals satisfy the convergence tolerance $\epsilon_{stop}$ for three consecutive iterations. Specifically, the convergence criteria are defined as:
-\begin{equation} \label{eq:ATC_convergence_criteria}
-    (r_{ij,t}^k)^2 \le \epsilon_{stop} \quad \text{and} \quad (s_{ij,t}^k)^2 \le \epsilon_{stop} \quad \text{for 3 consecutive steps}
-\end{equation}
-where the stopping tolerance is set to $\epsilon_{stop} = 0.001$. If the criteria are met, the algorithm stops and the final optimal scheduling is achieved. Otherwise, the iteration counter is incremented ($k \leftarrow k+1$) and the process returns to Step 2.
