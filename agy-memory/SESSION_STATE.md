@@ -13,7 +13,11 @@ Nâng cấp và chuyển đổi toàn bộ báo cáo Đồ án Tốt nghiệp (D
 - **Deep Logic & Redundancy Audit (DATN.tex - Mở bài & Kết bài):** 
   - Khắc phục lỗi đảo ngược luồng logic vật lý ở Voltage Paradox và Future Work.
   - Xén gọt lặp ý (Redundancy) ở Conclusion để biến nó thành bản đúc kết uy lực thay vì nhắc lại cơ chế đã có ở Abstract. Loại bỏ triệt để từ ngữ sáo rỗng (Fluff).
-- **Trạng thái Phase 3 (Final Polish):** Đã HOÀN TẤT 100% quá trình phẫu thuật nội dung (Logic/Redundancy) cho toàn bộ các chương. Sẵn sàng sang Task định dạng.
+- **Format Audit (Task 7):** Đã sửa lỗi tràn lề `Overfull \hbox` và lệch hàng (Misaligned) tại các hệ phương trình DistFlow, ATC, AC-OPF trong Chapter 2 và 3. Tối ưu hóa Inline math.
+- **Chỉnh sửa Phần Kết quả Chapter 5 (Task 10.5):** Tư lệnh đã đích thân chỉ đạo "phẫu thuật" thành công các Hình 5.5, 5.6 và 5.9. Thay thế văn bản Base Fault thành chuẩn IEEE (nhấn mạnh sự cách ly $P_{tie}=0$), đính chính vai trò tối ưu hóa chi phí của BESS (so với máy phát bù Q), và nêu bật sự tương phản vận hành vật lý giữa MG2 (đủ Q) và MG4 (thiếu Q).
+- **Task 9 (Algorithm Flowcharts):** Đã hoàn thành vẽ Lưu đồ TikZ cho thuật toán 3-Mode State Machine ở Chương 4. Đã sử dụng `latex_writer` để vẽ và `logic_flow_checker` để xác minh độ chính xác của các phân nhánh (Mode 1, 2, 3) và tham số Rolling Horizon.
+- **Task 9.5 (MPC Rolling Horizon):** Đã hoàn thành vẽ sơ đồ trục thời gian (Timeline) thể hiện cơ chế Rolling Horizon của thuật toán MPC (Day-ahead vs Real-time). Đã kiểm chứng tính đồng bộ với mô hình Pyomo.
+- **Trạng thái:** Đã HOÀN TẤT gần như toàn bộ kế hoạch. Chờ chèn các hình minh họa phụ trợ (Task 10) và nộp bài.
 
 ## Key Decisions
 1. **Kiến trúc Top-Down (Chapter 6):** Sử dụng `Transfer folder/Result_data/report_result` để viết kết quả.
@@ -27,9 +31,8 @@ Nâng cấp và chuyển đổi toàn bộ báo cáo Đồ án Tốt nghiệp (D
 9. **Logic Flow & Redundancy Protocol:** Áp dụng quy tắc thép: "So What?" và "Ngữ cảnh -> Nguyên nhân Vật lý -> Hệ quả Vật lý -> Phản ứng Thuật toán".
 
 ## Next Steps
-- **Hoàn thiện Phase 3 (Formatting & Proofreading):**
-  - **Task 7:** Rà soát căn lề biến số và công thức toán học toàn bộ luận văn.
-  - **Task 8:** Quy chuẩn phần viết tắt (Abbreviations), xóa cụm từ dư thừa, chỉ dùng viết tắt trong các chương.
+- **Khởi động lại Hình ảnh (Task 9.5 & 10):** Triển khai vẽ sơ đồ MPC Rolling Horizon (Task 9.5) trên trục thời gian, sau đó mới chèn các hình minh họa phụ trợ khác ở Chương 2 (Task 10).
+- **Project Closure (Task 11):** Cập nhật danh sách Publications, thông tin trang bìa, và biên dịch lại PDF lần cuối.
 
 ## Critical Context
 **Cấu hình mạng (Topology P2P):** 1 Utility Grid & 4 Microgrids.

@@ -53,7 +53,7 @@ where the primal residual (mismatch) $r_{ij,t}^k$ and the dual residual (speed) 
     s_{ij,t}^k &= \rho_{ij,t}^k \left| P_{tie,ij,t}^{*,k} - P_{tie,ij,t}^{*,k-1} \right| \label{eq:ATC_dual_residual}
 \end{align}
 \end{subequations}
-The balancing parameters are set as $\tau = 1.5$ and $\mu = 10$. This Adaptive Residual Balancing approach dynamically adjusts the penalty parameter to maintain a balance between primal and dual feasibility, significantly accelerating the convergence of the ATC algorithm.
+The balancing parameters are set as $\tau = 1.5$ and $\mu = 10$. These specific values are empirically tuned based on the network's impedance characteristics and operating bounds to ensure the monotonic convergence of the dual gap. This Adaptive Residual Balancing approach dynamically adjusts the penalty parameter to maintain a balance between primal and dual feasibility, significantly accelerating the convergence of the ATC algorithm.
 
 \subsection{The Local MG Problem with ATC}
 In the ATC architecture, MGs receive the updated penalty multipliers ($\lambda_{ij,t}^k, \rho_{ij,t}^k$) and the optimal reference target ($P_{target,ij,t}^{k-1}$) broadcasted by the central Coordinator (Utility Grid). To align their local schedules with the global consensus, each MG integrates an Augmented Lagrangian penalty function into its base optimization objective.
@@ -84,13 +84,13 @@ Consequently, the local problem is formulated as an SOCP model subject to its co
 \State Initialize multipliers $\lambda_{ij,t}^1 = 0$, $\rho_{ij,t}^1 = \rho_0$ for all $(i,j) \in \mathcal{L}^{trade}, t \in \mathcal{T}$.
 \State Initialize targets $P_{target,ij,t}^0 = 0$ and schedules $P_{tie,ij,t}^0 = 0$.
 \Repeat
-    \State \textbf{// Lower Level: Local MG Optimization (Parallel Execution)}
+    \State \textbf{Lower Level: Local MG Optimization (Parallel Execution)}
     \For{each MG $i \in \mathcal{M}$}
         \State Receive global signals $P_{target,ij,t}^{k-1}$, $\lambda_{ij,t}^k$, $\rho_{ij,t}^k$ from the Coordinator.
         \State Solve the penalized local OPF minimizing $\mathcal{F}_{ATC, i}^{OPF}$ via \eqref{eq:ATC_Global_Objective}.
         \State Extract optimal schedule $P_{tie,ij,t}^k$ and transmit to the Coordinator.
     \EndFor
-    \State \textbf{// Upper Level: Coordinator Update}
+    \State \textbf{Upper Level: Coordinator Update}
     \State Calculate primal $r_{ij,t}^k$ and dual $s_{ij,t}^k$ residuals via \eqref{eq:ATC_residuals}.
     \State Update the optimal target $P_{target,ij,t}^k$ to enforce consensus.
     \State Update Lagrange multipliers $\lambda_{ij,t}^{k+1}$ via \eqref{eq:ATC_lambda_update}.

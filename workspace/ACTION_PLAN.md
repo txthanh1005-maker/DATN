@@ -67,27 +67,36 @@ Chiến dịch cuối cùng nhằm đồng bộ hóa toàn bộ các phần râu
   - **Người thực hiện:** `@latex_writer`
   - **Mô tả:** Tìm toàn bộ chuỗi "xx" trong các file `.tex` và điền số liệu/text/trích dẫn chính xác.
 - **Task 6.5: User Check / Manual Verification**
-  - **Trạng thái:** `[>] IMPLEMENTING`
+  - **Trạng thái:** `[x] DONE`
   - **Người thực hiện:** Tư lệnh
   - **Mô tả:** Tư lệnh trực tiếp kiểm tra, xác nhận chất lượng văn bản của Chương 1 và Chương 5 (đặc biệt là các lỗi lặp ý, mảnh câu gãy). Các tác vụ phía dưới chỉ được tiến hành khi Tư lệnh xác nhận hoàn thành Task này.
 - **Task 7: Rà soát căn lề biến số và công thức toán học**
-  - **Trạng thái:** `[ ] TODO`
+  - **Trạng thái:** `[x] DONE`
   - **Người thực hiện:** `@domain_reviewer` / `@latex_writer`
   - **Mô tả:** Đảm bảo mọi phương trình SOCP, ATC, MPC đúng format. Kiểm tra tính đồng nhất của các biến số ($I^2X$, $\lambda$, $P_{tie}$).
 - **Task 8: Quy chuẩn lại các phần viết tắt (Abbreviations)**
-  - **Trạng thái:** `[>] IMPLEMENTING`
+  - **Trạng thái:** `[x] DONE`
   - **Người thực hiện:** `@latex_writer`
   - **Mô tả:** Cập nhật List of Abbreviations trong file danh mục. Quan trọng: Lọc và xóa toàn bộ các cụm từ đang viết dư thừa dưới dạng `Full word (Abbreviation)` (ví dụ: Analytical Target Cascading (ATC), Model Predictive Control (MPC), v.v.) trong các chương và chuyển đổi 100% về dạng viết tắt `Abbreviation`, đảm bảo tính thống nhất.
 - **Task 9: Bổ sung Lưu đồ Thuật toán (Algorithm Flowcharts)**
-  - **Trạng thái:** `[ ] TODO`
+  - **Trạng thái:** `[x] DONE`
   - **Người thực hiện:** `@latex_writer`
   - **Mô tả:** Thêm sơ đồ minh họa cho cấu trúc 3-Mode State Machine và kiến trúc ATC-MPC.
+- **Task 9.5: Vẽ sơ đồ MPC Rolling Horizon**
+  - **Trạng thái:** `[x] DONE`
+  - **Người thực hiện:** `@latex_writer`
+  - **Mô tả:** Vẽ lưu đồ/hình minh họa trục thời gian thể hiện nguyên lý cửa sổ trượt (Rolling Horizon) của MPC: So sánh Day-Ahead (h=24) và Real-Time Emergency (h=5).
 - **Task 10: Chèn thêm hình minh họa (Illustrative Figures) & Dàn trang**
   - **Trạng thái:** `[ ] TODO`
   - **Người thực hiện:** `@latex_writer`
   - **Mô tả:** Nhúng các hình minh họa phụ trợ. Thực hiện cuối cùng để tránh vỡ float/layout.
 
 ### Phase 4: Project Closure
+- **Task 10.5: Chỉnh sửa Phần Kết quả (Chapter 5) - Manual Update**
+  - **Trạng thái:** `[x] DONE`
+  - **Người thực hiện:** Tư lệnh
+  - **Mô tả:** Đã tối ưu hóa Hình 5.5, 5.6, 5.9 và chuẩn hóa phân tích vật lý cho Base Fault, PF Model, và Reactive Power Dispatch (sự tương phản MG2/MG4).
+
 - **Task 11: Final Review & Publications**
   - **Trạng thái:** `[ ] TODO`
   - **Người thực hiện:** Tư lệnh

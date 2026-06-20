@@ -7,13 +7,13 @@
 
 In the operational context of MMG systems, independent optimization at a single time instance or a fixed time frame is often inadequate to cope with unpredictable fluctuations from load demand ($P_{load,i,t}$, $Q_{load,i,t}$) and RESs ($P_{PV,i,t}^{peak}$, $P_{WT,i,t}^{peak}$), as well as unexpected events such as main grid disconnection. To address this challenge, MPC is implemented as the highest-level Temporal Coordination layer.
 
-The MPC operates on a Rolling Horizon principle, continuously solving the optimization problem over a prediction horizon $h$ at each control step, but only applying the control signals of the first step to the actual system. In this proposed architecture, the temporal framework is strictly divided into two primary phases: Day-Ahead Scheduling and Real-Time Emergency MPC.
+To address unpredictable RES and load fluctuations, the system employs an MPC rolling horizon ($h$), where only the first optimal control step is applied to counter immediate physical deviations, inherently coupling the day-ahead economics with real-time stability. In this proposed architecture, the temporal framework is strictly divided into two primary phases: Day-Ahead Scheduling and Real-Time Emergency MPC.
 
 \subsubsection{Day-Ahead Scheduling}
 
 During the Day-Ahead Scheduling phase, the optimization problem is formulated and solved for the entire 24-hour cycle of the upcoming day, meaning the prediction horizon is set to $h = 24$ hours. The primary objective is to establish an economically optimal operational plan based on long-term forecasts of renewable power generation ($P_{PV,i,t}^{peak}$, $P_{WT,i,t}^{peak}$) and load demand ($P_{load,i,t}$, $Q_{load,i,t}$). 
 
-In this phase, BESS using variables such as $P_{ch,i,t}$, $P_{dis,i,t}$, $u_{ch,i,t}$, and $u_{dis,i,t}$. Furthermore, DG represented by $u_{DG,i,t}$ and $v_{DG,i,t}$, aiming to minimize the overall operational costs while ensuring sufficient spinning reserve capacity ($R_{DG,t}$).
+In this phase, BESS operations are modeled using variables such as $P_{ch,i,t}$, $P_{dis,i,t}$, $u_{ch,i,t}$, and $u_{dis,i,t}$. Furthermore, DG dispatch actions are represented by $u_{DG,i,t}$ and $v_{DG,i,t}$, aiming to minimize the overall operational costs while ensuring sufficient spinning reserve capacity ($R_{DG,t}$).
 
 \subsubsection{Real-Time Emergency MPC}
 
@@ -21,13 +21,106 @@ To address immediate deviations, fault clearing, component isolation, and dynami
 
 During emergency conditions, the system dynamically re-evaluates the operational dispatch and activates load shedding or tie-line re-coordination (detailed mechanisms are formulated in Section 4.3).
 
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tikzpicture}[
+    >=stealth,
+    applied/.style={rectangle, draw, fill=green!40, minimum width=1.0cm, minimum height=0.6cm, font=\small, align=center},
+    predicted/.style={rectangle, draw, fill=orange!40, minimum width=1.0cm, minimum height=0.6cm, font=\small, align=center},
+    past/.style={rectangle, draw, fill=gray!20, minimum width=1.0cm, minimum height=0.6cm, font=\small, align=center},
+    horizon/.style={rectangle, draw, blue, thick, dashed, rounded corners}
+]
+
+% Timeline Axis
+\draw[->, thick] (0,0) -- (17,0) node[right] {Time};
+\draw[->, thick] (0,0) -- (0,6.5) node[above] {Step};
+
+% Vertical guidelines
+\foreach \x/\xtext in {1.5/t, 2.7/t{+}1, 3.9/t{+}2, 5.1/t{+}3, 6.3/t{+}4, 7.5/t{+}5, 8.7/t{+}6, 11.3/t{+}k, 12.5/t{+}k{+}1, 13.7/t{+}k{+}2, 14.9/t{+}k{+}3, 16.1/t{+}k{+}4} {
+    \draw[gray, loosely dashed] (\x,0) -- (\x,6);
+    \node[below, font=\footnotesize] at (\x,0) {$\xtext$};
+}
+\node[below] at (10.0,0) {$\dots$};
+
+% --- Step t Optimization ---
+\node[left] at (-0.2, 5.5) {$t$};
+\node[applied] (A1) at (1.5, 5.5) {1-1};
+\node[predicted] (P1_1) at (2.7, 5.5) {1-2};
+\node[predicted] (P1_2) at (3.9, 5.5) {1-3};
+\node[predicted] (P1_3) at (5.1, 5.5) {1-4};
+\node[predicted] (P1_4) at (6.3, 5.5) {1-5};
+\draw[horizon] (0.9, 5.05) rectangle (6.9, 5.95);
+
+% --- Step t+1 Optimization ---
+\node[left] at (-0.2, 4.2) {$t+1$};
+\node[past] (D2) at (1.5, 4.2) {Past};
+\node[applied] (A2) at (2.7, 4.2) {2-1};
+\node[predicted] (P2_1) at (3.9, 4.2) {2-2};
+\node[predicted] (P2_2) at (5.1, 4.2) {2-3};
+\node[predicted] (P2_3) at (6.3, 4.2) {2-4};
+\node[predicted] (P2_4) at (7.5, 4.2) {2-5};
+\draw[horizon] (2.1, 3.75) rectangle (8.1, 4.65);
+
+% --- Step t+2 Optimization ---
+\node[left] at (-0.2, 2.9) {$t+2$};
+\node[past] (D3_1) at (1.5, 2.9) {Past};
+\node[past] (D3_2) at (2.7, 2.9) {Past};
+\node[applied] (A3) at (3.9, 2.9) {3-1};
+\node[predicted] (P3_1) at (5.1, 2.9) {3-2};
+\node[predicted] (P3_2) at (6.3, 2.9) {3-3};
+\node[predicted] (P3_3) at (7.5, 2.9) {3-4};
+\node[predicted] (P3_4) at (8.7, 2.9) {3-5};
+\draw[horizon] (3.3, 2.45) rectangle (9.3, 3.35);
+
+% --- Time Break (Vertical dots) ---
+\node at (-0.2, 1.9) {\Large $\vdots$};
+\node at (1.5, 1.9) {\Large $\vdots$};
+\node at (2.7, 1.9) {\Large $\vdots$};
+\node at (3.9, 1.9) {\Large $\vdots$};
+\node at (11.3, 1.9) {\Large $\vdots$};
+
+% --- Step t+k Optimization ---
+\node[left] at (-0.2, 0.9) {$t+k$};
+\node[past] (Dk_1) at (1.5, 0.9) {Past};
+\node[past] (Dk_2) at (2.7, 0.9) {Past};
+\node[past] (Dk_3) at (3.9, 0.9) {Past};
+\node at (10.0, 0.9) {$\dots$};
+\node[applied] (Ak) at (11.3, 0.9) {k-1};
+\node[predicted] (Pk_1) at (12.5, 0.9) {k-2};
+\node[predicted] (Pk_2) at (13.7, 0.9) {k-3};
+\node[predicted] (Pk_3) at (14.9, 0.9) {k-4};
+\node[predicted] (Pk_4) at (16.1, 0.9) {k-5};
+\draw[horizon] (10.7, 0.45) rectangle (16.7, 1.35); 
+
+% --- Final Executed Control ---
+\node[left] at (-0.2, -0.4) {Executed};
+\node[applied] (E1) at (1.5, -0.4) {1-1};
+\node[applied] (E2) at (2.7, -0.4) {2-1};
+\node[applied] (E3) at (3.9, -0.4) {3-1};
+\node at (10.0, -0.4) {$\dots$};
+\node[applied] (Ek) at (11.3, -0.4) {k-1};
+
+% Legend
+\draw[draw=black, fill=white] (0, -1.2) rectangle (17.0, -2.0);
+\node[past, minimum width=0.6cm, minimum height=0.3cm] at (1.0, -1.6) {}; \node[right, font=\small] at (1.4, -1.6) {Scheduled (Past)};
+\node[applied, minimum width=0.6cm, minimum height=0.3cm] at (5.5, -1.6) {}; \node[right, font=\small] at (5.9, -1.6) {Applied Control};
+\node[predicted, minimum width=0.6cm, minimum height=0.3cm] at (10.0, -1.6) {}; \node[right, font=\small] at (10.4, -1.6) {Predicted Action};
+\draw[horizon] (14.0, -1.75) rectangle (14.6, -1.45); \node[right, font=\small] at (14.7, -1.6) {Horizon};
+
+\end{tikzpicture}
+}
+\caption{MPC Rolling Horizon Framework}
+\label{fig:mpc_rolling_horizon}
+\end{figure}
+
 \subsection{State Update and Forecasting Mechanism}
 
 At each discrete time step $t$, before the optimization problem is formulated and solved for the upcoming prediction horizon $h$, the system must inherit the latest physical states from the previous control action and integrate the newly acquired forecasting vectors.
 
 \subsubsection{SOC Inheritance}
 
-In the context of the MMG system, SOC BESS. The SOC at the beginning of the new rolling horizon must accurately reflect the state resulting from the control actions implemented in the previous step.
+In the context of the MMG system, maintaining the continuity of the BESS state of charge (SOC) is crucial. The SOC at the beginning of the new rolling horizon must accurately reflect the state resulting from the control actions implemented in the previous step.
 
 For a prediction horizon starting at the current time step $t$, the initial SOC parameter, denoted as $SOC^{ini}$ for the current optimization window, is directly updated by the realized SOC from the end of the previous time step $t-1$:
 \begin{equation} \label{eq:SOC_ini}
@@ -86,33 +179,34 @@ The integration mechanism is formally structured such that the MPC layer acts as
 
 For each prospective control interval $\tau \in \mathcal{H}_{MPC}$, the MPC provides the temporal coupling via the updated SOC inheritance $SOC_{i,\tau}$ (Eq. \ref{eq:SOC_transition}), alongside the most recent forecasting vectors for load demand and renewable generation ($\mathbf{P}_{load,i}^{(t)}, \mathbf{Q}_{load,i}^{(t)}, \mathbf{P}_{PV,i}^{(t)}, \mathbf{P}_{WT,i}^{(t)}$). The ATC algorithm then iteratively optimizes the spatial power distribution and active power traded via inter-MG tie-lines ($P_{tie,ij,\tau}$) by minimizing the ATC Global Objective (Eq. \ref{eq:ATC_Global_Objective}). The distributed coordination mathematically relies on updating the Augmented Lagrangian multiplier $\lambda_{ij,\tau}$ and the penalty parameter $\rho_{ij,\tau}$ to reach an optimal consensus on the target traded active power $P_{target,ij,\tau}$ designated by the DSO. At each iteration $k$, the multiplier update step is executed as:
 \begin{equation} \label{eq:Multiplier_Update}
-    \lambda_{ij,\tau}^{(k+1)} = \lambda_{ij,\tau}^{(k)} + \rho_{ij,\tau} \left( P_{tie,ij,\tau}^{(k)} - P_{target,ij,\tau} \right) \quad \forall \tau \in \mathcal{H}_{MPC}
+    \lambda_{ij,\tau}^{(k+1)} = \lambda_{ij,\tau}^{(k)} + \rho_{ij,\tau}^{(k)} \left( P_{tie,ij,\tau}^{(k)} - P_{target,ij,\tau}^{(k)} \right) \quad \forall \tau \in \mathcal{H}_{MPC}
 \end{equation}
-By explicitly embedding the ATC SOCP solver within the outer MPC loop, the control system mathematically guarantees that both the inter-temporal energy constraints and the spatial power flow limits---including the tightened apparent power flow bounds and nodal voltage magnitude constraints ($V_{min}^2 \leq V_{i,\tau}^2 \leq V_{max}^2$)---are strictly satisfied at every temporal stage.
+By explicitly embedding the ATC SOCP solver within the outer MPC loop, the control system mathematically guarantees that both the inter-temporal energy constraints and the spatial power flow limits—including the tightened apparent power flow bounds and nodal voltage magnitude constraints ($V_{min}^2 \leq V_{i,\tau}^2 \leq V_{max}^2$)—are strictly satisfied at every temporal stage.
 
 \subsubsection{Activation of Penalty Functions and Load Shedding Mechanism}
 
-During emergency mode operations, the available generation capacity from local DGs ($P_{DG,i,t}$), BESS discharging ($P_{dis,i,t}$), and renewable resources may fail to cover the aggregated demand. Consequently, the load shedding mechanism is explicitly activated as a last resort to preserve overall system stability.
+During emergency mode operations, available local generation and BESS discharge capacity may fail to cover the aggregated demand. Unconstrained optimization would aggressively discharge the BESS to meet immediate deficits, leading to terminal depletion ($SOC_{i,t}$ approaching $SOC^{min}$) and rendering the MMG defenseless for future intervals. 
 
-The optimization objective incorporates severe penalty functions to strategically manage energy deficits and state deviations. The total active power load shedding at each node $P_{shed,i,t}$ is decoupled into normal load shedding ($P_{shed,i,t}^{normal}$) and critical load shedding ($P_{shed,i,t}^{critical}$). VOLL coefficients: a penalty cost for normal load shedding $C_{shed}^{normal}$ and a significantly higher penalty cost for critical load shedding $C_{shed}^{critical}$. The load shedding cost function is formulated as:
+To enforce Graceful Degradation, load shedding is decoupled into normal and critical loads with hierarchical VOLL coefficients, and simultaneously, a terminal SOC penalty ($J_{SOC}$) is activated. 
+
+The load shedding cost function incorporates a penalty cost for normal load shedding $C_{shed}^{normal}$ and a significantly higher penalty cost for critical load shedding $C_{shed}^{critical}$:
 \begin{equation} \label{eq:MPC_load_shedding}
     J_{shed,\tau} = \sum_{i \in \mathcal{N}} \left( C_{shed}^{normal} P_{shed,i,\tau}^{normal} + C_{shed}^{critical} P_{shed,i,\tau}^{critical} \right)
 \end{equation}
-This strict prioritization ensures that critical infrastructure remains energized while flexible loads are curtailed first.
 
-Furthermore, to maintain energy reserves for extended islanded operation, the system must address the inherent vulnerability of energy storage. During critical emergencies, local controllers often exhibit aggressive discharging behaviors to immediately compensate for power deficits. This unconstrained operation would inevitably leave the BESS completely depleted ($SOC_{i,t}$ approaching $SOC^{min}$), rendering the system defenseless for subsequent intervals.
-
-To physically prevent this depletion, a terminal SOC penalty is activated within the objective function. By introducing a slack variable $S_{SOC,i}$ and a penalty coefficient $\beta_{SOC}$, the MPC strictly penalizes the deviation of the BESS SOC at the end of the predictive horizon from a secure reference level. The SOC penalty function is formulated as:
+To physically prevent BESS depletion, a slack variable $S_{SOC,i}$ and a penalty coefficient $\beta_{SOC}$ are introduced. The MPC strictly penalizes the deviation of the BESS SOC at the end of the predictive horizon from a secure reference level:
 \begin{equation} \label{eq:MPC_SOC_penalty}
     J_{SOC} = \sum_{i \in \mathcal{N}^{BESS}} \beta_{SOC} S_{SOC,i}^2
 \end{equation}
-This temporal safeguard works in tandem with the spatial penalty coefficient for distribution network power losses $\omega_{loss}$, ensuring sustainable multi-interval resilience.
+
+By structuring the penalty weights such that $C_{shed}^{critical} \gg \beta_{SOC} > C_{shed}^{normal}$, the SOCP mathematically guarantees that flexible loads are curtailed early to preserve BESS reserves, ensuring the sustained operation of critical infrastructure. This temporal safeguard works in tandem with the spatial penalty coefficient for distribution network power losses $\omega_{loss}$, ensuring sustainable multi-interval resilience.
 
 Through this cohesive integration, the ATC SOCP algorithm resolves spatial power flow conflicts while the MPC framework optimizes the inter-temporal energy buffering and load shedding deployment, enabling the MMG system to navigate $N-2$ contingencies and main grid disconnections seamlessly.
 
-\begin{algorithm}[H]
-\caption{Bottom-Up Spatiotemporal Coordination as a 3-Mode State Machine (Part 1)}
-\label{alg:MPC_Emergency}
+\par\vspace{1em}
+\noindent\rule{\linewidth}{0.8pt}
+\captionof{algorithm}{Bottom-Up Spatiotemporal Coordination as a 3-Mode State Machine}\label{alg:MPC_Emergency}
+\vspace{-0.7em}\noindent\rule{\linewidth}{0.4pt}
 \begin{algorithmic}[1]
 \Require Real-time network measurements, BESS characteristics, Forecast models.
 \State \textbf{DAY-AHEAD SCHEDULING PHASE}
@@ -134,23 +228,12 @@ Through this cohesive integration, the ATC SOCP algorithm resolves spatial power
         \State Horizon $h \gets 5$ \Comment{Note: Forecast vectors seamlessly extend beyond $t=24$ for late-day windows}
         \State Fetch rolling forecast vectors $\mathbf{P}_{load,i}^{(t)}, \mathbf{Q}_{load,i}^{(t)}$ (Eq. \ref{eq:forecast_Pload}--\ref{eq:forecast_Qload}) 
         \State Fetch renewable potential $\mathbf{P}_{PV,i}^{(t)}, \mathbf{P}_{WT,i}^{(t)}$ (Eq. \ref{eq:forecast_P_PV}--\ref{eq:forecast_P_WT})
-        \State \textbf{Activate Emergency Mode Constraints} ($\Gamma_E(\tau) = 1$):
-        \State \quad $\bullet$ Isolate mathematically identified faulty components.\eqref{eq:fault_generic}
-        \State \quad $\bullet$ Enforce tightened nodal voltage bounds. \eqref{eq:voltage_limit}
-        \State \quad $\bullet$ Activate load shedding allowance. \eqref{eq:shed_total}--\eqref{eq:shed_critical_limit}
-        \State \textbf{Update Objective Function:} Switch to $\mathcal{F}_{emergency}^{OPF}$ \eqref{eq:total_objective_emergency} and add SOC penalty $J_{SOC}$ \eqref{eq:MPC_SOC_penalty}
-        \algstore{myalg}
-\end{algorithmic}
-\end{algorithm}
-
-\addtocounter{algorithm}{-1}
-\begin{algorithm}[H]
-\caption{Bottom-Up Spatiotemporal Coordination as a 3-Mode State Machine (Part 2)}
-\label{alg:MPC_Emergency_Part2}
-\begin{algorithmic}[1]
-\algrestore{myalg}
-\Statex \textbf{Algorithm 1 (Continued) -- MODE 2 (Emergency Mode) Continued}
-        
+        \State \textbf{Physical Cause:} Isolate mathematically identified faulty components \eqref{eq:fault_generic}.
+        \State \textbf{Physical Effect:} Enforce tightened nodal voltage bounds \eqref{eq:voltage_limit} 
+        \Statex \hspace{2.6cm} and activate load shedding allowance \eqref{eq:shed_total}--\eqref{eq:shed_critical_limit}.
+        \State \textbf{Algorithmic Response:} Activate Emergency Mode Constraints ($\Gamma_E(\tau) = 1$).
+        \State \textbf{Update Objective Function:} Switch to $\mathcal{F}_{emergency}^{OPF}$ \eqref{eq:total_objective_emergency} 
+        \Statex \hspace{4.2cm} and add SOC penalty $J_{SOC}$ \eqref{eq:MPC_SOC_penalty}.
         
         \State \textbf{STEP 3: ROLLING HORIZON OPTIMIZATION LOOP}
         \State \textbf{Call} Spatial ATC Algorithm to optimize spatial power flow
@@ -165,13 +248,56 @@ Through this cohesive integration, the ATC SOCP algorithm resolves spatial power
     \ElsIf{Fault cleared at current step $t$}
         \State \textbf{Mode 3 (Recovery Mode):}
         \State Horizon $h \gets 25 - t$
-        \State Fetch forecast vectors $\mathbf{P}_{load,i}^{(t)}, \mathbf{Q}_{load,i}^{(t)}$ (Eq. \ref{eq:forecast_Pload}--\ref{eq:forecast_Qload}) 
-        \State Fetch renewable potential $\mathbf{P}_{PV,i}^{(t)}, \mathbf{P}_{WT,i}^{(t)}$ (Eq. \ref{eq:forecast_P_PV}--\ref{eq:forecast_P_WT})
-        \State Iteratively solve ATC Global Objective \eqref{eq:ATC_Global_Objective} for period $\tau \in [t, 24]$. 
-        \State Update Day-Ahead baseline schedule $\mathbf{u}^{DA}$ with newly calculated decisions
-        \State Extract and apply control signals for step $t$ from the new baseline
+        \State \textbf{Physical Cause:} Fetch forecast vectors and renewable potential 
+        \Statex \hspace{2.6cm} (Eq. \ref{eq:forecast_Pload}--\ref{eq:forecast_P_WT}) to evaluate residual state divergence.
+        \State \textbf{Algorithmic Response:} Iteratively solve ATC Global Objective 
+        \Statex \hspace{3.7cm} \eqref{eq:ATC_Global_Objective} for period $\tau \in [t, 24]$. 
+        \State \textbf{Physical Effect:} Update Day-Ahead baseline schedule $\mathbf{u}^{DA}$ 
+        \Statex \hspace{2.6cm} with newly calculated decisions.
+        \State Extract and apply control signals for step $t$ from the new baseline.
     \EndIf
 \EndFor
 \end{algorithmic}
-\end{algorithm}
+\noindent\rule{\linewidth}{0.8pt}
+\par\vspace{1em}
 
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.5cm and 1cm,
+    process/.style={rectangle, draw, fill=blue!10, rounded corners, text width=3.8cm, text centered, minimum height=1.5cm},
+    decision/.style={diamond, aspect=2, draw, fill=yellow!10, text width=3.5cm, text centered, inner sep=0pt},
+    arrow/.style={thick, ->, >=stealth}
+]
+
+% Nodes
+\node (start) [process] {Start: Day-Ahead Scheduling};
+\node (loop) [process, below=of start] {For each time step $t = 1$ to $24$};
+\node (decision) [decision, below=of loop] {Fault status at step $t$?};
+
+\node (mode2) [process, below=of decision, yshift=-0.5cm] {\textbf{Mode 2}\\(Emergency, $h=5$)\\\textit{Activate Constraints}\\\textit{Call Spatial ATC}};
+\node (mode1) [process, left=of mode2, xshift=-0.5cm] {\textbf{Mode 1}\\(Normal)\\\textit{Apply DA Schedule}};
+\node (mode3) [process, right=of mode2, xshift=0.5cm] {\textbf{Mode 3}\\(Recovery, $h=25-t$)\\\textit{Call Spatial ATC}\\\textit{Update DA Baseline}};
+
+\node (merge) [process, below=of mode2, yshift=-0.5cm] {End of step $t$};
+
+% Arrows
+\draw [arrow] (start) -- (loop);
+\draw [arrow] (loop) -- (decision);
+
+\draw [arrow] (decision.west) -| node[anchor=south, near start] {No Fault} (mode1.north);
+\draw [arrow] (decision.south) -- node[anchor=west] {Fault Detected} (mode2.north);
+\draw [arrow] (decision.east) -| node[anchor=south, near start] {Fault Cleared} (mode3.north);
+
+\draw [arrow] (mode1.south) |- (merge.west);
+\draw [arrow] (mode2.south) -- (merge.north);
+\draw [arrow] (mode3.south) |- (merge.east);
+
+% Loop back
+\path (mode1.west) ++(-1,0) coordinate (left_edge);
+\draw [arrow] (merge.south) -- ++(0,-0.5) -| (left_edge) |- (loop.west);
+
+\end{tikzpicture}
+\caption{Flowchart of the 3-Mode State Machine Algorithm}
+\label{fig:3mode_flowchart}
+\end{figure}
