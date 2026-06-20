@@ -1,11 +1,11 @@
-\section*{CHAPTER 4. TEMPORAL COORDINATION WITH MODEL PREDICTIVE CONTROL}
-\addcontentsline{toc}{section}{\numberline{}CHAPTER 4. TEMPORAL COORDINATION WITH MODEL PREDICTIVE CONTROL}
+\section*{CHAPTER 4. TEMPORAL COORDINATION WITH MPC}
+\addcontentsline{toc}{section}{\numberline{}CHAPTER 4. TEMPORAL COORDINATION WITH MPC}
 \setcounter{section}{4}
 \setcounter{subsection}{0}
 \setcounter{equation}{0}
-\subsection{Model Predictive Control Time Framework}
+\subsection{MPC Time Framework}
 
-In the operational context of Multi-Microgrid systems, independent optimization at a single time instance or a fixed time frame is often inadequate to cope with unpredictable fluctuations from load demand ($P_{load,i,t}$, $Q_{load,i,t}$) and renewable energy sources ($P_{PV,i,t}^{peak}$, $P_{WT,i,t}^{peak}$), as well as unexpected events such as main grid disconnection. To address this challenge, MPC is implemented as the highest-level Temporal Coordination layer.
+In the operational context of MMG systems, independent optimization at a single time instance or a fixed time frame is often inadequate to cope with unpredictable fluctuations from load demand ($P_{load,i,t}$, $Q_{load,i,t}$) and RESs ($P_{PV,i,t}^{peak}$, $P_{WT,i,t}^{peak}$), as well as unexpected events such as main grid disconnection. To address this challenge, MPC is implemented as the highest-level Temporal Coordination layer.
 
 The MPC operates on a Rolling Horizon principle, continuously solving the optimization problem over a prediction horizon $h$ at each control step, but only applying the control signals of the first step to the actual system. In this proposed architecture, the temporal framework is strictly divided into two primary phases: Day-Ahead Scheduling and Real-Time Emergency MPC.
 
@@ -17,7 +17,7 @@ In this phase, BESS using variables such as $P_{ch,i,t}$, $P_{dis,i,t}$, $u_{ch,
 
 \subsubsection{Real-Time Emergency MPC}
 
-To address immediate deviations, fault clearing, component isolation, and dynamic responses during emergencies, the Real-Time Emergency MPC is activated. This phase employs a rolling horizon of $h = 5$ hours. At each time step $t \in \mathcal{T}$, the system updates the latest measurements regarding renewable generation, actual load, and the current State of Charge of the BESS ($SOC_{i,t}$). The optimization problem is continuously re-evaluated over the sliding window from $t$ to $t + h - 1$.
+To address immediate deviations, fault clearing, component isolation, and dynamic responses during emergencies, the Real-Time Emergency MPC is activated. This phase employs a rolling horizon of $h = 5$ hours. At each time step $t \in \mathcal{T}$, the system updates the latest measurements regarding renewable generation, actual load, and the current SOC of the BESS ($SOC_{i,t}$). The optimization problem is continuously re-evaluated over the sliding window from $t$ to $t + h - 1$.
 
 During emergency conditions, the system dynamically re-evaluates the operational dispatch and activates load shedding or tie-line re-coordination (detailed mechanisms are formulated in Section 4.3).
 
@@ -25,15 +25,15 @@ During emergency conditions, the system dynamically re-evaluates the operational
 
 At each discrete time step $t$, before the optimization problem is formulated and solved for the upcoming prediction horizon $h$, the system must inherit the latest physical states from the previous control action and integrate the newly acquired forecasting vectors.
 
-\subsubsection{State of Charge Inheritance}
+\subsubsection{SOC Inheritance}
 
-In the context of the Multi-Microgrid system, SOC BESS. The SOC at the beginning of the new rolling horizon must accurately reflect the state resulting from the control actions implemented in the previous step.
+In the context of the MMG system, SOC BESS. The SOC at the beginning of the new rolling horizon must accurately reflect the state resulting from the control actions implemented in the previous step.
 
 For a prediction horizon starting at the current time step $t$, the initial SOC parameter, denoted as $SOC^{ini}$ for the current optimization window, is directly updated by the realized SOC from the end of the previous time step $t-1$:
 \begin{equation} \label{eq:SOC_ini}
     SOC^{ini} = SOC_{i,t-1} \quad \forall i \in \mathcal{N}^{BESS}
 \end{equation}
-where $SOC_{i,t-1}$ represents the State of Charge of the BESS at node $i$ evaluated at the prior interval. This value serves as the initial boundary condition for the BESS constraints over the new prediction horizon. 
+where $SOC_{i,t-1}$ represents the SOC of the BESS at node $i$ evaluated at the prior interval. This value serves as the initial boundary condition for the BESS constraints over the new prediction horizon. 
 
 Consequently, the SOC transition within the predictive window for any prospective step $\tau \in [t, t+h-1]$ is formulated based on the charging ($P_{ch,i,\tau}$) and discharging ($P_{dis,i,\tau}$) power variables:
 \begin{equation} \label{eq:SOC_transition}
@@ -45,7 +45,7 @@ where $\eta_{BESS}$ denotes the charging/discharging efficiency, and $E_{BESS}$ 
 
 Beyond the state inheritance, the MPC architecture requires continuous refreshing of the anticipated uncontrollable variables, specifically the active and reactive load demand, alongside the renewable energy generation capabilities.
 
-At each control iteration starting at time $t$, the energy management system retrieves the most recent forecast profiles. These predictions are structured as vectors spanning the entire prediction horizon $h$. The forecasting vectors updated at step $t$ are formally defined as follows:
+At each control iteration starting at time $t$, the EMS retrieves the most recent forecast profiles. These predictions are structured as vectors spanning the entire prediction horizon $h$. The forecasting vectors updated at step $t$ are formally defined as follows:
 
 \begin{itemize}
     \item \textbf{Load Demand Forecasts}: The active and reactive power demand vectors for each node $i$ are updated as:
@@ -70,7 +70,7 @@ MPC strategy inherently relies on a dynamic rolling mechanism that functions as 
 
 Under normal operating conditions (Mode 1), where no faults are detected within the distribution network, the real-time dispatch simply tracks the established Day-Ahead schedule. In this state, the actual operational variables strictly follow the day-ahead baseline, meaning the system state $\mathbf{x}_t$ and control actions $\mathbf{u}_t$ satisfy $\mathbf{u}_t = \mathbf{u}_t^{DA}$. This baseline schedule is derived from the 24-hour ATC SOCP optimization problem described in Chapter 4 (Eq. \ref{eq:ATC_Global_Objective}). Thus, the system operates securely without the need for iterative rolling horizon recalculations, thereby significantly conserving computational resources.
 
-However, when a fault is cleared following an emergency event, the system transitions into Mode 3 (Recovery Mode). Rather than immediately resuming the potentially outdated Day-Ahead schedule, the energy management system recalculates a new optimal operational plan from the current time $t^{end}_{faults}$ to the end of the 24-hour cycle, yielding a shrinking prediction horizon $\mathcal{H}_{rec} = \{t^{end}_{faults}, t^{end}_{faults}+1, \dots, 24\}$. The updated forecast vectors (Eqs. \ref{eq:forecast_Pload}--\ref{eq:forecast_P_WT}) are integrated into the optimization engine, and the modified ATC Global Objective is solved to establish a new operational baseline:
+However, when a fault is cleared following an emergency event, the system transitions into Mode 3 (Recovery Mode). Rather than immediately resuming the potentially outdated Day-Ahead schedule, the EMS recalculates a new optimal operational plan from the current time $t^{end}_{faults}$ to the end of the 24-hour cycle, yielding a shrinking prediction horizon $\mathcal{H}_{rec} = \{t^{end}_{faults}, t^{end}_{faults}+1, \dots, 24\}$. The updated forecast vectors (Eqs. \ref{eq:forecast_Pload}--\ref{eq:forecast_P_WT}) are integrated into the optimization engine, and the modified ATC Global Objective is solved to establish a new operational baseline:
 \begin{equation} \label{eq:Recovery_Objective}
     \min \sum_{\tau=t}^{24} \sum_{n \in \mathcal{N}_{MG}} F_{MG,n}(\tau)
 \end{equation}
@@ -80,11 +80,11 @@ Once this new updated baseline schedule $\mathbf{u}_{\tau}^{DA*}$ is successfull
 
 In the face of extreme scenarios such as $N-2$ contingencies and main grid connection faults (resulting in complete islanding where $P_{grid,t}^{buy} = 0$ and $P_{grid,t}^{sell} = 0$), relying solely on independent spatial or temporal coordination is mathematically and physically insufficient. When multiple cascading line outages occur, the network topology is severely compromised. This physical deterioration forces instant updates to the dynamic topology and operational boundaries.
 
-To counteract this physical collapse, the system enters Mode 2 (Emergency Mode), employing a bottom-up integration strategy that intrinsically couples the ATC spatial algorithm with the MPC rolling horizon framework. This synergistic approach allows the Multi-Microgrid system to maintain rigorous operational resilience under critical conditions.
+To counteract this physical collapse, the system enters Mode 2 (Emergency Mode), employing a bottom-up integration strategy that intrinsically couples the ATC spatial algorithm with the MPC rolling horizon framework. This synergistic approach allows the MMG system to maintain rigorous operational resilience under critical conditions.
 
 The integration mechanism is formally structured such that the MPC layer acts as the primary temporal coordinator, dictating the rolling horizon scheduling. Within each time step $t$ of the MPC's sliding predictive window $\mathcal{H}_{MPC} = \{t, t+1, \dots, t+h-1\}$, the ATC spatial algorithm, formulated as a penalized SOCP problem, is iteratively invoked. 
 
-For each prospective control interval $\tau \in \mathcal{H}_{MPC}$, the MPC provides the temporal coupling via the updated State of Charge inheritance $SOC_{i,\tau}$ (Eq. \ref{eq:SOC_transition}), alongside the most recent forecasting vectors for load demand and renewable generation ($\mathbf{P}_{load,i}^{(t)}, \mathbf{Q}_{load,i}^{(t)}, \mathbf{P}_{PV,i}^{(t)}, \mathbf{P}_{WT,i}^{(t)}$). The ATC algorithm then iteratively optimizes the spatial power distribution and active power traded via inter-microgrid tie-lines ($P_{tie,ij,\tau}$) by minimizing the ATC Global Objective (Eq. \ref{eq:ATC_Global_Objective}). The distributed coordination mathematically relies on updating the Augmented Lagrangian multiplier $\lambda_{ij,\tau}$ and the penalty parameter $\rho_{ij,\tau}$ to reach an optimal consensus on the target traded active power $P_{target,ij,\tau}$ designated by the DSO. At each iteration $k$, the multiplier update step is executed as:
+For each prospective control interval $\tau \in \mathcal{H}_{MPC}$, the MPC provides the temporal coupling via the updated SOC inheritance $SOC_{i,\tau}$ (Eq. \ref{eq:SOC_transition}), alongside the most recent forecasting vectors for load demand and renewable generation ($\mathbf{P}_{load,i}^{(t)}, \mathbf{Q}_{load,i}^{(t)}, \mathbf{P}_{PV,i}^{(t)}, \mathbf{P}_{WT,i}^{(t)}$). The ATC algorithm then iteratively optimizes the spatial power distribution and active power traded via inter-MG tie-lines ($P_{tie,ij,\tau}$) by minimizing the ATC Global Objective (Eq. \ref{eq:ATC_Global_Objective}). The distributed coordination mathematically relies on updating the Augmented Lagrangian multiplier $\lambda_{ij,\tau}$ and the penalty parameter $\rho_{ij,\tau}$ to reach an optimal consensus on the target traded active power $P_{target,ij,\tau}$ designated by the DSO. At each iteration $k$, the multiplier update step is executed as:
 \begin{equation} \label{eq:Multiplier_Update}
     \lambda_{ij,\tau}^{(k+1)} = \lambda_{ij,\tau}^{(k)} + \rho_{ij,\tau} \left( P_{tie,ij,\tau}^{(k)} - P_{target,ij,\tau} \right) \quad \forall \tau \in \mathcal{H}_{MPC}
 \end{equation}
@@ -92,7 +92,7 @@ By explicitly embedding the ATC SOCP solver within the outer MPC loop, the contr
 
 \subsubsection{Activation of Penalty Functions and Load Shedding Mechanism}
 
-During emergency mode operations, the available generation capacity from local Diesel Generators ($P_{DG,i,t}$), BESS discharging ($P_{dis,i,t}$), and renewable resources may fail to cover the aggregated demand. Consequently, the load shedding mechanism is explicitly activated as a last resort to preserve overall system stability.
+During emergency mode operations, the available generation capacity from local DGs ($P_{DG,i,t}$), BESS discharging ($P_{dis,i,t}$), and renewable resources may fail to cover the aggregated demand. Consequently, the load shedding mechanism is explicitly activated as a last resort to preserve overall system stability.
 
 The optimization objective incorporates severe penalty functions to strategically manage energy deficits and state deviations. The total active power load shedding at each node $P_{shed,i,t}$ is decoupled into normal load shedding ($P_{shed,i,t}^{normal}$) and critical load shedding ($P_{shed,i,t}^{critical}$). VOLL coefficients: a penalty cost for normal load shedding $C_{shed}^{normal}$ and a significantly higher penalty cost for critical load shedding $C_{shed}^{critical}$. The load shedding cost function is formulated as:
 \begin{equation} \label{eq:MPC_load_shedding}
@@ -102,13 +102,13 @@ This strict prioritization ensures that critical infrastructure remains energize
 
 Furthermore, to maintain energy reserves for extended islanded operation, the system must address the inherent vulnerability of energy storage. During critical emergencies, local controllers often exhibit aggressive discharging behaviors to immediately compensate for power deficits. This unconstrained operation would inevitably leave the BESS completely depleted ($SOC_{i,t}$ approaching $SOC^{min}$), rendering the system defenseless for subsequent intervals.
 
-To physically prevent this depletion, a terminal State of Charge penalty is activated within the objective function. By introducing a slack variable $S_{SOC,i}$ and a penalty coefficient $\beta_{SOC}$, the MPC strictly penalizes the deviation of the BESS SOC at the end of the predictive horizon from a secure reference level. The SOC penalty function is formulated as:
+To physically prevent this depletion, a terminal SOC penalty is activated within the objective function. By introducing a slack variable $S_{SOC,i}$ and a penalty coefficient $\beta_{SOC}$, the MPC strictly penalizes the deviation of the BESS SOC at the end of the predictive horizon from a secure reference level. The SOC penalty function is formulated as:
 \begin{equation} \label{eq:MPC_SOC_penalty}
     J_{SOC} = \sum_{i \in \mathcal{N}^{BESS}} \beta_{SOC} S_{SOC,i}^2
 \end{equation}
 This temporal safeguard works in tandem with the spatial penalty coefficient for distribution network power losses $\omega_{loss}$, ensuring sustainable multi-interval resilience.
 
-Through this cohesive integration, the ATC SOCP algorithm resolves spatial power flow conflicts while the MPC framework optimizes the inter-temporal energy buffering and load shedding deployment, enabling the Multi-Microgrid system to navigate $N-2$ contingencies and main grid disconnections seamlessly.
+Through this cohesive integration, the ATC SOCP algorithm resolves spatial power flow conflicts while the MPC framework optimizes the inter-temporal energy buffering and load shedding deployment, enabling the MMG system to navigate $N-2$ contingencies and main grid disconnections seamlessly.
 
 \begin{algorithm}[H]
 \caption{Bottom-Up Spatiotemporal Coordination as a 3-Mode State Machine (Part 1)}

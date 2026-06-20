@@ -203,9 +203,9 @@ welcome any constructive feedback from professors and readers.
 \section*{ABSTRACT}
     \thispagestyle{empty}
 
-The increasing severity of extreme weather events exposes the inherent vulnerability of traditional distribution grids, rendering centralized and linear energy management models inadequate. To enhance physical resilience and economic efficiency under severe disruptions, this thesis proposes a highly rigorous, bottom-up spatiotemporal energy management framework for Multi-Microgrid (MMG) systems. The proposed architecture synergizes three core mechanisms: SOCP AC-OPF constraints for voltage security, ATC for decentralized, privacy-preserving multi-agent coordination, and MPC to robustly navigate system uncertainties through a rolling horizon. 
+The increasing severity of extreme weather events exposes the inherent vulnerability of traditional distribution grids, rendering centralized and linear energy management models inadequate. To enhance physical resilience and economic efficiency under severe disruptions, this thesis proposes a highly rigorous, bottom-up spatiotemporal energy management framework for MMG systems. The proposed architecture synergizes three core mechanisms: SOCP AC-OPF constraints for voltage security, ATC for decentralized, privacy-preserving multi-agent coordination, and MPC to robustly navigate system uncertainties through a rolling horizon. 
 
-By stress-testing the architecture against severe islanding scenarios, the simulation reveals several significant findings. Most crucially, the framework guarantees a 100\% survival rate for Critical Loads during grid failures. Economically, routing Peer-to-Peer (P2P) exchanges to liberate stranded renewable energy successfully manifests a ``Negative Premium'', wherein post-fault operational costs are counterintuitively lower than normal pre-fault operations. Furthermore, the rigorous mathematical formulation exposes two key physical phenomena. First, the Tie-line Congestion Paradox demonstrates that physical transmission bounds inherently constrain the ATC consensus pricing ($\lambda$), decoupling it from extreme local Value of Lost Load (VOLL) escalations and preventing economic collapse. Second, the Voltage Paradox highlights the absolute necessity of AC-OPF integration; high transit currents induce severe $I^2X$ reactive power losses that threaten catastrophic voltage collapse, forcing the algorithm to proactively execute active power load shedding as a vital physical defense. Ultimately, this thesis establishes a computationally tractable, fault-adaptive, and physically secure P2P energy trading framework, forging a resilient paradigm for the next generation of decentralized power systems.
+By stress-testing the architecture against severe islanding scenarios, the simulation reveals several significant findings. Most crucially, the framework guarantees a 100\% survival rate for Critical Loads during grid failures. Economically, routing P2P exchanges to liberate stranded renewable energy successfully manifests a ``Negative Premium'', wherein post-fault operational costs are counterintuitively lower than normal pre-fault operations. Furthermore, the rigorous mathematical formulation exposes two key physical phenomena. First, the Tie-line Congestion Paradox demonstrates that physical transmission bounds inherently constrain the ATC consensus pricing ($\lambda$), decoupling it from extreme local VOLL escalations and preventing economic collapse. Second, the Voltage Paradox highlights the absolute necessity of AC-OPF integration; high transit currents induce severe $I^2X$ reactive power losses that threaten catastrophic voltage collapse, forcing the algorithm to proactively execute active power load shedding as a vital physical defense. Ultimately, this thesis establishes a computationally tractable, fault-adaptive, and physically secure P2P energy trading framework, forging a resilient paradigm for the next generation of decentralized power systems.
 
 \thispagestyle{empty}
     \clearpage
@@ -264,6 +264,7 @@ ADMM & Alternating Direction Method of Multipliers \\
 \multicolumn{2}{@{}l}{\textbf{2. Energy Systems \& Components}} \\
 \midrule
 MG & Microgrid \\
+MMG & Multi-Microgrid \\
 P2P & Peer-to-Peer \\
 PV & Photovoltaic \\
 WT & Wind Turbine \\
@@ -418,7 +419,7 @@ $s_{SOC}$ & Slack variable for end-of-horizon SOC penalty \\
     \setcounter{subsection}{0}
 
 \subsection{Conclusion}
-This thesis successfully developed a fault-adaptive, P2P energy trading framework to enhance multi-microgrid resilience, summarized by four key findings:
+This thesis successfully developed a fault-adaptive, P2P energy trading framework to enhance MMG resilience, summarized by four key findings:
 \begin{itemize}
     \item \textbf{Algorithmic Architecture:} The proposed ``Bottom-up Spatiotemporal 3-Mode State Machine'' achieved high computational tractability, reaching rapid ATC convergence (max 91 seconds) during severe structural grid shocks to ensure real-time MPC feasibility.
     \item \textbf{Physical Resilience and AC-OPF Necessity:} The absolute necessity of AC-OPF was validated by demonstrating that proactive active power curtailment effectively mitigates catastrophic voltage collapse caused by transit-induced reactive losses, strictly maintaining the 0.90~p.u. boundary.
@@ -429,9 +430,9 @@ This thesis successfully developed a fault-adaptive, P2P energy trading framewor
 \subsection{Future Work}
 To fundamentally address the physical and algorithmic limitations observed in this study, future research should focus on three primary directions:
 \begin{itemize}
-    \item \textbf{Overcoming Conservative BESS State-of-Charge (SOC) Retention:} To mitigate the conservative MPC BESS discharging behavior (driven by the strict end-of-horizon SOC penalty constraints), introducing an RL-based SOC Penalty will encourage more proactive BESS discharging. Additionally, to address the inherent uncertainty of renewable energy generation, future iterations will employ Stochastic MPC to provide robust operational scheduling.
-    \item \textbf{Hardware and Reactive Power Support:} Currently, when handling massive transit currents that threaten voltage stability, intermediary microgrids are forced to suboptimally shed active power. To resolve this limitation, future iterations will integrate dynamic reactive compensation devices (e.g., STATCOM, SVC) or Smart Inverters equipped with Volt-VAR control to independently supply the necessary reactive power ($Q$) support.
-    \item \textbf{Dynamic Topology Reconfiguration:} To autonomously isolate physical fault zones and establish backup routing paths, future work will integrate a Dynamic Switch Control mechanism for real-time network reconfiguration, thereby optimizing power flow and further enhancing the structural resilience of the multi-microgrid network.
+    \item \textbf{Overcoming Conservative BESS SOC Retention:} To mitigate the conservative MPC BESS discharging behavior (driven by the strict end-of-horizon SOC penalty constraints), introducing an RL-based SOC Penalty will encourage more proactive BESS discharging. Additionally, to address the inherent uncertainty of renewable energy generation, future iterations will employ Stochastic MPC to provide robust operational scheduling.
+    \item \textbf{Hardware and Reactive Power Support:} Currently, when handling massive transit currents that threaten voltage stability, intermediary MGs are forced to suboptimally shed active power. To resolve this limitation, future iterations will integrate dynamic reactive compensation devices (e.g., STATCOM, SVC) or Smart Inverters equipped with Volt-VAR control to independently supply the necessary reactive power ($Q$) support.
+    \item \textbf{Dynamic Topology Reconfiguration:} To autonomously isolate physical fault zones and establish backup routing paths, future work will integrate a Dynamic Switch Control mechanism for real-time network reconfiguration, thereby optimizing power flow and further enhancing the structural resilience of the MMG network.
 \end{itemize}
 
 \newpage
