@@ -87,9 +87,29 @@ Chiến dịch cuối cùng nhằm đồng bộ hóa toàn bộ các phần râu
   - **Người thực hiện:** `@latex_writer`
   - **Mô tả:** Vẽ lưu đồ/hình minh họa trục thời gian thể hiện nguyên lý cửa sổ trượt (Rolling Horizon) của MPC: So sánh Day-Ahead (h=24) và Real-Time Emergency (h=5).
 - **Task 10: Chèn thêm hình minh họa (Illustrative Figures) & Dàn trang**
-  - **Trạng thái:** `[ ] TODO`
+  - **Trạng thái:** `[x] DONE`
   - **Người thực hiện:** `@latex_writer`
   - **Mô tả:** Nhúng các hình minh họa phụ trợ. Thực hiện cuối cùng để tránh vỡ float/layout.
+
+- **Task 10.1: Visualize the Architecture - Tri-layer Framework**
+  - **Trạng thái:** `[x] DONE`
+  - **Người thực hiện:** `@latex_writer` / Tư lệnh
+  - **Mô tả:** Thiết kế sơ đồ khối tổng quát kết nối 3 lớp: Physical Layer (SOCP), Spatial Layer (ATC), Temporal Layer (MPC) để đặt vào Chương 1 hoặc đầu Chương 5.
+
+- **Task 10.2: Visualize the Math - Geometric SOCP Relaxation**
+  - **Trạng thái:** `[>] IMPLEMENTING`
+  - **Người thực hiện:** `@latex_writer` / Tư lệnh
+  - **Mô tả:** Bổ sung hình vẽ minh họa không gian hình học 3D của phương trình dòng điện: từ Non-convex equality (đường cong rỗng) biến thành Convex Cone (khối đặc) tại Mục 2.4.1.
+
+- **Task 10.3: Visualize the Algorithm - ATC Sequence Diagram**
+  - **Trạng thái:** `[ ] TODO`
+  - **Người thực hiện:** `@latex_writer`
+  - **Mô tả:** Vẽ biểu đồ trình tự (Sequence Diagram) bằng TikZ thể hiện quá trình truyền nhận Target/Response giữa DSO (Coordinator) và Local MGs trong Mục 3.3/3.4, nhấn mạnh bảo mật dữ liệu.
+
+- **Task 10.4: Visualize the Scenario - Extreme Fault Timeline \& Graceful Degradation**
+  - **Trạng thái:** `[ ] TODO`
+  - **Người thực hiện:** `@latex_writer` / Tư lệnh
+  - **Mô tả:** Vẽ trục thời gian ngang cho kịch bản sự cố (Chương 5), đánh dấu các mốc t=9 (Islanding), t=14 (PV drop), t=18 (DG fault). Kèm theo biểu đồ Conceptual cho Graceful Degradation (SOC vs Load Shedding).
 
 ### Phase 4: Project Closure
 - **Task 10.5: Chỉnh sửa Phần Kết quả (Chapter 5) - Manual Update**
@@ -98,7 +118,7 @@ Chiến dịch cuối cùng nhằm đồng bộ hóa toàn bộ các phần râu
   - **Mô tả:** Đã tối ưu hóa Hình 5.5, 5.6, 5.9 và chuẩn hóa phân tích vật lý cho Base Fault, PF Model, và Reactive Power Dispatch (sự tương phản MG2/MG4).
 
 - **Task 11: Final Review & Publications**
-  - **Trạng thái:** `[ ] TODO`
+  - **Trạng thái:** `[>] IMPLEMENTING`
   - **Người thực hiện:** Tư lệnh
   - **Mô tả:** Tư lệnh tự điền danh sách các bài báo khoa học đã đăng (hoặc comment/xóa nếu chưa có). Cập nhật Ngày/Tháng ở trang bìa. Chạy lệnh Compile cuối cùng để ra file PDF hoàn chỉnh.
 

@@ -7,7 +7,14 @@
 \subsection{ATC Overview}
 The operation of MMG (Multi-MG) systems entails a complex spatial coordination problem. Traditional centralized operations require MGs to transmit all their local, potentially sensitive information---such as load demand, renewable generation profiles, BESS constraints---to a central operator. This paradigm not only creates computational bottlenecks for large-scale systems but also severely compromises the privacy of independent MG operators.
 
-To resolve these physical and informational challenges, the ATC framework is introduced. ATC is a distributed optimization technique originally developed for multidisciplinary design optimization, which perfectly aligns with the hierarchical structure of modern distribution networks. By decomposing the global OPF problem, ATC divides the Multi-MG system into a two-level hierarchical architecture:
+To resolve these physical and informational challenges, the ATC framework is introduced. ATC is a distributed optimization technique originally developed for multidisciplinary design optimization, which perfectly aligns with the hierarchical structure of modern distribution networks. Figure \ref{fig:mmg_conceptual} illustrates the conceptual topology of this Multi-Microgrid (MMG) system, where individual MGs can seamlessly trade active power through physical tie-lines while coordinating with the Main Grid. By decomposing the global OPF problem, ATC divides the Multi-MG system into a two-level hierarchical architecture:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{chapters/Imagine/microgrid connetion.png}
+    \caption{Conceptual topology of the interconnected Multi-Microgrid system.}
+    \label{fig:mmg_conceptual}
+\end{figure}
 \begin{itemize}
     \item \textbf{Coordinator Level (Upper Level):} DSO or Utility Grid serves as the central coordinator. The DSO assigns the optimal target variables $P_{target,ij,t}$ (conceptually acting as the ideal tie-line reference) to achieve P2P consensus.
     \item \textbf{Local MG Level (Lower Level):} Each individual MG operates as an independent autonomous entity. Utilizing the target signals provided by the coordinator, each local MG solves an SOCP problem to determine its optimal internal asset dispatch and the scheduled tie-line power exchange $P_{tie,ij,t}$.

@@ -7,6 +7,7 @@
 \setcounter{table}{0}
 
 
+
 \subsection{System Parameters, Sets, and Indices}
 
 To ensure realistic simulations and validate the proposed mathematical models, the system parameters and input datasets are constructed based on physical configurations. The foundational global parameters and component data specifications are detailed as follows:
@@ -27,7 +28,14 @@ Furthermore, the set of boundary nodes that possess tie-lines enabling physical 
 
 \subsection{Mathematical Modeling of Energy Components}
 
-This section details the mathematical formulation governing the operational constraints of the various energy components deployed within the MG network.
+This section details the mathematical formulation governing the operational constraints of the various energy components deployed within the MG network. Figure \ref{fig:mg_structure} illustrates the internal configuration of a typical MG node, highlighting the integration of renewable sources, energy storage, dispatchable generators, and local loads.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{chapters/Imagine/MG structure.jpg}
+    \caption{Internal configuration of a typical Microgrid node. Source: Modern clean energy microgrid diagram. Image by AllahFoto, licensed via Adobe Stock (Education License).}
+    \label{fig:mg_structure}
+\end{figure}
 
 \subsubsection{RESs and Loads}
 The integration of RES, specifically PV systems and WT, alongside power loads, constitutes the primary non-dispatchable elements of the network. The active power output from PV and WT units is strictly bounded by their available forecasted generation peaks at any given time step $t$. The active power limits are formulated as follows:
@@ -186,6 +194,15 @@ Equation \eqref{eq:voltage_drop} governs the voltage drop along branch $(i,j)$, 
 
 \subsection{SOCP Relaxation and Exactness}
 \label{subsec:socp_relaxation}
+
+The selection of an appropriate OPF model involves navigating the strict trade-off between physical accuracy and computational feasibility. As illustrated in Figure \ref{fig:opf_evolution}, simplistic models like DC-OPF fail to capture reactive power and voltage dynamics, rendering them unsafe for distribution networks with high R/X ratios. Conversely, while the Full AC-OPF guarantees physical fidelity, its non-convex nature makes it computationally intractable for real-time emergency dispatch. Therefore, the SOCP relaxation is adopted as the optimal pathway, striking the perfect balance between global optimality and strict AC physics.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{chapters/Imagine/ACOPFevolution.png}
+    \caption{Evolution of Optimal Power Flow models and the justification for the SOCP approach.}
+    \label{fig:opf_evolution}
+\end{figure}
 
 \subsubsection{Convexification and SOC Relaxation}
 The non-linear nature of the AC-OPF fundamentally stems from the current magnitude definition in the Branch Flow Model. As originally stated in Equation \eqref{eq:current_def}, the squared branch current is formulated as:

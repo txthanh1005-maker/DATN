@@ -17,7 +17,9 @@ Nâng cấp và chuyển đổi toàn bộ báo cáo Đồ án Tốt nghiệp (D
 - **Chỉnh sửa Phần Kết quả Chapter 5 (Task 10.5):** Tư lệnh đã đích thân chỉ đạo "phẫu thuật" thành công các Hình 5.5, 5.6 và 5.9. Thay thế văn bản Base Fault thành chuẩn IEEE (nhấn mạnh sự cách ly $P_{tie}=0$), đính chính vai trò tối ưu hóa chi phí của BESS (so với máy phát bù Q), và nêu bật sự tương phản vận hành vật lý giữa MG2 (đủ Q) và MG4 (thiếu Q).
 - **Task 9 (Algorithm Flowcharts):** Đã hoàn thành vẽ Lưu đồ TikZ cho thuật toán 3-Mode State Machine ở Chương 4. Đã sử dụng `latex_writer` để vẽ và `logic_flow_checker` để xác minh độ chính xác của các phân nhánh (Mode 1, 2, 3) và tham số Rolling Horizon.
 - **Task 9.5 (MPC Rolling Horizon):** Đã hoàn thành vẽ sơ đồ trục thời gian (Timeline) thể hiện cơ chế Rolling Horizon của thuật toán MPC (Day-ahead vs Real-time). Đã kiểm chứng tính đồng bộ với mô hình Pyomo.
-- **Trạng thái:** Đã HOÀN TẤT gần như toàn bộ kế hoạch. Chờ chèn các hình minh họa phụ trợ (Task 10) và nộp bài.
+- **Task 10 (Hình minh họa):** Đã chèn thành công các hình minh họa cho Chương 1 (Spider-chart), Chương 2 (MG Structure, OPF Evolution), và Chương 3 (MMG Connection).
+- **Advanced Visualization (Tasks 10.1 - 10.4):** Đã được lên kế hoạch vào `ACTION_PLAN.md` theo 4 nguyên tắc Vàng (Architecture, Math, Process, Scenario). Đang chờ lệnh khởi động để vẽ/chèn.
+- **Trạng thái:** Tạm dừng Task 11 để hoàn thiện các Sơ đồ nâng cao (Advanced Visualizations).
 
 ## Key Decisions
 1. **Kiến trúc Top-Down (Chapter 6):** Sử dụng `Transfer folder/Result_data/report_result` để viết kết quả.
@@ -30,9 +32,7 @@ Nâng cấp và chuyển đổi toàn bộ báo cáo Đồ án Tốt nghiệp (D
 8. **Defense Matrix Integration:** Sử dụng toán học tuyệt đối thay thế cho các ngôn từ so sánh sáo rỗng.
 9. **Logic Flow & Redundancy Protocol:** Áp dụng quy tắc thép: "So What?" và "Ngữ cảnh -> Nguyên nhân Vật lý -> Hệ quả Vật lý -> Phản ứng Thuật toán".
 
-## Next Steps
-- **Khởi động lại Hình ảnh (Task 9.5 & 10):** Triển khai vẽ sơ đồ MPC Rolling Horizon (Task 9.5) trên trục thời gian, sau đó mới chèn các hình minh họa phụ trợ khác ở Chương 2 (Task 10).
-- **Project Closure (Task 11):** Cập nhật danh sách Publications, thông tin trang bìa, và biên dịch lại PDF lần cuối.
+- **Project Closure (Task 11):** Cập nhật danh sách Publications, thông tin trang bìa, và biên dịch lại PDF lần cuối. Sẵn sàng nộp bài!
 
 ## Critical Context
 **Cấu hình mạng (Topology P2P):** 1 Utility Grid & 4 Microgrids.

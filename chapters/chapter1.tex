@@ -26,6 +26,13 @@ More importantly, unlike linear approximations that ignore losses, the SOCP form
 
 Within this exact AC framework, the critical role of reactive power ($Q$) is explicitly managed. Rather than commoditizing reactive power into the financial P2P market, the SOCP model mathematically ensures that local DERs provide autonomous $Q$ generation. Specifically, DERs autonomously generate $Q$ as an ancillary service utilizing their remaining inverter capacity ($S_{max}^2 \ge P^2 + Q^2$) \cite{Montoya2021Mixed}, thus preserving the active power ($P$) trading limits \cite{Angle2020SOCP}. This localized reactive support is dynamically dispatched to neutralize the voltage fluctuations induced by large-scale active power ($P$) trades. As demonstrated by Garrido-Arevalo et al., integrating this mechanism guarantees that local grid security is maintained, proving effective in supporting voltage stability without requiring external financial transactions \cite{Garrido_Arevalo_2024}. Furthermore, Men et al. explicitly established that deploying such SOCP-based autonomous reactive compensation enhances overall power system resilience, ensuring uninterrupted operation during severe disturbances and autonomous islanded transitions \cite{men2023secondary}.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{chapters/Imagine/z7956779224645_7ae6f3c694e347667ff8f318347f2b26.jpg}
+    \caption{Trade-off comparison of Optimal Power Flow models highlighting the optimal balance achieved by the SOCP relaxation.}
+    \label{fig:opf_tradeoff}
+\end{figure}
+
 \subsection{The Spatial Layer: Decentralization and Privacy}
 Traditional EMS depend on a centralized architecture to coordinate dispatch and execute global optimization. However, these systems require the EMS to aggregate large volumes of high-resolution data, including local capacity bounds and operational states. This extensive data requirement creates a severe computational and communication bottleneck that degrades real-time dispatch efficiency \cite{Chen2021}. Furthermore, in the P2P market, prosumers' underlying load profiles and financial bids are strictly confidential. A centralized framework inherently compromises this privacy by mandating full parameter exposure, thereby undermining market trust and disincentivizing participation \cite{Liu2025}.
 Beyond computational and economic limitations, centralized coordination introduces a structural vulnerability that compromises grid resilience during extreme weather events. Operating a MMG network through a single computational hub establishes a critical single point of failure. If the central communication link is severed during a physical disaster, the entire MMG system loses coordination. This loss of centralized control triggers cascading failures across the network, disrupting the autonomous islanded resilience required to sustain critical loads during emergencies \cite{Panteli2016_Resilience, Zuo2022}.
@@ -69,6 +76,13 @@ To address these critical limitations, this research proposes a fundamentally ne
     \item \textbf{Achieving Proactive Resilience via Graceful Degradation:} We introduce temporal foresight into the dispatch process using MPC, guaranteeing the sustained survival of critical infrastructure during prolonged outages.
     \item \textbf{Transforming P2P Markets into a Resilience Backbone:} We successfully synthesize the physical, spatial, and temporal dimensions into a cohesive tri-layer architecture. Comprehensive validation proves that this unified approach empowers the P2P network to function as a highly robust, self-healing safety net.
 \end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{chapters/Imagine/model_3layer.png}
+    \caption{The proposed Tri-layer Cooperative Resilience Architecture, conceptualized as nested control loops: Temporal MPC rolling horizon (outer), Spatial ATC coordination (middle), and Physical SOCP feasibility (inner core).}
+    \label{fig:tri_layer_arch}
+\end{figure}
 
 \subsection{Thesis Organization}
 The remainder of this thesis is logically structured to systematically present the proposed framework, building from physical foundations to spatial coordination, and finally temporal resilience. The organization is as follows:
