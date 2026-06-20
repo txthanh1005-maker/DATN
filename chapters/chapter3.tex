@@ -22,8 +22,15 @@ To resolve these physical and informational challenges, the ATC framework is int
 
 Through an iterative exchange of limited boundary variables (the target power $P_{target,ij,t}$ and the tie-line response $P_{tie,ij,t}$) alongside penalty multipliers, the ATC algorithm guides the MMG system toward a globally optimal equilibrium without exposing any internal constraints or local asset states. For mathematical clarity regarding directional power flow, the active power traded via the tie-line connecting MG $i$ to MG $j$ at time $t$ is denoted as $P_{tie,ij,t}$.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{chapters/Imagine/ATC Iterative Sequence Flow.png}
+    \caption{Ensuring data privacy and independent P2P trading.}
+    \label{fig:atc_evolution_sequence}
+\end{figure}
+
 \subsection{The Coordinator Problem (Utility Grid)}
-At the top level of the ATC hierarchy, the Coordinator (Utility Grid) serves as the central authority to establish P2P consensus. The objective function of the coordinator is formulated to penalize the mismatch between the coordinator's target $P_{target,ij,t}$ and the previous iteration's optimal tie-line scheduled power $P_{tie,ij,t}^{*,k}$ submitted by the local MGs, subject to strict reciprocity ($P_{target,ij,t} + P_{target,ji,t} = 0$). The optimization problem is given by:
+At the top level of the ATC hierarchy, the Coordinator (Utility Grid) serves as the central authority to establish P2P consensus. The objective function of the coordinator is formulated to penalize the mismatch between the coordinator's target $P_{target,ij,t}$ and the previous iteration's optimal tie-line scheduled power $P_{tie,ij,t}^{*,k}$ submitted by the local MGs, subject to strict reciprocity ($P_{target,ij,t} + P_{target,ji,t} = 0$). The optimization SOCP problem is given by:
 \begin{equation} \label{eq:ATC_Utility_Grid_Obj}
 \begin{aligned}
 \min \quad & \sum_{t \in \mathcal{T}} \sum_{(i,j) \in \mathcal{L}^{trade}} \left[ \lambda_{ij,t}^k \left( P_{tie,ij,t}^{*,k} - P_{target,ij,t} \right) \right. \\

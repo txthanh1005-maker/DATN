@@ -215,6 +215,13 @@ This equality constraint is highly non-convex. To achieve a computationally trac
     \label{eq:socp_relaxation}
 \end{equation}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{chapters/Imagine/SOCP relaxation.png}
+    \caption{Geometric visualization of the SOCP relaxation: The non-convex equality constraint (hollow surface) is relaxed into a convex inequality (solid feasible region), thereby transforming the problem space into a globally solvable convex cone.}
+    \label{fig:socp_cone}
+\end{figure}
+
 \subsubsection{Exactness in Normal Mode}
 The fundamental premise of substituting an equality with an inequality is predicated on the concept of exactness---the condition where the optimizer natively forces the inequality \eqref{eq:socp_relaxation} to hold with equality. In the Normal Mode of operation, this exactness is inherently guaranteed. As defined in the objective function \eqref{eq:total_cost_function}, the formulation incorporates a dedicated loss penalty component, $F_{loss}$ \eqref{eq:cost_loss}. Because the primary objective of the solver is to minimize the total operational cost, it actively suppresses the squared current variable $I_{ij,t}^2$, strictly driving it towards its theoretical lower bound. Consequently, the inequality holds with equality ($I_{ij,t}^2 V_{i,t}^2 = P_{line,ij,t}^2 + Q_{line,ij,t}^2$), thereby guaranteeing the exactness of the SOCP model and accurately reflecting the true physical state of the distribution grid.
 

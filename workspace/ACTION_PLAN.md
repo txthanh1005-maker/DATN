@@ -97,19 +97,19 @@ Chiến dịch cuối cùng nhằm đồng bộ hóa toàn bộ các phần râu
   - **Mô tả:** Thiết kế sơ đồ khối tổng quát kết nối 3 lớp: Physical Layer (SOCP), Spatial Layer (ATC), Temporal Layer (MPC) để đặt vào Chương 1 hoặc đầu Chương 5.
 
 - **Task 10.2: Visualize the Math - Geometric SOCP Relaxation**
-  - **Trạng thái:** `[>] IMPLEMENTING`
+  - **Trạng thái:** `[x] DONE`
   - **Người thực hiện:** `@latex_writer` / Tư lệnh
   - **Mô tả:** Bổ sung hình vẽ minh họa không gian hình học 3D của phương trình dòng điện: từ Non-convex equality (đường cong rỗng) biến thành Convex Cone (khối đặc) tại Mục 2.4.1.
 
-- **Task 10.3: Visualize the Algorithm - ATC Sequence Diagram**
-  - **Trạng thái:** `[ ] TODO`
-  - **Người thực hiện:** `@latex_writer`
+- **Task 10.3: Sequence Diagram - ATC Iteration & Privacy**
+  - **Trạng thái:** `[x] DONE`
+  - **Người thực hiện:** `@latex_writer` / Tư lệnh
   - **Mô tả:** Vẽ biểu đồ trình tự (Sequence Diagram) bằng TikZ thể hiện quá trình truyền nhận Target/Response giữa DSO (Coordinator) và Local MGs trong Mục 3.3/3.4, nhấn mạnh bảo mật dữ liệu.
 
 - **Task 10.4: Visualize the Scenario - Extreme Fault Timeline \& Graceful Degradation**
-  - **Trạng thái:** `[ ] TODO`
+  - **Trạng thái:** `[x] DONE`
   - **Người thực hiện:** `@latex_writer` / Tư lệnh
-  - **Mô tả:** Vẽ trục thời gian ngang cho kịch bản sự cố (Chương 5), đánh dấu các mốc t=9 (Islanding), t=14 (PV drop), t=18 (DG fault). Kèm theo biểu đồ Conceptual cho Graceful Degradation (SOC vs Load Shedding).
+  - **Mô tả:** Chèn ảnh sơ đồ vòng lặp hoặc timeline về các giai đoạn sự cố (Normal -> Fault/Islanding -> Recovery) cho phần lý thuyết của Chương 4/5. (SOC vs Load Shedding).
 
 ### Phase 4: Project Closure
 - **Task 10.5: Chỉnh sửa Phần Kết quả (Chapter 5) - Manual Update**

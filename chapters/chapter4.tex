@@ -157,6 +157,47 @@ Without the continuous inheritance of $SOC^{ini}$ and the rolling refresh of the
 
 \subsection{The 3-Mode Spatiotemporal Coordination Framework}
 
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    node distance=1.5cm and 1cm,
+    process/.style={rectangle, draw, fill=blue!10, rounded corners, text width=3.8cm, text centered, minimum height=1.5cm},
+    decision/.style={diamond, aspect=2, draw, fill=yellow!10, text width=3.5cm, text centered, inner sep=0pt},
+    arrow/.style={thick, ->, >=stealth}
+]
+
+% Nodes
+\node (start) [process] {Start: Day-Ahead Scheduling};
+\node (loop) [process, below=of start] {For each time step $t = 1$ to $24$};
+\node (decision) [decision, below=of loop] {Fault status at step $t$?};
+
+\node (mode2) [process, below=of decision, yshift=-0.5cm] {\textbf{Mode 2}\\(Emergency, $h=5$)\\\textit{Activate Constraints}\\\textit{Call Spatial ATC}};
+\node (mode1) [process, left=of mode2, xshift=-0.5cm] {\textbf{Mode 1}\\(Normal)\\\textit{Apply DA Schedule}};
+\node (mode3) [process, right=of mode2, xshift=0.5cm] {\textbf{Mode 3}\\(Recovery, $h=25-t$)\\\textit{Call Spatial ATC}\\\textit{Update DA Baseline}};
+
+\node (merge) [process, below=of mode2, yshift=-0.5cm] {End of step $t$};
+
+% Arrows
+\draw [arrow] (start) -- (loop);
+\draw [arrow] (loop) -- (decision);
+
+\draw [arrow] (decision.west) -| node[anchor=south, near start] {No Fault} (mode1.north);
+\draw [arrow] (decision.south) -- node[anchor=west] {Fault Detected} (mode2.north);
+\draw [arrow] (decision.east) -| node[anchor=south, near start] {Fault Cleared} (mode3.north);
+
+\draw [arrow] (mode1.south) |- (merge.west);
+\draw [arrow] (mode2.south) -- (merge.north);
+\draw [arrow] (mode3.south) |- (merge.east);
+
+% Loop back
+\path (mode1.west) ++(-1,0) coordinate (left_edge);
+\draw [arrow] (merge.south) -- ++(0,-0.5) -| (left_edge) |- (loop.west);
+
+\end{tikzpicture}
+\caption{Flowchart of the 3-Mode State Machine Algorithm}
+\label{fig:3mode_flowchart}
+\end{figure}
+
 MPC strategy inherently relies on a dynamic rolling mechanism that functions as a state machine. To efficiently manage computational resources while ensuring system resilience, the spatiotemporal coordination framework is explicitly structured into three distinct operating modes: Mode 1 (Normal Operation), Mode 2 (Emergency Mode), and Mode 3 (Recovery Mode).
 
 \subsubsection{Mode 1 and Mode 3: Normal Operation and Recovery}
@@ -261,43 +302,3 @@ Through this cohesive integration, the ATC SOCP algorithm resolves spatial power
 \noindent\rule{\linewidth}{0.8pt}
 \par\vspace{1em}
 
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[
-    node distance=1.5cm and 1cm,
-    process/.style={rectangle, draw, fill=blue!10, rounded corners, text width=3.8cm, text centered, minimum height=1.5cm},
-    decision/.style={diamond, aspect=2, draw, fill=yellow!10, text width=3.5cm, text centered, inner sep=0pt},
-    arrow/.style={thick, ->, >=stealth}
-]
-
-% Nodes
-\node (start) [process] {Start: Day-Ahead Scheduling};
-\node (loop) [process, below=of start] {For each time step $t = 1$ to $24$};
-\node (decision) [decision, below=of loop] {Fault status at step $t$?};
-
-\node (mode2) [process, below=of decision, yshift=-0.5cm] {\textbf{Mode 2}\\(Emergency, $h=5$)\\\textit{Activate Constraints}\\\textit{Call Spatial ATC}};
-\node (mode1) [process, left=of mode2, xshift=-0.5cm] {\textbf{Mode 1}\\(Normal)\\\textit{Apply DA Schedule}};
-\node (mode3) [process, right=of mode2, xshift=0.5cm] {\textbf{Mode 3}\\(Recovery, $h=25-t$)\\\textit{Call Spatial ATC}\\\textit{Update DA Baseline}};
-
-\node (merge) [process, below=of mode2, yshift=-0.5cm] {End of step $t$};
-
-% Arrows
-\draw [arrow] (start) -- (loop);
-\draw [arrow] (loop) -- (decision);
-
-\draw [arrow] (decision.west) -| node[anchor=south, near start] {No Fault} (mode1.north);
-\draw [arrow] (decision.south) -- node[anchor=west] {Fault Detected} (mode2.north);
-\draw [arrow] (decision.east) -| node[anchor=south, near start] {Fault Cleared} (mode3.north);
-
-\draw [arrow] (mode1.south) |- (merge.west);
-\draw [arrow] (mode2.south) -- (merge.north);
-\draw [arrow] (mode3.south) |- (merge.east);
-
-% Loop back
-\path (mode1.west) ++(-1,0) coordinate (left_edge);
-\draw [arrow] (merge.south) -- ++(0,-0.5) -| (left_edge) |- (loop.west);
-
-\end{tikzpicture}
-\caption{Flowchart of the 3-Mode State Machine Algorithm}
-\label{fig:3mode_flowchart}
-\end{figure}
