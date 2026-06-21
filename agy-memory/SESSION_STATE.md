@@ -13,11 +13,7 @@ Nâng cấp và chuyển đổi toàn bộ báo cáo Đồ án Tốt nghiệp (D
 - **Format Audit (Task 7):** Đã sửa lỗi tràn lề `Overfull \hbox` và lệch hàng (Misaligned) tại các hệ phương trình DistFlow, ATC, AC-OPF trong Chapter 2 và 3. Tối ưu hóa Inline math.
 - **Chỉnh sửa Phần Kết quả Chapter 5 (Task 10.5):** Cập nhật Hình 5.5, 5.6 và 5.9. Thay thế văn bản Base Fault thành chuẩn IEEE (nhấn mạnh sự cách ly $P_{tie}=0$).
 - **Algorithm Flowcharts & Timeline (Task 9 & 9.5):** Hoàn thành vẽ Lưu đồ TikZ cho thuật toán 3-Mode State Machine (Chương 4) và sơ đồ trục thời gian Rolling Horizon (MPC).
-- **Advanced Visualizations Completed (Tasks 10.1 - 10.4):**
-  - **Task 10.1:** Chèn ảnh tĩnh `model_3layer.png` thay thế mã TikZ cồng kềnh cho kiến trúc tổng thể (Chương 1).
-  - **Task 10.2:** Kiểm duyệt và chèn ảnh `SOCP relaxation.png` minh họa không gian hình học toán học nón lồi (Chương 2).
-  - **Task 10.3:** Tự code TikZ độc quyền và chèn sơ đồ `ATC Iterative Sequence Flow` vào Chương 3, thể hiện quá trình trao đổi Target/Response $\lambda, \rho$ và luồng P2P độc lập, tuyệt đối bảo mật dữ liệu.
-  - **Task 10.4:** Chèn sơ đồ Timeline sự cố kép (`fault_graph.png`) minh họa đứt gãy lưới và sụt giảm PV (Chương 5), liên kết với cơ chế Graceful Degradation.
+- **Academic Reviewer Panel (Task 11):** Triển khai đồng thời 5 tác nhân (EIC, Methodology, Domain, Perspective, DA) quét toàn bộ luận văn (`DATN.tex`, `chapter1.tex` - `chapter5.tex`). Tổng hợp 30 báo cáo review thành `need_update.md` với quyết định "Minor Revision", tập trung vào ATC Convergence, Communication Latency, và Transient Stability caveats.
 
 ## Key Decisions
 1. **Kiến trúc Top-Down (Chapter 6):** Sử dụng `Transfer folder/Result_data/report_result` để viết kết quả.
@@ -51,3 +47,4 @@ Nâng cấp và chuyển đổi toàn bộ báo cáo Đồ án Tốt nghiệp (D
 - `D:\Latex\DATN\chapters\chapter4.tex`
 - `D:\Latex\DATN\chapters\chapter5.tex`
 - `D:\Latex\DATN\chapters\Imagine\ATC_Evolution.tex`
+- `D:\Latex\DATN\need_update.md`

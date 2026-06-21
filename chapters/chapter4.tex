@@ -277,7 +277,7 @@ Through this cohesive integration, the ATC SOCP algorithm resolves spatial power
         \Statex \hspace{4.2cm} and add SOC penalty $J_{SOC}$ \eqref{eq:MPC_SOC_penalty}.
         
         \State \textbf{STEP 3: ROLLING HORIZON OPTIMIZATION LOOP}
-        \State \textbf{Call} Spatial ATC Algorithm to optimize spatial power flow
+        \State Call Spatial ATC Algorithm to optimize spatial power flow
         \State Compute SOC transitions simultaneously using Eq. (\ref{eq:SOC_transition})
         \State Iteratively solve ATC Global Objective \eqref{eq:ATC_Global_Objective} for period $\tau \in [t, t+h-1]$.
         \State Enforce tie-line target exchange agreement 
@@ -285,7 +285,7 @@ Through this cohesive integration, the ATC SOCP algorithm resolves spatial power
         
         \State \textbf{STEP 4: CONTROL IMPLEMENTATION}
         \State Extract optimized decision variables for the entire horizon $\tau \in [t, t+h-1]$
-        \State \textbf{Apply only} the control signals for the first step $\tau = t$ to physical assets (BESS, DG, Loads)
+        \State Apply only the control signals for the first step $\tau = t$ to physical assets (BESS, DG, Loads)
     \ElsIf{Fault cleared at current step $t$}
         \State \textbf{Mode 3 (Recovery Mode):}
         \State Horizon $h \gets 25 - t$

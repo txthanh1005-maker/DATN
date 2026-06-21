@@ -7,7 +7,7 @@
 % Title: A Fault-Adaptive Peer-to-Peer Energy Trading Framework for
 %        Enhancing Multi-Microgrid Resilience via ATC and MPC
 %
-% Student : Trinh Xuan Thanh
+% Student : Trịnh Xuân Thành
 % Year    : 2026
 %--------------------------------------------------------------
 
@@ -86,7 +86,7 @@
     \vspace{24pt}
 
     % STUDENT NAME
-    \fontsize{14pt}{18pt}\selectfont{} \textbf{TRINH XUAN THANH}
+    \fontsize{14pt}{18pt}\selectfont{} \textbf{TRỊNH XUÂN THÀNH}
     \vspace{6pt}
 
     % EMAIL
@@ -103,7 +103,7 @@
     \centering
     \fontsize{13pt}{16pt}\selectfont{}
     \begin{tabular}{l l c}
-        \textbf{Supervisor:}    & Assoc. Prof. Nguyen Duc Tuyen \vspace{6pt} & \\
+        \textbf{Supervisor:}    & Assoc. Prof. Nguyễn Đức Tuyên \vspace{6pt} & \\
                                 & \vspace{3pt} & \fontsize{10pt}{12pt}\selectfont{} Supervisor's signature \\
         \textbf{Department:}    & Electrical Engineering \vspace{3pt}\\
         \textbf{School:}        & Electrical and Electronic Engineering
@@ -114,7 +114,7 @@
 
 % DATE
 \begin{center}
-    \fontsize{14pt}{18pt}\selectfont{} Hanoi, June 2026
+    \fontsize{14pt}{18pt}\selectfont{} Hà Nội, June 2026
 \end{center}
 \end{titlepage}
 
@@ -127,7 +127,7 @@
     \thispagestyle{empty}
 
 \vspace{0.5cm}
-\noindent Full name: Trinh Xuan Thanh \\
+\noindent Full name: Trịnh Xuân Thành \\
 \noindent Student ID: 20222744 \\
 \noindent Class: Renewable energy and power system 01 -- K67
 \vspace{0.5cm}
@@ -146,12 +146,12 @@ Enhancing Multi-Microgrid Resilience via ATC and MPC.}
 \end{sloppypar}
 
 \vspace{6pt}
-    \hspace{7cm} Hanoi, \ldots\ldots / 06 / 2026
+    \hspace{7cm} Hà Nội, \ldots\ldots / 06 / 2026
 
     \hspace{8.6cm} Supervisor
 
 \vspace{2cm}
-    \hspace{7.8cm} Assoc. Prof. Nguyen Duc Tuyen
+    \hspace{7.8cm} Assoc. Prof. Nguyễn Đức Tuyên
 
 \thispagestyle{empty}
     \clearpage
@@ -163,22 +163,22 @@ Enhancing Multi-Microgrid Resilience via ATC and MPC.}
 \section*{ACKNOWLEDGEMENTS}
 
 First and foremost, I would like to express my sincere gratitude to
-{Assoc. Prof. Nguyen Duc Tuyen} for his dedicated supervision,
+Assoc. Prof. Nguyễn Đức Tuyên for his dedicated supervision,
 invaluable guidance, and continuous encouragement throughout the entire course
 of this thesis. His insightful feedback and deep expertise in power systems
 have been the cornerstone of this work.
 
-I am deeply grateful to all faculty members of the {Department of
-Electrical Engineering}, School of Electrical and Electronic Engineering,
+I am deeply grateful to all faculty members of the Department of
+Electrical Engineering, School of Electrical and Electronic Engineering,
 Hanoi University of Science and Technology (HUST), for imparting knowledge
 and creating a stimulating academic environment over the past five years.
 
-My heartfelt thanks also go to the members of the {100RE Lab} for their
+My heartfelt thanks also go to the members of the 100RE Lab for their
 collegiality, knowledge sharing, and moral support during the research process.
 Working alongside such a motivated group has been both a privilege and an
 inspiration.
 
-Finally, I owe my deepest appreciation to my {family}, whose unwavering
+Finally, I owe my deepest appreciation to my family, whose unwavering
 support, trust, and encouragement have been my greatest source of strength and
 motivation throughout my academic journey.
 
@@ -189,10 +189,10 @@ welcome any constructive feedback from professors and readers.
     \hspace{9.1cm} The Author
 
 \vspace{0.5cm}
-    \hspace{10cm} Thanh
+    \hspace{10cm} Thành
 
 \vspace{0.5cm}
-    \hspace{9.0cm} Trinh Xuan Thanh
+    \hspace{9.0cm} Trịnh Xuân Thành
 
 \thispagestyle{empty}
     \clearpage
@@ -205,7 +205,10 @@ welcome any constructive feedback from professors and readers.
 
 The increasing severity of extreme weather events exposes the inherent vulnerability of traditional distribution grids, rendering centralized and linear energy management models inadequate. To enhance physical resilience and economic efficiency under severe disruptions, this thesis proposes a highly rigorous, bottom-up spatiotemporal energy management framework for MMG systems. The proposed architecture synergizes three core mechanisms: SOCP AC-OPF constraints for voltage security, ATC for decentralized, privacy-preserving multi-agent coordination, and MPC to robustly navigate system uncertainties through a rolling horizon. 
 
-By stress-testing the architecture against severe islanding scenarios, the simulation reveals several significant findings. Most crucially, the framework guarantees a 100\% survival rate for Critical Loads during grid failures. Economically, routing P2P exchanges to liberate stranded renewable energy successfully manifests a ``Negative Premium'', wherein post-fault operational costs are counterintuitively lower than normal pre-fault operations. Furthermore, the rigorous mathematical formulation exposes two key physical phenomena. First, the Tie-line Congestion Paradox demonstrates that physical transmission bounds inherently constrain the ATC consensus pricing ($\lambda$), decoupling it from extreme local VOLL escalations and preventing economic collapse. Second, the Voltage Paradox highlights the absolute necessity of AC-OPF integration; high transit currents induce severe $I^2X$ reactive power losses that threaten catastrophic voltage collapse, forcing the algorithm to proactively execute active power load shedding as a vital physical defense. Ultimately, this thesis establishes a computationally tractable, fault-adaptive, and physically secure P2P energy trading framework, forging a resilient paradigm for the next generation of decentralized power systems.
+By stress-testing the architecture against severe islanding scenarios, the simulation reveals several significant findings. Most crucially, the framework guarantees a 100\% survival rate for Critical Loads during grid failures. Economically, routing P2P exchanges to liberate stranded renewable energy successfully manifests a Negative Premium, wherein post-fault operational costs are counterintuitively lower than normal pre-fault operations. Furthermore, the rigorous mathematical formulation exposes two key physical phenomena. First, the Tie-line Congestion Paradox demonstrates that physical transmission bounds inherently constrain the ATC consensus pricing ($\lambda$), decoupling it from extreme local VOLL escalations and preventing economic collapse. Second, the Voltage Paradox highlights the absolute necessity of AC-OPF integration; high transit currents induce severe $I^2X$ reactive power losses that threaten catastrophic voltage collapse, forcing the algorithm to proactively execute active power load shedding as a vital physical defense. Ultimately, this thesis establishes a computationally tractable, fault-adaptive, and physically secure P2P energy trading framework, forging a resilient paradigm for the next generation of decentralized power systems.
+
+\vspace{12pt}
+\noindent\textbf{Keywords:} \textit{Grid Resilience, Peer-to-Peer Energy Trading, Extreme Weather Events, Analytical Target Cascading, SOCP Convex Relaxation, Model Predictive Control, Multi-Microgrid Systems, Resilient Operations, Decentralized Energy Management.}
 
 \thispagestyle{empty}
     \clearpage
@@ -216,13 +219,13 @@ By stress-testing the architecture against severe islanding scenarios, the simul
 \section*{DECLARATION OF ORIGINALITY}
     \thispagestyle{empty}
 
-I am Trinh Xuan Thanh, Student ID 20222744, student of Class Renewable Energy and Power System 01 -- K67. My supervisor is Assoc. Prof. Nguyen Duc Tuyen. I hereby declare that the entire content presented in the thesis entitled \textit{``A Fault-Adaptive Peer-to-Peer Energy Trading Framework for Enhancing Multi-Microgrid Resilience via ATC and MPC''} is the result of my own study and research process. The data reported in the thesis are completely truthful. All cited information complies with intellectual property regulations, and references are clearly listed. I take full responsibility for the contents written in this thesis.
+I am Trịnh Xuân Thành, Student ID 20222744, student of Class Renewable Energy and Power System 01 -- K67. My supervisor is Assoc. Prof. Nguyễn Đức Tuyên. I hereby declare that the entire content presented in the thesis entitled \textit{A Fault-Adaptive Peer-to-Peer Energy Trading Framework for Enhancing Multi-Microgrid Resilience via ATC and MPC} is the result of my own study and research process. The data reported in the thesis are completely truthful. All cited information complies with intellectual property regulations, and references are clearly listed. I take full responsibility for the contents written in this thesis.
 
 \vspace{6pt}
     \hspace{9.5cm} The Author
 
 \vspace{2cm}
-    \hspace{9.0cm} Trinh Xuan Thanh
+    \hspace{9.0cm} Trịnh Xuân Thành
 
 \thispagestyle{empty}
     \clearpage
@@ -421,10 +424,10 @@ $s_{SOC}$ & Slack variable for end-of-horizon SOC penalty \\
 \subsection{Conclusion}
 This thesis successfully developed a fault-adaptive, P2P energy trading framework to enhance MMG resilience, summarized by four key findings:
 \begin{itemize}
-    \item \textbf{Algorithmic Architecture:} The proposed ``Bottom-up Spatiotemporal 3-Mode State Machine'' achieved high computational tractability, reaching rapid ATC convergence (max 91 seconds) during severe structural grid shocks to ensure real-time MPC feasibility.
+    \item \textbf{Algorithmic Architecture:} The proposed Bottom-up Spatiotemporal 3-Mode State Machine achieved high computational tractability, reaching rapid ATC convergence (max 91 seconds) during severe structural grid shocks to ensure real-time MPC feasibility.
     \item \textbf{Physical Resilience and AC-OPF Necessity:} The absolute necessity of AC-OPF was validated by demonstrating that proactive active power curtailment effectively mitigates catastrophic voltage collapse caused by transit-induced reactive losses, strictly maintaining the 0.90~p.u. boundary.
-    \item \textbf{Market Pricing and the Tie-line Congestion Paradox:} The study mathematically proved the ``Tie-line Congestion Paradox'', wherein physical thermal limits inherently activate KKT bounds to forcefully cap ATC consensus pricing ($\lambda$), completely preventing market collapse during extreme localized VOLL escalations.
-    \item \textbf{System Security and Graceful Degradation:} The framework synergizes a ``Graceful Degradation'' mechanism with P2P trading to guarantee a 100\% Critical Load survival rate while achieving a ``Negative Premium''---a dual economic-resilience benefit that liberates stranded energy during severe disruptions.
+    \item \textbf{Market Pricing and the Tie-line Congestion Paradox:} The study mathematically proved the Tie-line Congestion Paradox, wherein physical thermal limits inherently activate KKT bounds to forcefully cap ATC consensus pricing ($\lambda$), completely preventing market collapse during extreme localized VOLL escalations.
+    \item \textbf{System Security and Graceful Degradation:} The framework synergizes a Graceful Degradation mechanism with P2P trading to guarantee a 100\% Critical Load survival rate while achieving a Negative Premium---a dual economic-resilience benefit that liberates stranded energy during severe disruptions.
 \end{itemize}
 
 \subsection{Future Work}
@@ -445,8 +448,8 @@ To fundamentally address the physical and algorithmic limitations observed in th
 
 \begin{itemize}
     % TODO: Fill in with actual publications
-    \item \textbf{Trinh Xuan Thanh}, [Co-author(s)], 
-          \textit{``[Paper Title]''}, [Journal/Conference Name], 06/2026 
+    \item \textbf{Trịnh Xuân Thành}, [Co-author(s)], 
+          \textit{[Paper Title]}, [Journal/Conference Name], 06/2026 
           (Under Review / Published).
 \end{itemize}
 

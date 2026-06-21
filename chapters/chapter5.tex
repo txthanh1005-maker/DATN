@@ -30,7 +30,7 @@ The physical network topology (Figure \ref{fig:p2p_topology}) integrates four di
 \end{itemize}
 
 \subsubsection{Network Topology and DER Allocation Parameters}
-To ensure the mathematical models accurately reflect physical distribution networks, DERs across the four MGs---as structurally depicted in Figure \ref{fig:p2p_topology}---is systematically summarized in Table \ref{tab:der_placement}.
+To ensure the mathematical models accurately reflect physical distribution networks, DERs across the four MGs---as structurally depicted in Figure \ref{fig:p2p_topology}---are systematically summarized in Table \ref{tab:der_placement}.
 
 \begin{table}[htbp]
     \centering
@@ -50,7 +50,7 @@ To ensure the mathematical models accurately reflect physical distribution netwo
     }
 \end{table}
 
-Furthermore, DG BESS are identically configured across all deployed units. These parameters form the foundational cost coefficients for the objective function and are summarized in Table \ref{tab:dg_bess_params}.
+Furthermore, DG and BESS are identically configured across all deployed units. These parameters form the foundational cost coefficients for the objective function and are summarized in Table \ref{tab:dg_bess_params}.
 
 \begin{table}[htbp]
     \centering
@@ -140,7 +140,7 @@ The benchmark analysis is visually supported by Figure \ref{fig:cost_vs_shedding
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{"Transfer folder/Result_data/report_result/stage_1/Stage1_Cost_vs_Shedding.png"}
+    \includegraphics[width=0.85\textwidth]{{Transfer folder/Result_data/report_result/stage_1/Stage1_Cost_vs_Shedding.png}}
     \caption{Macro-economic comparison demonstrating the true economic cost versus total load shedding.}
     \label{fig:cost_vs_shedding}
 \end{figure}
@@ -157,7 +157,7 @@ More importantly, when evaluating the overarching system resilience through the 
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.85\textwidth]{"Transfer folder/Result_data/report_result/stage_1/Stage1_Energy_Mix.png"}
+    \includegraphics[width=0.85\textwidth]{{Transfer folder/Result_data/report_result/stage_1/Stage1_Energy_Mix.png}}
     \caption{Energy mix distribution across the MMG system over a 24-hour horizon.}
     \label{fig:energy_mix}
 \end{figure}
@@ -179,7 +179,7 @@ This capability to provide resilience at a Negative Premium stems from unblockin
 
 \begin{itemize}
     \item \textbf{Base Fault: The Vulnerability of Isolation:}
-    When extreme high-impact, low-probability (HILP) events induce a main grid blackout and PV outage, MMG system is forced into isolated operation. Under these conditions, tie-line power flows are constrained to zero ($P_{tie} = 0$), compelling each MG to maintain its internal supply-demand balance using only local resources. This structural limitation exacerbates localized power mismatches. Specifically, the faulted MGs (MG2 and MG4) experience severe energy deficits, whereas the healthy, independent MGs (MG1 and MG3) are forced to curtail surplus renewable generation. To maintain physical system stability and prevent voltage or frequency collapse, the local controllers in the faulted MGs must execute extensive load shedding, incurring substantial economic penalties. The severe load curtailment observed in the Base Case for MG2 and MG4 (see Figure \ref{fig:base_fault_load_shedding}) demonstrates that isolated local energy storage capacities are inadequate to sustain operation during prolonged disruptions. This underscores the technical necessity of relaxing the isolation constraint ($P_{tie} = 0$) by establishing a P2P trading framework to enhance overall system resilience and mitigating localized power deficits.
+    When extreme high-impact, low-probability (HILP) events induce a main grid blackout and PV outage, the MMG system is forced into isolated operation. Under these conditions, tie-line power flows are constrained to zero ($P_{tie} = 0$), compelling each MG to maintain its internal supply-demand balance using only local resources. This structural limitation exacerbates localized power mismatches. Specifically, the faulted MGs (MG2 and MG4) experience severe energy deficits, whereas the healthy, independent MGs (MG1 and MG3) are forced to curtail surplus renewable generation. To maintain physical system stability and prevent voltage or frequency collapse, the local controllers in the faulted MGs must execute extensive load shedding, incurring substantial economic penalties. The severe load curtailment observed in the Base Case for MG2 and MG4 (see Figure \ref{fig:base_fault_load_shedding}) demonstrates that isolated local energy storage capacities are inadequate to sustain operation during prolonged disruptions. This underscores the technical necessity of relaxing the isolation constraint ($P_{tie} = 0$) by establishing a P2P trading framework to enhance overall system resilience and mitigate localized power deficits.
 
 \begin{figure}[H]
     \centering
@@ -294,9 +294,9 @@ This counterintuitive pricing behavior is a direct consequence of the physical n
 
 Because no additional power can physically cross the congested boundary to further alleviate the shortages in the Deficit Island, the decentralized ATC market algorithm correctly identifies that any further increase in the consensus price $\lambda$ would not yield any additional transacted energy. Consequently, the uniform consensus price $\lambda$ completely severs its connection from the astronomical deficit prices (VOLL) of the shedding MGs.
 
-This market fracturing is not an arbitrary algorithmic behavior, but a direct consequence of the KKT optimality conditions. When a tie-line flow reaches its upper limit ($P_{tie} \le P_{max}$), the corresponding dual variable $\mu$ (the shadow price of transmission capacity) becomes strictly positive ($\mu > 0$). In the Lagrangian formulation, the trading consensus multiplier $\lambda$ negotiated at the boundary is mathematically defined as the internal marginal price minus this congestion shadow price ($\lambda = LMP_{deficit} - \mu$). Therefore, $\lambda$ remains decoupled and strictly reflects the marginal cost of the "trapped surplus" generation stranded within the Surplus Island. The astronomical price spike at the deficit nodes is entirely absorbed by the transmission rent $\mu$. \footnote{Note: $\lambda$ represents the ATC boundary negotiation multiplier (the unconstrained trading signal), not the internal LMPs. While $\lambda$ synchronizes across the network, the internal LMPs within MG4 implicitly skyrocket to VOLL, reflecting the physical reality of the localized deficit.}
+This market fracturing is not an arbitrary algorithmic behavior, but a direct consequence of the KKT optimality conditions. When a tie-line flow reaches its upper limit ($P_{tie} \le P_{max}$), the corresponding dual variable $\mu$ (the shadow price of transmission capacity) becomes strictly positive ($\mu > 0$). In the Lagrangian formulation, the trading consensus multiplier $\lambda$ negotiated at the boundary is mathematically defined as the internal marginal price minus this congestion shadow price ($\lambda = LMP_{deficit} - \mu$). Therefore, $\lambda$ remains decoupled and strictly reflects the marginal cost of the trapped surplus generation stranded within the Surplus Island. The astronomical price spike at the deficit nodes is entirely absorbed by the transmission rent $\mu$. \footnote{Note: $\lambda$ represents the ATC boundary negotiation multiplier (the unconstrained trading signal), not the internal LMPs. While $\lambda$ synchronizes across the network, the internal LMPs within MG4 implicitly skyrocket to VOLL, reflecting the physical reality of the localized deficit.}
 
-This price decoupling represents a massive advantage of the AC-OPF-based decentralized market: it proves that the trading mechanism is not a purely financial construct, but is fundamentally anchored to the physical physics of AC power flows. It shields the broader network from localized price explosions while guaranteeing that energy routing is maximized right up to the strict thermal limits. Immediately after the fault clears at $t=16$, the depleted BESS units and accumulated demand trigger a massive recovery surge, removing the congestion and causing the internal price to immediately spike to its peak ($\sim 18.0$) as the system reconnects to the main grid.
+This price decoupling represents a massive advantage of the AC-OPF-based decentralized market: it proves that the trading mechanism is not a purely financial construct, but is fundamentally anchored to the fundamental physics of AC power flows. It shields the broader network from localized price explosions while guaranteeing that energy routing is maximized right up to the strict thermal limits. Immediately after the fault clears at $t=16$, the depleted BESS units and accumulated demand trigger a massive recovery surge, removing the congestion and causing the internal price to immediately spike to its peak ($\sim 18.0$) as the system reconnects to the main grid.
 
 \begin{figure}[H]
     \centering
@@ -311,7 +311,7 @@ This price decoupling represents a massive advantage of the AC-OPF-based decentr
 
 This section evaluates the resilience of the proposed system under conditions beyond the standard emergency fault. To assess the system against AC-OPF physical limits, a three-dimensional stress matrix tests the network across temporal, spatial, and spatiotemporal dimensions. 
 
-Using the fault scenario from Sections 5.2 and 5.3 as the baseline, the network is subjected to increasingly severe structural stress. While the utility grid disconnection isolates the entire MMG system, the ``2-MG'' and ``3-MG'' designations specify the number of MGs suffering from compounded severe PV losses, which transform them into significant power sinks:
+Using the fault scenario from Sections 5.2 and 5.3 as the baseline, the network is subjected to increasingly severe structural stress. While the utility grid disconnection isolates the entire MMG system, the 2-MG and 3-MG designations specify the number of MGs suffering from compounded severe PV losses, which transform them into significant power sinks:
 \begin{itemize}
     \item \textbf{2-MG Deficit (Short Fault - Standard Baseline):} The default emergency scenario where MG2 and MG4 suffer significant internal power deficits over a 7-hour window ($t=9$ to $t=15$), relying on MG1 and MG3 as surplus power providers.
     \item \textbf{2-MG Deficit (Long Fault - Temporal Depth):} The system-wide outage is extended to an 11-hour window ($t=9$ to $t=19$). Due to BESS hoarding (a recognized algorithmic limitation established in Section 5.2.4), this prolonged scenario specifically tests the continuous endurance of the P2P active power routing network rather than local battery capacities.
@@ -327,7 +327,7 @@ The primary source of system stress originates at the network layer, specificall
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[width=\textwidth]{"Transfer folder/Result_data/report_result/stage_6/Stage6_P2P.png"}
+    \includegraphics[width=\textwidth]{{Transfer folder/Result_data/report_result/stage_6/Stage6_P2P.png}}
     \caption{P2P active power exchange across four fault scenarios: Base Case (2-MG Short), 3-MG Short, 2-MG Long, and 3-MG Long.}
     \label{fig:stage6_p2p}
 \end{figure}
@@ -342,7 +342,7 @@ As established in Sections 5.3.1 and 5.4.2, the intensive routing of active powe
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[width=\textwidth]{"Transfer folder/Result_data/report_result/stage_6/Stage6_Voltage.png"}
+    \includegraphics[width=\textwidth]{{Transfer folder/Result_data/report_result/stage_6/Stage6_Voltage.png}}
     \caption{System-wide voltage envelope under varying spatiotemporal fault severities.}
     \label{fig:stage6_voltage}
 \end{figure}
@@ -357,7 +357,7 @@ As established in Section 5.4.1 and Section 5.4.3, the active load shedding obse
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[width=\textwidth]{"Transfer folder/Result_data/report_result/stage_6/Robustness_Cost_vs_Shedding copy.png"}
+    \includegraphics[width=\textwidth]{{Transfer folder/Result_data/report_result/stage_6/Robustness_Cost_vs_Shedding copy.png}}
     \caption{Robustness test demonstrating True Economic Cost versus Load Shedding across fault depths.}
     \label{fig:stage6_bar_cost}
 \end{figure}
@@ -366,9 +366,9 @@ The temporal dynamics of this shedding behavior demonstrate the system's operati
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[width=\textwidth]{"Transfer folder/Result_data/report_result/stage_6/Stage6_CostShedding.png"}
+    \includegraphics[width=\textwidth]{{Transfer folder/Result_data/report_result/stage_6/Stage6_CostShedding.png}}
     \caption{Temporal distribution of Total Shedding and Economic Cost.}
     \label{fig:stage6_ts_cost}
 \end{figure}
 
-In conclusion, the analysis in Section 5.4 establishes that the MMG energy management framework executes a strategy of "Graceful Degradation." Under compounding extreme fault conditions, the algorithm incurs maximum economic penalty, utilizing normal loads as operational buffers. This controlled degradation protects the core network, guaranteeing the 100\% protection of critical loads. This phenomenon is a direct mathematical consequence of the objective function gradient: because the VOLL penalty for critical infrastructure strictly dominates normal loads ($VOLL_{critical} \gg VOLL_{normal}$), the solver is mathematically constrained to fully exhaust locally available normal load shedding variables before violating critical load constraints, validating the system's strict prioritization of power security over economic optimality.
+In conclusion, the analysis in Section 5.4 establishes that the MMG energy management framework executes a strategy of Graceful Degradation. Under compounding extreme fault conditions, the algorithm incurs maximum economic penalty, utilizing normal loads as operational buffers. This controlled degradation protects the core network, guaranteeing the 100\% protection of critical loads. This phenomenon is a direct mathematical consequence of the objective function gradient: because the VOLL penalty for critical infrastructure strictly dominates normal loads ($VOLL_{critical} \gg VOLL_{normal}$), the solver is mathematically constrained to fully exhaust locally available normal load shedding variables before violating critical load constraints, validating the system's strict prioritization of power security over economic optimality.

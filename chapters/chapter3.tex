@@ -110,7 +110,7 @@ Consequently, the local problem is formulated as an SOCP model subject to its co
     \State Update Lagrange multipliers $\lambda_{ij,t}^{k+1}$ via \eqref{eq:ATC_lambda_update}.
     \State Adjust penalty parameters $\rho_{ij,t}^{k+1}$ via Adaptive Residual Balancing \eqref{eq:ATC_rho_update}.
     \State $k \leftarrow k + 1$
-\Until{$(r_{ij,t}^{k-1})^2 \le \epsilon_{stop}$ \textbf{and} $(s_{ij,t}^{k-1})^2 \le \epsilon_{stop}$ for 3 consecutive steps.}
+\Until{$(r_{ij,t}^{k-1})^2 \le \epsilon_{stop}$ and $(s_{ij,t}^{k-1})^2 \le \epsilon_{stop}$ for 3 consecutive steps.}
 \end{algorithmic}
 \end{algorithm}
 
