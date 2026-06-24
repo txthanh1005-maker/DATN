@@ -18,6 +18,7 @@
 
 **Deadline 2 (28/06): Nộp quyển**
 - [ ] TODO: Bổ sung Citation (Task 9 - CRITICAL): Thêm trích dẫn (cite) cho các phần lý thuyết và đặc biệt là CÁC CÔNG THỨC TOÁN HỌC (SOCP, OPF, ATC, MPC). Tránh lỗi đạo văn/thiếu cơ sở. (Assigned: `researcher`, `latex_writer`)
+- [ ] TODO: Tích hợp Citation Matrix dạng Thuật toán (Task 9.1 - MEDIUM): Cập nhật Citation Matrix dạng Pseudo-code/Algorithm vào Chương 1 dựa theo 3 lăng kính (Physical, Spatial, Temporal) sau khi Supervisor duyệt ý tưởng. (Assigned: `latex_writer`)
 - [ ] TODO: Củng cố lập luận (Task 7 & 8 - HIGH): Viết tiểu mục "Conclusion/Discussion" ở cuối *từng chương* (Chương 1, 2, 3, 4). Mở rộng "General Conclusion". (Assigned: `latex_writer`)
 - [ ] TODO: Tái cấu trúc Nội dung (Task 6 - MEDIUM): Đổi tên các case lỗi (long/short fault) thành Transient Fault, Sustained Fault, và Cascading Fault. Yêu cầu chạy lại code P2P (Tạm hoãn). (Assigned: `code_generator`, `latex_writer`)
 - [ ] TODO: Xử lý Đồ họa (Task 4 - MEDIUM): Thay thế các ảnh mờ bằng ảnh độ phân giải cao/định dạng eps. (Assigned: `latex_writer`, `code_generator`)

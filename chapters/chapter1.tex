@@ -1,10 +1,44 @@
-﻿\section*{CHAPTER 1. INTRODUCTION AND LITERATURE REVIEW}
+\section*{CHAPTER 1. INTRODUCTION AND LITERATURE REVIEW}
 \addcontentsline{toc}{section}{\numberline{}CHAPTER 1. INTRODUCTION AND LITERATURE REVIEW}
 
 \setcounter{section}{1}
 \setcounter{subsection}{0}
 \setcounter{figure}{0}
 \setcounter{table}{0}
+
+\begin{algorithm}[H]
+\caption{Methodological Trajectory and Gap Analysis of the Tri-layer Architecture}
+\label{alg:literature_review}
+\begin{algorithmic}[1]
+\State \textbf{Initialize} Macro\_Context $\gets$ Evolution of SG, MGs, P2P Trading \Comment{\cite{Muhtadi2021, Dagar2021, Ahmad2023, She2022, Trivedi2022, Choudhury2022, Zhang2018_P2P, Karami2021, Ali2022, Park2024, Tushar2020_P2P, Zia2020}}
+\State Macro\_Context.shift\_to $\gets$ Grid Resilience \Comment{\cite{Li2017Networked, Hu2026Region, Chen2020, Bhusal2020}}
+\State
+\Function{Analyze\_PowerFlow}{Lens 1: Physical}
+    \State \textbf{Reject} Lumped-Node \Comment{Ignores R/X, masks voltage violations} \cite{Guerrero2021_Network, Guerrero2018_Decentralized, lannoye2012evaluation, javed2024analyzing}
+    \State \textbf{Reject} Linearized DC/LinDistFlow \Comment{Inaccurate voltage drop under stress} \cite{paudel2020peer, Patari2021, Hashmi2020, Pareek2020, Polat2025, eajal2018existence}
+    \State \textbf{Accept} SOCP Relaxation \Comment{Exact non-linear physics, respects limits} \cite{farivar2013branch, Patari2021, Low2014_SOCP, Srivastava2023, Montoya2021Mixed, Angle2020SOCP, Garrido_Arevalo_2024, men2023secondary}
+\EndFunction
+\State
+\Function{Analyze\_Coordination}{Lens 2: Spatial}
+    \State \textbf{Reject} Centralized EMS \Comment{Single point of failure, violates privacy} \cite{Chen2021, Liu2025, Panteli2016_Resilience, Zuo2022}
+    \State \textbf{Reject} Flat ADMM \Comment{Oscillation, slow convergence in hierarchical grid} \cite{Zhao2022, erseghe2014distributed, Zhang2019_ADMM, Ullah2022, Nasiri2023, Xia2024, Mishra2024, Rajaei2021, Sun_2022}
+    \State \textbf{Accept} Hierarchical ATC \Comment{Top-down, fast convergence, decoupled zones} \cite{mohammadi2020accelerated, Zhao2022_ATC, Kong2020_ATC}
+\EndFunction
+\State
+\Function{Analyze\_TimeDynamics}{Lens 3: Temporal}
+    \State \textbf{Reject} Static Day-Ahead \Comment{Rigid, breached bounds during blackouts} \cite{Liu2020Robust, Huynh2024Water, zhang2021multi, wu2021model}
+    \State \textbf{Reject} Stochastic \& Robust \Comment{PDF-dependent, computationally intractable} 
+    \State \textbf{Accept} MPC Rolling Horizon \Comment{Real-time update, Graceful degradation} \cite{Elkazaz2019Energy, Parisio2014_MPC, zheng2023distributed, zhou2025networked}
+\EndFunction
+\State
+\State \textbf{Extract} Master\_Gap
+\If{(Physical \textbf{AND} Spatial \textbf{AND} Temporal) $\to$ Isolated Solutions}
+    \State Master\_Gap $\gets$ "Lack of unified framework combining Exact Physics, Privacy, and Resilience"
+\EndIf
+\State
+\State \textbf{Propose} Tri-layer Cooperative Resilience Architecture (SOCP + ATC + MPC) \Comment{\cite{Chowdhury2023_SOCP_ThreePhase, Chowdhury2025_SOCP_Coopt, Nakiganda2023_Microgrid, ATC_Coopt_2025, Mavromatis2021_AdaptiveRho, Ullah2022_LMP, Hermans2024_MPC, Hamilton2023_VOLL}}
+\end{algorithmic}
+\end{algorithm}
 
 \subsection{The Evolution of Smart Grid and MMGs}
 The global energy landscape is undergoing a profound paradigm shift driven by the massive integration of DERs \cite{Muhtadi2021, Dagar2021}. The massive penetration of renewables has catalyzed the transformation of passive end-users into active prosumers. Consequently, this evolution introduces unprecedented challenges in two-way energy coordination and grid management \cite{Ahmad2023}.
