@@ -96,8 +96,8 @@ To rigorously evaluate the resilience of the proposed EMS, a compounded emergenc
 
 Under these harsh operating conditions, three distinct comparison scenarios are defined to evaluate the proposed framework:
 \begin{itemize}
-    \item \textbf{Base Fault:} Isolated operation without P2P energy sharing during the emergency.
-    \item \textbf{PF:} Ideal centralized approach with perfect prediction of the entire horizon.
+    \item \textbf{Islanded Fault:} Isolated operation without P2P energy sharing during the emergency.
+    \item \textbf{Perfect Foresight:} Ideal centralized approach with perfect prediction of the entire horizon.
     \item \textbf{MPC:} The proposed distributed rolling-horizon MPC with limited foresight.
 \end{itemize}
 
@@ -105,7 +105,7 @@ Under these harsh operating conditions, three distinct comparison scenarios are 
 
 To comprehensively validate the proposed MPC-ATC framework, this chapter introduces a three-dimensional evaluation methodology:
 \begin{itemize}
-    \item \textbf{Horizontal Evaluation (Cross-sectional Benchmarking):} Fixes the environmental inputs to compare the proposed method against standard baselines (e.g., Base Fault, PF), establishing its comparative economic and security superiority.
+    \item \textbf{Horizontal Evaluation (Cross-sectional Benchmarking):} Fixes the environmental inputs to compare the proposed method against standard baselines (e.g., Islanded Fault, Perfect Foresight), establishing its comparative economic and security superiority.
     \item \textbf{Vertical Evaluation (Dynamic and Physical Dynamics):} Fixes the model to the proposed framework, diving deep into its internal operations over time. This uncovers the underlying physical mechanics (e.g., active power routing, voltage constraints, algorithmic convergence) that enable its performance.
     \item \textbf{Boundary Evaluation (Stress Testing):} Pushes both the economic and physical dimensions to their absolute limits through distributed dynamic compounding faults, evaluating the ultimate resilience and graceful degradation capacity of the system.
 \end{itemize}
@@ -125,15 +125,15 @@ Table \ref{tab:benchmark_stage1} summarizes the macro-economic benchmark results
         \toprule
         \textbf{Model} & \textbf{Pure Cost (cents)} & \textbf{Pure Gap} & \textbf{True Eco Cost (cents)} & \textbf{Eco Gap} & \textbf{Shedding (MWh)} \\
         \midrule
-        \textbf{Base Fault} & 179,695.79 & 5.02\% & 1,722,260.04 & 272.41\% & 15.4260 \\
-        \textbf{PF} & 171,100.35 & Baseline & 462,462.02 & Baseline & 2.9138 \\
+        \textbf{Islanded Fault} & 179,695.79 & 5.02\% & 1,722,260.04 & 272.41\% & 15.4260 \\
+        \textbf{Perfect Foresight} & 171,100.35 & Baseline & 462,462.02 & Baseline & 2.9138 \\
         \textbf{Current Method} & 179,007.53 & 4.62\% & 470,294.90 & 1.69\% & 2.9129 \\
         \bottomrule
     \end{tabular}%
     }
     
     \vspace{1ex}
-    \small \textit{Note: The minute disparity in load shedding between PF (2.9138 MWh) and the Current Method (2.9129 MWh) is mathematically negligible and stems exclusively from numerical solver convergence tolerances rather than algorithmic inferiority.}
+    \small \textit{Note: The minute disparity in load shedding between Perfect Foresight (2.9138 MWh) and the Current Method (2.9129 MWh) is mathematically negligible and stems exclusively from numerical solver convergence tolerances rather than algorithmic inferiority.}
 \end{table}
 
 The benchmark analysis is visually supported by Figure \ref{fig:cost_vs_shedding}:
@@ -146,12 +146,12 @@ The benchmark analysis is visually supported by Figure \ref{fig:cost_vs_shedding
 \end{figure}
 
 \subsubsection{Critical Load Protection and Energy Security}
-The primary objective during emergency operation is the minimization of unserved energy, specifically shielding critical infrastructure. Under the isolated Base Fault scenario, P2P sharing forces the system to shed $15.4260$ MWh of load due to localized power depletion. Implementing the distributed MPC drastically reduces this shedding to merely $2.9129$ MWh, closely mirroring the ideal performance of the PF model ($2.9138$ MWh). 
+The primary objective during emergency operation is the minimization of unserved energy, specifically shielding critical infrastructure. Under the Islanded Fault scenario, the lack of P2P sharing forces the system to shed $15.4260$ MWh of load due to localized power depletion. Implementing the distributed MPC drastically reduces this shedding to merely $2.9129$ MWh, closely mirroring the ideal performance of the Perfect Foresight model ($2.9138$ MWh). 
 
 Mathematically, the financial data confirms the complete protection of critical loads. The shedding compensation incurred by the MPC is the difference between its true economic cost and pure cost ($470,294.90 - 179,007.53 = 291,287.37$ cents). Dividing this penalty by the curtailed energy ($2.9129$ MWh) yields an exact compensation rate of $100,000$ cents/MWh, which perfectly matches the VOLL assigned strictly to Normal Loads. Consequently, this demonstrates that all curtailed power was exclusively non-essential, confirming that the framework successfully protected 100\% of the Critical Load during severe compounded outages.
 
 \subsubsection{Optimality Gap Analysis: The Denominator Effect}
-Although the proposed MPC operates under a distributed architecture with a limited rolling horizon, its generation dispatch expenses (Pure Cost) stand at $179,007.53$ cents, maintaining an Optimality Gap of $4.62\%$ relative to the centralized PF benchmark ($171,100.35$ cents). 
+Although the proposed MPC operates under a distributed architecture with a limited rolling horizon, its generation dispatch expenses (Pure Cost) stand at $179,007.53$ cents, maintaining an Optimality Gap of $4.62\%$ relative to the centralized Perfect Foresight benchmark ($171,100.35$ cents). 
 
 More importantly, when evaluating the overarching system resilience through the \textit{True Economic Gap}, the disparity collapses to a mere $1.69\%$. This performance gap highlights a crucial operational phenomenon: The short-sightedness of the rolling horizon slightly compromises the optimal economic dispatch of generation resources, but it fundamentally does not degrade the system's energy security capability. This behavior is mathematically driven by the objective function's weighting. The penalty factor for load shedding (VOLL = 100,000 cents/MWh) is orders of magnitude higher than the marginal cost of standard generation ($\sim 16$ cents). Therefore, even with only a 1-hour look-ahead window, the objective gradient heavily prioritizes immediate BESS discharge and P2P sharing to avert shedding at all costs. The MPC's myopic nature only leads to suboptimal fuel purchasing schedules, but it will never elect to shed load unless physical capacities are entirely exhausted.
 
@@ -163,7 +163,7 @@ More importantly, when evaluating the overarching system resilience through the 
 \end{figure}
 
 \subsubsection{Co-optimization Benefits of P2P Energy Trading}
-Cross-examining the Base Fault and MPC scenarios uncovers the synergistic benefits of the P2P architecture. Typically, enhancing system resilience to supply an additional $12.51$ MWh (the difference in shedding between Base Fault and MPC) requires a Resilience Premium by ramping up expensive localized generation. However, the MPC achieves this while actually lowering the total generation cost ($179,007.53$ cents) compared to the isolated Base Fault ($179,695.79$ cents).
+Cross-examining the Islanded Fault and MPC scenarios uncovers the synergistic benefits of the P2P architecture. Typically, enhancing system resilience to supply an additional $12.51$ MWh (the difference in shedding between Islanded Fault and MPC) requires a Resilience Premium by ramping up expensive localized generation. However, the MPC achieves this while actually lowering the total generation cost ($179,007.53$ cents) compared to the Islanded Fault scenario ($179,695.79$ cents).
 
 This capability to provide resilience at a Negative Premium stems from unblocking stranded renewable energy. As illustrated in Figure \ref{fig:energy_mix}, excess PV and wind generation from healthy nodes—which would otherwise be curtailed under isolated conditions—is effectively routed to deficit regions. The P2P network, dynamically regulated by the MPC, forms a symbiotic ecosystem that simultaneously saves critical loads and optimizes overall fuel expenditure.
 
@@ -173,15 +173,15 @@ This capability to provide resilience at a Negative Premium stems from unblockin
     \centering
     \begin{subfigure}[b]{0.48\textwidth} \includegraphics[width=\textwidth]{{Transfer folder/Result_data/report_result/stage_2/Load_Shedding_MG2.png}} \caption{MG2} \end{subfigure}\hfill
     \begin{subfigure}[b]{0.48\textwidth} \includegraphics[width=\textwidth]{{Transfer folder/Result_data/report_result/stage_2/Load_Shedding_MG4.png}} \caption{MG4} \end{subfigure}
-    \caption{Massive Load Shedding in Vulnerable MGs - Base Fault Scenario.}
-    \label{fig:base_fault_load_shedding}
+    \caption{Massive Load Shedding in Vulnerable MGs - Islanded Fault Scenario.}
+    \label{fig:islanded_fault_load_shedding}
 \end{figure}
 
 \begin{itemize}
-    \item \textbf{Base Fault: The Vulnerability of Isolation:}
+    \item \textbf{Islanded Fault: The Vulnerability of Isolation:}
     When extreme high-impact, low-probability (HILP) events induce a main grid blackout and PV outage, the MMG system is forced into isolated operation. Under these conditions, tie-line power flows are constrained to zero ($P_{tie} = 0$), compelling each MG to maintain its internal supply-demand balance using only local resources. This structural limitation exacerbates localized power mismatches. Specifically, the faulted MGs (MG2 and MG4) experience severe energy deficits, whereas the healthy, independent MGs (MG1 and MG3) are forced to curtail surplus renewable generation. 
     
-    To maintain physical system stability and prevent voltage or frequency collapse, the local controllers in the faulted MGs must execute extensive load shedding, incurring substantial economic penalties. The severe load curtailment observed in the Base Case for MG2 and MG4 (see Figure \ref{fig:base_fault_load_shedding}) demonstrates that isolated local energy storage capacities are inadequate to sustain operation during prolonged disruptions. This underscores the technical necessity of relaxing the isolation constraint ($P_{tie} = 0$) by establishing a P2P trading framework to enhance overall system resilience and mitigate localized power deficits.
+    To maintain physical system stability and prevent voltage or frequency collapse, the local controllers in the faulted MGs must execute extensive load shedding, incurring substantial economic penalties. The severe load curtailment observed in the Islanded Fault scenario for MG2 and MG4 (see Figure \ref{fig:islanded_fault_load_shedding}) demonstrates that isolated local energy storage capacities are inadequate to sustain operation during prolonged disruptions. This underscores the technical necessity of relaxing the isolation constraint ($P_{tie} = 0$) by establishing a P2P trading framework to enhance overall system resilience and mitigate localized power deficits.
 
 \begin{figure}[H]
     \centering
@@ -194,17 +194,17 @@ This capability to provide resilience at a Negative Premium stems from unblockin
     \label{fig:soc_comparison}
 \end{figure}
 
-    \item \textbf{PF: The Advantage of Absolute Knowledge:}
-The PF model operates with absolute knowledge of the entire 24-hour horizon. This predictive supremacy manifests as a highly proactive energy management strategy, clearly visible in the SOC comparison charts (Figure \ref{fig:soc_comparison}). Rather than passively maintaining charge before the emergency, the PF model exhibits a sophisticated anticipatory discharge behavior. 
+    \item \textbf{Perfect Foresight: The Advantage of Absolute Knowledge:}
+The Perfect Foresight model operates with absolute knowledge of the entire 24-hour horizon. This predictive supremacy manifests as a highly proactive energy management strategy, clearly visible in the SOC comparison charts (Figure \ref{fig:soc_comparison}). Rather than passively maintaining charge before the emergency, the Perfect Foresight model exhibits a sophisticated anticipatory discharge behavior. 
 
-Specifically, at $t=8\text{h}$, right before the main grid fault occurs, the PF model intentionally discharges the BESS down to its minimum limit ($SOC = 0.2$). This is not a random action, but a strategic clearing of energy headroom. Knowing that the main grid will fail at $t=9\text{h}$, but local solar generation will still be abundant during $t=9\text{h}$ and $t=10\text{h}$ before the PV outage at $t=11\text{h}$, the algorithm makes room to aggressively capture this free solar energy. Consequently, it rapidly charges the BESS from $0.2$ to near-maximum capacity ($\sim 0.95$) within those two hours.
+Specifically, at $t=8\text{h}$, right before the main grid fault occurs, the Perfect Foresight model intentionally discharges the BESS down to its minimum limit ($SOC = 0.2$). This is not a random action, but a strategic clearing of energy headroom. Knowing that the main grid will fail at $t=9\text{h}$, but local solar generation will still be abundant during $t=9\text{h}$ and $t=10\text{h}$ before the PV outage at $t=11\text{h}$, the algorithm makes room to aggressively capture this free solar energy. Consequently, it rapidly charges the BESS from $0.2$ to near-maximum capacity ($\sim 0.95$) within those two hours.
 
-During the darkest fault hours ($t=11\text{h}$ to $t=15\text{h}$), this strategically stored energy is deployed. By optimally manipulating its energy boundaries based on future knowledge, the PF model maximizes renewable energy utilization while avoiding unnecessary grid purchases. This flawless multi-period energy shifting demonstrates the critical role of the BESS in economic optimization. By preemptively capturing free solar generation and strategically discharging it during the most severe deficit periods, the PF framework substantially minimizes the reliance on expensive emergency active power generation, thereby driving down the total system cost and achieving the theoretical minimum operational expenditure.
+During the darkest fault hours ($t=11\text{h}$ to $t=15\text{h}$), this strategically stored energy is deployed. By optimally manipulating its energy boundaries based on future knowledge, the Perfect Foresight model maximizes renewable energy utilization while avoiding unnecessary grid purchases. This flawless multi-period energy shifting demonstrates the critical role of the BESS in economic optimization. By preemptively capturing free solar generation and strategically discharging it during the most severe deficit periods, the Perfect Foresight framework substantially minimizes the reliance on expensive emergency active power generation, thereby driving down the total system cost and achieving the theoretical minimum operational expenditure.
 
     \item \textbf{Proposed MPC: The Hoarding Syndrome and P2P Rescue:}
 In stark contrast, MPC operates under a limited rolling horizon, rendering it entirely blind to the true duration and severity of the impending emergency. This lack of long-term visibility fundamentally alters the battery dispatch behavior. Prior to the fault, the MPC maintains flat, standard economic SOC profiles, failing to proactively pre-charge. 
 
-More importantly, when the fault suddenly hits at $t=9\text{h}$, the MPC adopts a conservative energy retention strategy. Because it cannot foresee the end of the outage, the algorithm becomes highly reluctant to fully discharge its limited BESS reserves, reserving them against future uncertainties. As seen in the SOC Comparison graphs (Figure \ref{fig:soc_comparison}), rather than smoothly depleting the batteries like the PF model, the MPC significantly restricts its BESS discharge rates. 
+More importantly, when the fault suddenly hits at $t=9\text{h}$, the MPC adopts a conservative energy retention strategy. Because it cannot foresee the end of the outage, the algorithm becomes highly reluctant to fully discharge its limited BESS reserves, reserving them against future uncertainties. As seen in the SOC Comparison graphs (Figure \ref{fig:soc_comparison}), rather than smoothly depleting the batteries like the Perfect Foresight model, the MPC significantly restricts its BESS discharge rates. 
 
 To manage the contingency and compensate for this conservative discharge approach, the MPC is forced to rely almost exclusively on the P2P network as a primary support mechanism. The Active Power flow graphs (Figure \ref{fig:mpc_active_power}) illustrate this highly dynamic and topologically shifted support operation. During the initial phase of the grid isolation ($t=9\text{h}, t=10\text{h}$), the system relies heavily on two primary supporting units: MG2 (leveraging its dense solar capacity) and MG3 (benefiting from its light industrial load). These two MGs actively export significant amounts of surplus power through the tie-lines to sustain the power-deficient MGs, MG1 and MG4. 
 
@@ -284,12 +284,12 @@ It is precisely these iteration-heavy structural shocks that drive the maximum C
 
 Once the system adapts to the new islanded topology, the convergence speed accelerates exponentially in the later fault hours ($t=12\text{h}$ to $t=15\text{h}$). This acceleration is heavily driven by the algorithm's warm-start mechanism, which capitalizes on the multi-period correlation of power systems. By seeding the negotiation process with the converged dual multipliers ($\lambda$) from the previous time step, the algorithm initiates the optimization extremely close to the true optimal solution. Because the network conditions stabilize after the initial shocks, these warm-started parameters are highly accurate, reducing the required iterations to single digits and dropping the CPU time to mere seconds. While the residual decay exhibits minor transient oscillations as agents dynamically adjust their boundary targets, the algorithm successfully forces the residuals below the convergence limit across all fault and recovery hours. This cohesive behavior unequivocally demonstrates the mathematical reliability, extreme computational efficiency, and real-time feasibility of the distributed architecture under severe emergencies.
 
-This highlights the computational efficiency of the ATC algorithm. The monolithic PF model, which processes the entire 24-hour horizon simultaneously, incurs a high computational burden, requiring a total CPU time of 584 seconds. In contrast, the MPC approach distributes the computational load, resulting in a reduced total CPU time of 413 seconds.
+This highlights the computational efficiency of the ATC algorithm. The monolithic Perfect Foresight model, which processes the entire 24-hour horizon simultaneously, incurs a high computational burden, requiring a total CPU time of 584 seconds. In contrast, the MPC approach distributes the computational load, resulting in a reduced total CPU time of 413 seconds.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\textwidth]{{Transfer folder/Result_data/report_result/stage_4/Stage4_Combined_CPU_Time.png}}
-    \caption{Total and maximum CPU time comparison between PF and MPC.}
+    \caption{Total and maximum CPU time comparison between Perfect Foresight and MPC.}
     \label{fig:cpu_time}
 \end{figure}
 
@@ -327,10 +327,10 @@ This section evaluates the resilience of the proposed system under conditions be
 
 Using the fault scenario from Sections 5.2 and 5.3 as the baseline, the network is subjected to increasingly severe structural stress. While the utility grid disconnection isolates the entire MMG system, the 2-MG and 3-MG designations specify the number of MGs suffering from compounded severe PV losses, which transform them into significant power sinks:
 \begin{itemize}
-    \item \textbf{2-MG Deficit (Short Fault - Standard Baseline):} The default emergency scenario where MG2 and MG4 suffer significant internal power deficits over a 7-hour window ($t=9\text{h}$ to $t=15\text{h}$), relying on MG1 and MG3 as surplus power providers.
-    \item \textbf{2-MG Deficit (Long Fault - Prolonged Depth):} The system-wide outage is extended to an 11-hour window ($t=9\text{h}$ to $t=19\text{h}$). Due to BESS hoarding (a recognized algorithmic limitation established in Section 5.2.4), this prolonged scenario specifically tests the continuous endurance of the P2P active power routing network rather than local battery capacities.
-    \item \textbf{3-MG Deficit (Short Fault - Network Depth):} The compounded PV failure expands topologically to MG1 over the standard 7-hour window. This removes a primary energy exporter, transforming MG1 into a third significant power sink alongside MG2 and MG4.
-    \item \textbf{3-MG Deficit (Long Fault - Distributed Dynamic Extreme):} The expanded 3-MG deficit footprint is prolonged across the entire 11-hour window ($t=9\text{h}$ to $t=19\text{h}$). This maximizes network and dynamic stress, leaving MG3 as the sole surplus provider for the entire network.
+    \item \textbf{2-MG Deficit (Transient Fault - Standard Baseline):} The default emergency scenario where MG2 and MG4 suffer significant internal power deficits over a 7-hour window ($t=9\text{h}$ to $t=15\text{h}$), relying on MG1 and MG3 as surplus power providers.
+    \item \textbf{2-MG Deficit (Sustained Fault - Prolonged Depth):} The system-wide outage is extended to an 11-hour window ($t=9\text{h}$ to $t=19\text{h}$). Due to BESS hoarding (a recognized algorithmic limitation established in Section 5.2.4), this prolonged scenario specifically tests the continuous endurance of the P2P active power routing network rather than local battery capacities.
+    \item \textbf{3-MG Deficit (Cascading Fault - Network Depth):} The compounded PV failure expands topologically to MG1 over the standard 7-hour window. This removes a primary energy exporter, transforming MG1 into a third significant power sink alongside MG2 and MG4.
+    \item \textbf{3-MG Deficit (Sustained Cascading Fault - Distributed Dynamic Extreme):} The expanded 3-MG deficit footprint is prolonged across the entire 11-hour window ($t=9\text{h}$ to $t=19\text{h}$). This maximizes network and dynamic stress, leaving MG3 as the sole surplus provider for the entire network.
 \end{itemize}
 
 By evaluating the network under these extreme conditions, this analysis demonstrates the algorithm's Autonomous Critical Load Prioritization mechanism. Under severe energy scarcity, the distributed algorithm deliberately curtails normal loads and sacrifices global economic optimality to mathematically guarantee the uninterrupted supply of all critical infrastructure.
@@ -342,13 +342,13 @@ The primary source of system stress originates at the network layer, specificall
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=\textwidth]{{Transfer folder/Result_data/report_result/stage_6/Stage6_P2P.png}}
-    \caption{P2P active power exchange across four fault scenarios: Base Case (2-MG Short), 3-MG Short, 2-MG Long, and 3-MG Long.}
+    \caption{P2P active power exchange across four fault scenarios: Transient Fault, Cascading Fault, Sustained Fault, and Sustained Cascading Fault.}
     \label{fig:stage6_p2p}
 \end{figure}
 
-A cross-panel comparison highlights the substantial load placed on the transmission infrastructure. In the Base Case (representing the standard 2-MG Short Fault), the active power exchange exhibits a notable increase during the primary fault window. However, as the deficit expands topologically---transforming MG1 into an additional power sink in the 3-MG configurations---the network reaches its transfer saturation point. The active power flows originating from the sole remaining surplus provider (MG3) expand to their maximum physical constraints. The network routing algorithm maximizes power transfers through the distribution corridors to support the deficient MGs.
+A cross-panel comparison highlights the substantial load placed on the transmission infrastructure. In the Transient Fault scenario, the active power exchange exhibits a notable increase during the primary fault window. However, as the deficit expands topologically---transforming MG1 into an additional power sink in the Cascading Fault configurations---the network reaches its transfer saturation point. The active power flows originating from the sole remaining surplus provider (MG3) expand to their maximum physical constraints. The network routing algorithm maximizes power transfers through the distribution corridors to support the deficient MGs.
 
-In the Long Fault scenarios (2-MG Long and 3-MG Long), the severe energy deficit is sustained over an 11-hour window ($t=9\text{h}$ to $t=19\text{h}$). This extended disturbance necessitates massive active power transfer across the physical tie-lines, pushing them toward their thermal limits. This high magnitude of active power transferred leads to a proportional rise in transmission currents ($I$). These elevated currents contribute directly to severe reactive power losses ($I^2X$) and the subsequent voltage degradation analyzed in Section 5.4.3. To navigate this physical strain, the distributed algorithm strictly manages this maximized active power routing, utilizing it as the primary mechanism for load preservation while safely delivering available renewable generation to deficit nodes.
+In the Sustained Fault scenarios, the severe energy deficit is sustained over an 11-hour window ($t=9\text{h}$ to $t=19\text{h}$). This extended disturbance necessitates massive active power transfer across the physical tie-lines, pushing them toward their thermal limits. This high magnitude of active power transferred leads to a proportional rise in transmission currents ($I$). These elevated currents contribute directly to severe reactive power losses ($I^2X$) and the subsequent voltage degradation analyzed in Section 5.4.3. To navigate this physical strain, the distributed algorithm strictly manages this maximized active power routing, utilizing it as the primary mechanism for load preservation while safely delivering available renewable generation to deficit nodes.
 
 \subsubsection{Voltage Stability Envelopes under Severe Grid Contingencies}
 
@@ -361,7 +361,7 @@ As established in Sections 5.3.1 and 5.4.2, the intensive routing of active powe
     \label{fig:stage6_voltage}
 \end{figure}
 
-A comparative analysis of the voltage trajectories reveals the precise impact of distributed dynamic stress. The 2-MG Long Fault configuration imposes the most sustained thermal stress on the tie-lines, resulting in the deepest voltage sags (the lowest point) among all scenarios. This phenomenon illustrates a counterintuitive AC-OPF characteristic: the less severe 2-MG scenario possesses sufficient residual generation to sustain high transfer currents across the tie-lines, leading to significant voltage drops due to line impedance. In contrast, the generation-deficient 3-MG scenario lacks the capacity to drive such currents, resulting in shallower voltage sags but forcing the algorithm to initiate active load shedding. This behavior demonstrates the necessity of the AC-OPF framework: the algorithm executes a dynamic binding constraint pivot, autonomously shifting from enforcing network constraints ($V \ge 0.90$ p.u.) in the 2-MG case to enforcing generation limits ($P_{gen} \le P_{max}$) in the 3-MG case without requiring heuristic switching logic. Conversely, the voltage profiles of the 3-MG Short and 3-MG Long configurations closely track each other during the initial core fault window from $t=9\text{h}$ to $t=15\text{h}$. This identical tracking is a direct consequence of the rolling-horizon MPC algorithm's limited foresight. Lacking the ability to predict whether the fault will resolve at $t=15\text{h}$ or extend to $t=19\text{h}$, the algorithm executes the same conservative response. The operational divergence occurs sharply after hour 15: immediately following the conclusion of the Short fault, the corresponding voltage trajectory exhibits immediate recovery as normal operation resumes. In contrast, the Long fault trajectory remains suppressed near the critical boundary for the remainder of the extended outage.
+A comparative analysis of the voltage trajectories reveals the precise impact of distributed dynamic stress. The Sustained Fault configuration imposes the most sustained thermal stress on the tie-lines, resulting in the deepest voltage sags (the lowest point) among all scenarios. This phenomenon illustrates a counterintuitive AC-OPF characteristic: the less severe 2-MG scenario possesses sufficient residual generation to sustain high transfer currents across the tie-lines, leading to significant voltage drops due to line impedance. In contrast, the generation-deficient Cascading Fault scenario lacks the capacity to drive such currents, resulting in shallower voltage sags but forcing the algorithm to initiate active load shedding. This behavior demonstrates the necessity of the AC-OPF framework: the algorithm executes a dynamic binding constraint pivot, autonomously shifting from enforcing network constraints ($V \ge 0.90$ p.u.) in the 2-MG case to enforcing generation limits ($P_{gen} \le P_{max}$) in the Cascading Fault case without requiring heuristic switching logic. Conversely, the voltage profiles of the Cascading Fault and Sustained Cascading Fault configurations closely track each other during the initial core fault window from $t=9\text{h}$ to $t=15\text{h}$. This identical tracking is a direct consequence of the rolling-horizon MPC algorithm's limited foresight. Lacking the ability to predict whether the fault will resolve at $t=15\text{h}$ or extend to $t=19\text{h}$, the algorithm executes the same conservative response. The operational divergence occurs sharply after hour 15: immediately following the conclusion of the Transient Fault, the corresponding voltage trajectory exhibits immediate recovery as normal operation resumes. In contrast, the Sustained Fault trajectory remains suppressed near the critical boundary for the remainder of the extended outage.
 
 This strict adherence to the $0.90$ p.u. threshold highlights the fundamental constraint of the physical network. Once local reactive power capacities are exhausted, the algorithm is mathematically constrained to execute targeted active load shedding to alleviate the current burden and maintain system reliability, a mechanism critically analyzed in Section 5.4.4.
 

@@ -8,12 +8,10 @@ Nâng cấp và chuyển đổi toàn bộ báo cáo Đồ án Tốt nghiệp (D
 
 ## Progress & Changelog
 **Các Tác Vụ Gần Đây (Compacted):**
-- **Academic Citation Search (Task 9):** Tác nhân Trinh sát (Researcher) đã dò tìm thành công các bài báo chất lượng cao (2023-2025) từ IEEE và ScienceDirect. Tư lệnh đã trực tiếp phê duyệt và đưa vào các phương trình: SOCP (Chapter 2), ATC (Chapter 3), MPC (Chapter 4). Task 9 hoàn tất.
-- **Citation Matrix Algorithm (Task 9.1):** Lên ý tưởng/Tư duy biểu diễn Citation Matrix dưới dạng Lưu đồ Thuật toán (Algorithm Block) theo 3 lăng kính (Physical, Spatial, Temporal). Đã code demo nhưng quyết định Rollback về commit `11efb19` để chờ ý kiến duyệt chính thức từ Thầy hướng dẫn (Supervisor) nhằm đảm bảo an toàn.
-- **Format Audit (Task 7):** Đã sửa lỗi tràn lề `Overfull \hbox` và lệch hàng tại các hệ phương trình DistFlow, ATC, AC-OPF trong Chapter 2 và 3. Tối ưu hóa Inline math.
-- **Chỉnh sửa Phần Kết quả Chapter 5 (Task 10.5):** Cập nhật Hình 5.5, 5.6 và 5.9. Thay thế văn bản Base Fault thành chuẩn IEEE (nhấn mạnh sự cách ly $P_{tie}=0$).
-- **Algorithm Flowcharts & Timeline (Task 9 & 9.5):** Hoàn thành vẽ Lưu đồ TikZ cho thuật toán 3-Mode State Machine và sơ đồ trục thời gian Rolling Horizon (MPC).
-- **Academic Reviewer Panel (Task 11):** Triển khai đồng thời 5 tác nhân (EIC, Methodology, Domain, Perspective, DA) quét toàn bộ luận văn. Tổng hợp 30 báo cáo review thành `need_update.md` với quyết định "Minor Revision".
+- **Terminology Restructuring (Task 6):** Hoàn thành chuẩn hóa 100% tên kịch bản lỗi trong `chapter5.tex` (Base Fault $\rightarrow$ Islanded Fault, PF $\rightarrow$ Perfect Foresight, 2-MG/3-MG $\rightarrow$ Transient/Sustained/Cascading Fault). Đã tạo file hướng dẫn `image_label_fixes.md` cho Python và Reviewer Subagent đã xác nhận tất cả 10 ảnh đồ thị kết quả được xuất lại hoàn hảo, không còn nhãn cũ hay lỗi đè layout.
+- **Deep Logic Audit & Surgical Fixes (Task 12):** Hoàn thành rà soát logic chuyên sâu 3 bước bằng `logic_flow_checker`. Triển khai "phẫu thuật thẩm mỹ" an toàn: bổ sung chứng minh thuật toán cho ADMM, cô đọng Fluff phần SO/RO, và thắt chặt nguyên nhân vật lý $N-2$ cho Mode 2 MPC (Chapter 1 & 4). Rút gọn tiêu đề Chapter 2 thành "System Architecture and Modeling" để chống tràn lề.
+- **Academic Citation Search & Matrix (Task 9 & 9.1):** Trinh sát (Researcher) đã dò tìm và chèn trích dẫn toán học thành công vào các phương trình SOCP, ATC, MPC. Cập nhật Citation Matrix dạng Pseudo-code/Algorithm vào Chương 1.
+- **Format Audit & Visualizations (Task 7 & 9.5):** Sửa lỗi tràn lề `Overfull \hbox`. Hoàn thành vẽ Lưu đồ TikZ cho thuật toán 3-Mode State Machine và sơ đồ trục thời gian Rolling Horizon (MPC). Tất cả ảnh phân giải thấp đã được cập nhật bản nét.
 
 ## Key Decisions
 1. **Kiến trúc Top-Down (Chapter 6):** Sử dụng `Transfer folder/Result_data/report_result` để viết kết quả.
@@ -21,13 +19,11 @@ Nâng cấp và chuyển đổi toàn bộ báo cáo Đồ án Tốt nghiệp (D
 3. **Nâng cấp Radar Kiểm duyệt:** Skill `deep-logic-audit` giờ đây là tiêu chuẩn vàng để ép buộc phân tích phải có nền tảng Toán học/Vật lý.
 4. **Hủy diệt "Trading Q":** Tuyệt đối không cho P2P mua bán công suất phản kháng. Q chỉ phục vụ "Local Support".
 5. **Bẻ lái sang Resilience:** Trong bối cảnh Extreme Events, hệ thống không chỉ tìm kiếm cực tiểu chi phí (FIT/P2P thông thường) mà còn đóng vai trò "Safety Net".
-6. **ATC Multiplier Standards:** Chốt sử dụng chuẩn $\lambda, \rho$ thay cho $\alpha, \beta$ cho biến phạt tuyến tính và bậc hai.
-7. **Terminological Precision:** Sử dụng thuật ngữ "Distributed" thay vì "Decentralized" cho hệ thống điều khiển có giao tiếp qua Coordinator (DSO), tránh vi phạm tiêu chuẩn nghiêm ngặt của giới hàn lâm.
+6. **Terminological Precision:** Sử dụng thuật ngữ "Distributed, Dynamic, Multi-period" thay vì "Spatial, Temporal", tránh vi phạm tiêu chuẩn nghiêm ngặt của giới hàn lâm (Electrical Engineering Context).
 
 ## Next Steps
-- Quét các ảnh độ phân giải thấp và yêu cầu render lại theo DPI chuẩn (Task 4).
-- Cập nhật thuật ngữ tên lỗi (Task 6) và viết Conclusion/Discussion cho các chương (Task 7 & 8).
-- Tiến hành biên dịch thử nghiệm bản PDF mới nhất.
+- Củng cố lập luận (Task 7 & 8 - HIGH): Viết tiểu mục "Conclusion/Discussion" ở cuối *từng chương* (Chương 1, 2, 3, 4) và mở rộng "General Conclusion".
+- Biên dịch PDF lần cuối để kiểm tra tổng thể.
 
 ## Critical Context
 **Cấu hình mạng (Topology P2P):** 1 Utility Grid & 4 Microgrids.
@@ -51,3 +47,4 @@ Nâng cấp và chuyển đổi toàn bộ báo cáo Đồ án Tốt nghiệp (D
 - `D:\Latex\DATN\chapters\chapter5.tex`
 - `D:\Latex\DATN\chapters\Imagine\ATC_Evolution.tex`
 - `D:\Latex\DATN\need_update.md`
+- `D:\Latex\DATN\mass_replace.py`
