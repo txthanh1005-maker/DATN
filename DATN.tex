@@ -139,8 +139,8 @@
 \begin{enumerate}[label=\Roman*.]
     \item Review the state-of-the-art literature on microgrids and Peer-to-Peer (P2P) energy trading, identifying gaps in physical network constraints and resilient operations.
     \item Develop the system architecture and mathematical formulation for the multi-microgrid energy management problem, strictly considering physical grid constraints.
-    \item Design a distributed spatial coordination framework to facilitate secure energy trading and sharing across interconnected microgrids without compromising individual operational privacy.
-    \item Propose a temporal dynamic scheduling strategy to proactively manage energy resources and mitigate the impacts of extreme fault events.
+    \item Design a distributed distributed coordination framework to facilitate secure energy trading and sharing across interconnected microgrids without compromising individual operational privacy.
+    \item Propose a real-time dynamic scheduling strategy to proactively manage energy resources and mitigate the impacts of extreme fault events.
     \item Simulate and analyze the proposed framework on multi-microgrid testbeds, comprehensively evaluating economic efficiency, voltage stability, and overall system resilience.
 \end{enumerate}
 \end{sloppypar}
@@ -203,7 +203,7 @@ welcome any constructive feedback from professors and readers.
 \section*{ABSTRACT}
     \thispagestyle{empty}
 
-The increasing severity of extreme weather events exposes the inherent vulnerability of traditional distribution grids, rendering centralized and linear energy management models inadequate. To enhance physical resilience and economic efficiency under severe disruptions, this thesis proposes a highly rigorous, bottom-up spatiotemporal energy management framework for MMG systems. The proposed architecture synergizes three core mechanisms: SOCP AC-OPF constraints for voltage security, ATC for distributed, privacy-preserving multi-agent coordination, and MPC to robustly navigate system uncertainties through a rolling horizon. 
+The increasing severity of extreme weather events exposes the inherent vulnerability of traditional distribution grids, rendering centralized and linear energy management models inadequate. To enhance physical resilience and economic efficiency under severe disruptions, this thesis proposes a highly rigorous, bottom-up distributed dynamic energy management framework for MMG systems. The proposed architecture synergizes three core mechanisms: SOCP AC-OPF constraints for voltage security, ATC for distributed, privacy-preserving multi-agent coordination, and MPC to robustly navigate system uncertainties through a rolling horizon. 
 
 By stress-testing the architecture against severe islanding scenarios, the simulation reveals several significant findings. Most crucially, the framework guarantees a 100\% survival rate for Critical Loads during grid failures. Economically, routing P2P exchanges to liberate stranded renewable energy successfully manifests a Negative Premium, wherein post-fault operational costs are counterintuitively lower than normal pre-fault operations. Furthermore, the rigorous mathematical formulation exposes two key physical phenomena. First, the Tie-line Congestion Paradox demonstrates that physical transmission bounds inherently constrain the ATC consensus pricing ($\lambda$), decoupling it from extreme local VOLL escalations and preventing economic collapse. Second, the Voltage Paradox highlights the absolute necessity of AC-OPF integration; high transit currents induce severe $I^2X$ reactive power losses that threaten catastrophic voltage collapse, forcing the algorithm to proactively execute active power load shedding as a vital physical defense. Ultimately, this thesis establishes a computationally tractable, fault-adaptive, and physically secure P2P energy trading framework, forging a resilient paradigm for the next generation of distributed power systems.
 
@@ -424,7 +424,7 @@ $s_{SOC}$ & Slack variable for end-of-horizon SOC penalty \\
 \subsection{Conclusion}
 This thesis successfully developed a fault-adaptive, P2P energy trading framework to enhance MMG resilience, summarized by four key findings:
 \begin{itemize}
-    \item \textbf{Algorithmic Architecture:} The proposed Bottom-up Spatiotemporal 3-Mode State Machine achieved high computational tractability, reaching rapid ATC convergence (max 91 seconds) during severe structural grid shocks to ensure real-time MPC feasibility.
+    \item \textbf{Algorithmic Architecture:} The proposed Bottom-up Distributed Dynamic 3-Mode State Machine achieved high computational tractability, reaching rapid ATC convergence (max 91 seconds) during severe structural grid shocks to ensure real-time MPC feasibility.
     \item \textbf{Physical Resilience and AC-OPF Necessity:} The absolute necessity of AC-OPF was validated by demonstrating that proactive active power curtailment effectively mitigates catastrophic voltage collapse caused by transit-induced reactive losses, strictly maintaining the 0.90~p.u. boundary.
     \item \textbf{Market Pricing and the Tie-line Congestion Paradox:} The study mathematically proved the Tie-line Congestion Paradox, wherein physical thermal limits inherently activate KKT bounds to forcefully cap ATC consensus pricing ($\lambda$), completely preventing market collapse during extreme localized VOLL escalations.
     \item \textbf{System Security and Graceful Degradation:} The framework synergizes a Graceful Degradation mechanism with P2P trading to guarantee a 100\% Critical Load survival rate while achieving a Negative Premium---a dual economic-resilience benefit that liberates stranded energy during severe disruptions.

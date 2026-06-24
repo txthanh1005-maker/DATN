@@ -5,7 +5,7 @@
 \setcounter{equation}{0}
 
 \subsection{ATC Overview}
-The operation of MMG (Multi-MG) systems entails a complex spatial coordination problem. Traditional centralized operations require MGs to transmit all their local, potentially sensitive information---such as load demand, renewable generation profiles, BESS constraints---to a central operator. This paradigm not only creates computational bottlenecks for large-scale systems but also severely compromises the privacy of independent MG operators.
+The operation of MMG (Multi-MG) systems entails a complex distributed coordination problem. Traditional centralized operations require MGs to transmit all their local, potentially sensitive information---such as load demand, renewable generation profiles, BESS constraints---to a central operator. This paradigm not only creates computational bottlenecks for large-scale systems but also severely compromises the privacy of independent MG operators.
 
 To resolve these physical and informational challenges, the ATC framework is introduced. ATC is a distributed optimization technique originally developed for multidisciplinary design optimization, which perfectly aligns with the hierarchical structure of modern distribution networks. Figure \ref{fig:mmg_conceptual} illustrates the conceptual topology of this Multi-Microgrid (MMG) system, where individual MGs can seamlessly trade active power through physical tie-lines while coordinating with the Main Grid. By decomposing the global OPF problem, ATC divides the Multi-MG system into a two-level hierarchical architecture:
 
@@ -45,7 +45,7 @@ where:
     \item $P_{target,ij,t}$ is the decision variable representing the optimal trading target determined by the coordinator for the power flow from node $i$ to node $j$ at time $t$.
     \item $P_{tie,ij,t}^{*,k}$ is the fixed local tie-line power exchange from $i$ to $j$ scheduled by the lower-level MG at the current iteration $k$.
     \item $\lambda_{ij,t}^k$ is the linear Lagrange multiplier (shadow price) for active power trading at iteration $k$.
-    \item $\rho_{ij,t}^k$ is the quadratic penalty multiplier at iteration $k$, strictly penalizing the spatial deviation between the target and the local response.
+    \item $\rho_{ij,t}^k$ is the quadratic penalty multiplier at iteration $k$, strictly penalizing the inter-node deviation between the target and the local response.
 \end{itemize}
 
 After solving the optimal target $P_{target,ij,t}^{*, k}$ and receiving the updated $P_{tie,ij,t}^{*, k}$ from the lower-level MGs, the coordinator updates the penalty multipliers for the next iteration to drive the deviation to zero. The update equations for the multipliers ($\lambda$ and $\rho$) are defined as follows:
@@ -72,7 +72,7 @@ The balancing parameters are set as $\tau = 1.5$ and $\mu = 10$. These specific 
 \subsection{The Local MG Problem with ATC}
 In the ATC architecture, MGs receive the updated penalty multipliers ($\lambda_{ij,t}^k, \rho_{ij,t}^k$) and the optimal reference target ($P_{target,ij,t}^{k-1}$) broadcasted by the central Coordinator (Utility Grid). To align their local schedules with the global consensus, each MG integrates an Augmented Lagrangian penalty function into its base optimization objective.
 
-The base objectives of each MG, defined as $\mathcal{F}_{normal}^{OPF}$ for grid-connected modes and $\mathcal{F}_{emergency}^{OPF}$ for islanded states (as previously established in Chapter 2), are mathematically penalized for any spatial discrepancy. The Augmented Lagrangian penalty function corresponding to the active power deviation along the tie-lines is formulated as follows \cite{ATC_Coopt_2025}:
+The base objectives of each MG, defined as $\mathcal{F}_{normal}^{OPF}$ for grid-connected modes and $\mathcal{F}_{emergency}^{OPF}$ for islanded states (as previously established in Chapter 2), are mathematically penalized for any inter-node discrepancy. The Augmented Lagrangian penalty function corresponding to the active power deviation along the tie-lines is formulated as follows \cite{ATC_Coopt_2025}:
 \begin{equation} \label{eq:ATC_Penalty_Function}
 \begin{aligned}
 F_{penalty, i}^{ATC} &= \sum_{t \in \mathcal{T}} \sum_{j \in \mathcal{N}_i} \left[ \lambda_{ij,t}^k \left( P_{tie,ij,t} - P_{target,ij,t}^{k-1} \right) \right. \\
@@ -121,7 +121,7 @@ ATC algorithm is an iterative process that alternates between solving the local 
 \textbf{Step 2: Local MG Optimization.} Each MG autonomously solves its penalized OPF problem as defined in \eqref{eq:ATC_Global_Objective}, utilizing the target variables from the previous iteration $P_{target,ij,t}^{k-1}$. The optimal tie-line active power exchange $P_{tie,ij,t}^k$ is determined and subsequently transmitted to the Coordinator.
 
 \textbf{Step 3: Coordinator Update.} Upon receiving the tie-line power schedules from all interacting MGs, the Coordinator updates the target variables, multipliers, and adaptive penalty parameters to enforce P2P consensus. 
-First, the primal residual $r_{ij,t}^k$ and dual residual $s_{ij,t}^k$ are calculated to measure the spatial mismatch and the algorithm's progress. Then, the target variable $P_{target,ij,t}^k$ is updated to drive the consensus. The Lagrange multipliers and adaptive penalty parameters ($\lambda_{ij,t}^{k+1}$ and $\rho_{ij,t}^{k+1}$) are sequentially updated according to the explicit rules defined in \eqref{eq:ATC_lambda_update} and \eqref{eq:ATC_rho_update} \cite{Mavromatis2021_AdaptiveRho}.
+First, the primal residual $r_{ij,t}^k$ and dual residual $s_{ij,t}^k$ are calculated to measure the inter-node mismatch and the algorithm's progress. Then, the target variable $P_{target,ij,t}^k$ is updated to drive the consensus. The Lagrange multipliers and adaptive penalty parameters ($\lambda_{ij,t}^{k+1}$ and $\rho_{ij,t}^{k+1}$) are sequentially updated according to the explicit rules defined in \eqref{eq:ATC_lambda_update} and \eqref{eq:ATC_rho_update} \cite{Mavromatis2021_AdaptiveRho}.
 
 \textbf{Step 4: Convergence Check.} The iterative algorithm terminates when both the primal and dual residuals satisfy the convergence tolerance $\epsilon_{stop}$ (set to $10^{-4}$) for three consecutive iterations. If the criteria are met, the algorithm stops and the final optimal scheduling is achieved. Otherwise, the iteration counter is incremented ($k \leftarrow k+1$) and the process returns to Step 2.
 

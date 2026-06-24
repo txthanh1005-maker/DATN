@@ -5,9 +5,9 @@
 \setcounter{equation}{0}
 \subsection{MPC Time Framework}
 
-In the operational context of MMG systems, independent optimization at a single time instance or a fixed time frame is often inadequate to cope with unpredictable fluctuations from load demand ($P_{load,i,t}$, $Q_{load,i,t}$) and RESs ($P_{PV,i,t}^{peak}$, $P_{WT,i,t}^{peak}$), as well as unexpected events such as main grid disconnection. To address this challenge, MPC is implemented as the highest-level Temporal Coordination layer.
+In the operational context of MMG systems, independent optimization at a single time instance or a fixed time frame is often inadequate to cope with unpredictable fluctuations from load demand ($P_{load,i,t}$, $Q_{load,i,t}$) and RESs ($P_{PV,i,t}^{peak}$, $P_{WT,i,t}^{peak}$), as well as unexpected events such as main grid disconnection. To address this challenge, MPC is implemented as the highest-level Dynamic Coordination layer.
 
-To address unpredictable RES and load fluctuations, the system employs an MPC rolling horizon ($h$), where only the first optimal control step is applied to counter immediate physical deviations, inherently coupling the day-ahead economics with real-time stability. In this proposed architecture, the temporal framework is strictly divided into two primary phases: Day-Ahead Scheduling and Real-Time Emergency MPC.
+To address unpredictable RES and load fluctuations, the system employs an MPC rolling horizon ($h$), where only the first optimal control step is applied to counter immediate physical deviations, inherently coupling the day-ahead economics with real-time stability. In this proposed architecture, the dynamic framework is strictly divided into two primary phases: Day-Ahead Scheduling and Real-Time Emergency MPC.
 
 \subsubsection{Day-Ahead Scheduling}
 
@@ -153,9 +153,9 @@ At each control iteration starting at time $t$, the EMS retrieves the most recen
     \end{align}
 \end{itemize}
 
-Without the continuous inheritance of $SOC^{ini}$ and the rolling refresh of these forecast vectors, the MPC would lack the foresight required to execute the inter-temporal spatial coupling critical for emergency operations (Mode 2).
+Without the continuous inheritance of $SOC^{ini}$ and the rolling refresh of these forecast vectors, the MPC would lack the foresight required to execute the multi-period network coupling critical for emergency operations (Mode 2).
 
-\subsection{The 3-Mode Spatiotemporal Coordination Framework}
+\subsection{The 3-Mode Distributed Dynamic Coordination Framework}
 
 \begin{figure}[htbp]
 \centering
@@ -171,9 +171,9 @@ Without the continuous inheritance of $SOC^{ini}$ and the rolling refresh of the
 \node (loop) [process, below=of start] {For each time step $t = 1$ to $24$};
 \node (decision) [decision, below=of loop] {Fault status at step $t$?};
 
-\node (mode2) [process, below=of decision, yshift=-0.5cm] {\textbf{Mode 2}\\(Emergency, $h=5\text{h}$)\\\textit{Activate Constraints}\\\textit{Call Spatial ATC}};
+\node (mode2) [process, below=of decision, yshift=-0.5cm] {\textbf{Mode 2}\\(Emergency, $h=5\text{h}$)\\\textit{Activate Constraints}\\\textit{Call Distributed ATC}};
 \node (mode1) [process, left=of mode2, xshift=-0.5cm] {\textbf{Mode 1}\\(Normal)\\\textit{Apply DA Schedule}};
-\node (mode3) [process, right=of mode2, xshift=0.5cm] {\textbf{Mode 3}\\(Recovery, $h=25-t$)\\\textit{Call Spatial ATC}\\\textit{Update DA Baseline}};
+\node (mode3) [process, right=of mode2, xshift=0.5cm] {\textbf{Mode 3}\\(Recovery, $h=25-t$)\\\textit{Call Distributed ATC}\\\textit{Update DA Baseline}};
 
 \node (merge) [process, below=of mode2, yshift=-0.5cm] {End of step $t$};
 
@@ -198,7 +198,7 @@ Without the continuous inheritance of $SOC^{ini}$ and the rolling refresh of the
 \label{fig:3mode_flowchart}
 \end{figure}
 
-MPC strategy inherently relies on a dynamic rolling mechanism that functions as a state machine. To efficiently manage computational resources while ensuring system resilience, the spatiotemporal coordination framework is explicitly structured into three distinct operating modes: Mode 1 (Normal Operation), Mode 2 (Emergency Mode), and Mode 3 (Recovery Mode).
+MPC strategy inherently relies on a dynamic rolling mechanism that functions as a state machine. To efficiently manage computational resources while ensuring system resilience, the distributed dynamic coordination framework is explicitly structured into three distinct operating modes: Mode 1 (Normal Operation), Mode 2 (Emergency Mode), and Mode 3 (Recovery Mode).
 
 \subsubsection{Mode 1 and Mode 3: Normal Operation and Recovery}
 
@@ -210,19 +210,19 @@ However, when a fault is cleared following an emergency event, the system transi
 \end{equation}
 Once this new updated baseline schedule $\mathbf{u}_{\tau}^{DA*}$ is successfully deployed, the system securely reverts to Mode 1.
 
-\subsubsection{Mode 2: Emergency Integration of Spatial and Temporal Control}
+\subsubsection{Mode 2: Emergency Integration of Distributed and Dynamic Control}
 
-In the face of extreme scenarios such as $N-2$ contingencies and main grid connection faults (resulting in complete islanding where $P_{grid,t}^{buy} = 0$ and $P_{grid,t}^{sell} = 0$), relying solely on independent spatial or temporal coordination is mathematically and physically insufficient. When multiple cascading line outages occur, the network topology is severely compromised. This physical deterioration forces instant updates to the dynamic topology and operational boundaries.
+In the face of extreme scenarios such as $N-2$ contingencies and main grid connection faults (resulting in complete islanding where $P_{grid,t}^{buy} = 0$ and $P_{grid,t}^{sell} = 0$), relying solely on independent distributed or dynamic coordination is mathematically and physically insufficient. When multiple cascading line outages occur, the network topology is severely compromised. These physical line disconnections dynamically trap loads and generators into isolated segments, continuously shifting the feasible operational boundaries.
 
-To counteract this physical collapse, the system enters Mode 2 (Emergency Mode), employing a bottom-up integration strategy that intrinsically couples the ATC spatial algorithm with the MPC rolling horizon framework. This synergistic approach allows the MMG system to maintain rigorous operational resilience under critical conditions.
+To counteract this physical collapse, the system enters Mode 2 (Emergency Mode). Because distributed coordination alone fails when boundary constraints dynamically shift mid-operation, Mode 2 employs an integration strategy that intrinsically locks the multi-period predictive capabilities of the MPC with the distributed ATC algorithm. This synergistic approach allows the MMG system to continuously re-evaluate feasible trajectories and execute safe emergency load shedding operations under critical conditions.
 
-The integration mechanism is formally structured such that the MPC layer acts as the primary temporal coordinator, dictating the rolling horizon scheduling. Within each time step $t$ of the MPC's sliding predictive window $\mathcal{H}_{MPC} = \{t, t+1, \dots, t+h-1\}$, the ATC spatial algorithm, formulated as a penalized SOCP problem, is iteratively invoked. 
+The integration mechanism is formally structured such that the MPC layer acts as the primary dynamic coordinator, dictating the rolling horizon scheduling. Within each time step $t$ of the MPC's sliding predictive window $\mathcal{H}_{MPC} = \{t, t+1, \dots, t+h-1\}$, the ATC distributed algorithm, formulated as a penalized SOCP problem, is iteratively invoked. 
 
-For each prospective control interval $\tau \in \mathcal{H}_{MPC}$, the MPC provides the temporal coupling via the updated SOC inheritance $SOC_{i,\tau}$ (Eq. \ref{eq:SOC_transition}), alongside the most recent forecasting vectors for load demand and renewable generation ($\mathbf{P}_{load,i}^{(t)}, \mathbf{Q}_{load,i}^{(t)}, \mathbf{P}_{PV,i}^{(t)}, \mathbf{P}_{WT,i}^{(t)}$). The ATC algorithm then iteratively optimizes the spatial power distribution and active power traded via inter-MG tie-lines ($P_{tie,ij,\tau}$) by minimizing the ATC Global Objective (Eq. \ref{eq:ATC_Global_Objective}). The distributed coordination mathematically relies on updating the Augmented Lagrangian multiplier $\lambda_{ij,\tau}$ and the penalty parameter $\rho_{ij,\tau}$ to reach an optimal consensus on the target traded active power $P_{target,ij,\tau}$ designated by the DSO. At each iteration $k$, the multiplier update step is executed as:
+For each prospective control interval $\tau \in \mathcal{H}_{MPC}$, the MPC provides the multi-period coupling via the updated SOC inheritance $SOC_{i,\tau}$ (Eq. \ref{eq:SOC_transition}), alongside the most recent forecasting vectors for load demand and renewable generation ($\mathbf{P}_{load,i}^{(t)}, \mathbf{Q}_{load,i}^{(t)}, \mathbf{P}_{PV,i}^{(t)}, \mathbf{P}_{WT,i}^{(t)}$). The ATC algorithm then iteratively optimizes the network power distribution and active power traded via inter-MG tie-lines ($P_{tie,ij,\tau}$) by minimizing the ATC Global Objective (Eq. \ref{eq:ATC_Global_Objective}). The distributed coordination mathematically relies on updating the Augmented Lagrangian multiplier $\lambda_{ij,\tau}$ and the penalty parameter $\rho_{ij,\tau}$ to reach an optimal consensus on the target traded active power $P_{target,ij,\tau}$ designated by the DSO. At each iteration $k$, the multiplier update step is executed as:
 \begin{equation} \label{eq:Multiplier_Update}
     \lambda_{ij,\tau}^{(k+1)} = \lambda_{ij,\tau}^{(k)} + \rho_{ij,\tau}^{(k)} \left( P_{tie,ij,\tau}^{(k)} - P_{target,ij,\tau}^{(k)} \right) \quad \forall \tau \in \mathcal{H}_{MPC}
 \end{equation}
-By explicitly embedding the ATC SOCP solver within the outer MPC loop, the control system mathematically guarantees that both the inter-temporal energy constraints and the spatial power flow limits—including the tightened apparent power flow bounds and nodal voltage magnitude constraints ($V_{min}^2 \leq V_{i,\tau}^2 \leq V_{max}^2$)—are strictly satisfied at every temporal stage.
+By explicitly embedding the ATC SOCP solver within the outer MPC loop, the control system mathematically guarantees that both the multi-period energy constraints and the network power flow limits—including the tightened apparent power flow bounds and nodal voltage magnitude constraints ($V_{min}^2 \leq V_{i,\tau}^2 \leq V_{max}^2$)—are strictly satisfied at every operational stage.
 
 \subsubsection{Activation of Penalty Functions and Load Shedding Mechanism}
 
@@ -240,13 +240,13 @@ To physically prevent BESS depletion, a slack variable $S_{SOC,i}$ and a penalty
     J_{SOC} = \sum_{i \in \mathcal{N}^{BESS}} \beta_{SOC} S_{SOC,i}^2
 \end{equation}
 
-By structuring the penalty weights such that $C_{shed}^{critical} \gg \beta_{SOC} > C_{shed}^{normal}$, the SOCP mathematically guarantees that flexible loads are curtailed early to preserve BESS reserves, ensuring the sustained operation of critical infrastructure. This temporal safeguard works in tandem with the spatial penalty coefficient for distribution network power losses $\omega_{loss}$, ensuring sustainable multi-interval resilience.
+By structuring the penalty weights such that $C_{shed}^{critical} \gg \beta_{SOC} > C_{shed}^{normal}$, the SOCP mathematically guarantees that flexible loads are curtailed early to preserve BESS reserves, ensuring the sustained operation of critical infrastructure. This multi-period safeguard works in tandem with the network penalty coefficient for distribution network power losses $\omega_{loss}$, ensuring sustainable multi-interval resilience.
 
-Through this cohesive integration, the ATC SOCP algorithm resolves spatial power flow conflicts while the MPC framework optimizes the inter-temporal energy buffering and load shedding deployment, enabling the MMG system to navigate $N-2$ contingencies and main grid disconnections seamlessly.
+Through this cohesive integration, the ATC SOCP algorithm resolves network power flow conflicts while the MPC framework optimizes the multi-period energy buffering and load shedding deployment, enabling the MMG system to navigate $N-2$ contingencies and main grid disconnections seamlessly.
 
 \par\vspace{1em}
 \noindent\rule{\linewidth}{0.8pt}
-\captionof{algorithm}{Bottom-Up Spatiotemporal Coordination as a 3-Mode State Machine}\label{alg:MPC_Emergency}
+\captionof{algorithm}{Bottom-Up Distributed Dynamic Coordination as a 3-Mode State Machine}\label{alg:MPC_Emergency}
 \vspace{-0.7em}\noindent\rule{\linewidth}{0.4pt}
 \begin{algorithmic}[1]
 \Require Real-time network measurements, BESS characteristics, Forecast models.
@@ -277,7 +277,7 @@ Through this cohesive integration, the ATC SOCP algorithm resolves spatial power
         \Statex \hspace{4.2cm} and add SOC penalty $J_{SOC}$ \eqref{eq:MPC_SOC_penalty}.
         
         \State \textbf{STEP 3: ROLLING HORIZON OPTIMIZATION LOOP}
-        \State Call Spatial ATC Algorithm to optimize spatial power flow
+        \State Call Distributed ATC Algorithm to optimize network power flow
         \State Compute SOC transitions simultaneously using Eq. (\ref{eq:SOC_transition})
         \State Iteratively solve ATC Global Objective \eqref{eq:ATC_Global_Objective} for period $\tau \in [t, t+h-1]$.
         \State Enforce tie-line target exchange agreement 
