@@ -72,7 +72,7 @@ The balancing parameters are set as $\tau = 1.5$ and $\mu = 10$. These specific 
 \subsection{The Local MG Problem with ATC}
 In the ATC architecture, MGs receive the updated penalty multipliers ($\lambda_{ij,t}^k, \rho_{ij,t}^k$) and the optimal reference target ($P_{target,ij,t}^{k-1}$) broadcasted by the central Coordinator (Utility Grid). To align their local schedules with the global consensus, each MG integrates an Augmented Lagrangian penalty function into its base optimization objective.
 
-The base objectives of each MG, defined as $\mathcal{F}_{normal}^{OPF}$ for grid-connected modes and $\mathcal{F}_{emergency}^{OPF}$ for islanded states (as previously established in Chapter 2), are mathematically penalized for any spatial discrepancy. The Augmented Lagrangian penalty function corresponding to the active power deviation along the tie-lines is formulated as follows:
+The base objectives of each MG, defined as $\mathcal{F}_{normal}^{OPF}$ for grid-connected modes and $\mathcal{F}_{emergency}^{OPF}$ for islanded states (as previously established in Chapter 2), are mathematically penalized for any spatial discrepancy. The Augmented Lagrangian penalty function corresponding to the active power deviation along the tie-lines is formulated as follows \cite{ATC_Coopt_2025}:
 \begin{equation} \label{eq:ATC_Penalty_Function}
 \begin{aligned}
 F_{penalty, i}^{ATC} &= \sum_{t \in \mathcal{T}} \sum_{j \in \mathcal{N}_i} \left[ \lambda_{ij,t}^k \left( P_{tie,ij,t} - P_{target,ij,t}^{k-1} \right) \right. \\
@@ -81,7 +81,7 @@ F_{penalty, i}^{ATC} &= \sum_{t \in \mathcal{T}} \sum_{j \in \mathcal{N}_i} \lef
 \end{equation}
 where $\mathcal{N}_i$ represents the set of neighboring MGs directly connected to MG $i$.
 
-The incorporation of this penalty effectively bridges the gap between the decentralized operation and the global targets. The newly modified local ATC objective function, which each MG $i$ aims to minimize autonomously, is therefore defined as:
+The incorporation of this penalty effectively bridges the gap between the distributed operation and the global targets. The newly modified local ATC objective function, which each MG $i$ aims to minimize autonomously, is therefore defined as:
 \begin{equation} \label{eq:ATC_Global_Objective}
 \mathcal{F}_{ATC, i}^{OPF} = \mathcal{F}_i^{OPF} + F_{penalty, i}^{ATC}
 \end{equation}
@@ -91,7 +91,7 @@ Consequently, the local problem is formulated as an SOCP model subject to its co
 
 \subsection{ATC Iterative Algorithm and Convergence}
 \begin{algorithm}[H]
-\caption{Decentralized ATC Algorithm}
+\caption{Distributed ATC Algorithm}
 \label{alg:atc_coordination}
 \begin{algorithmic}[1]
 \State \textbf{Initialization:} Set iteration counter $k \leftarrow 1$.
@@ -121,7 +121,7 @@ ATC algorithm is an iterative process that alternates between solving the local 
 \textbf{Step 2: Local MG Optimization.} Each MG autonomously solves its penalized OPF problem as defined in \eqref{eq:ATC_Global_Objective}, utilizing the target variables from the previous iteration $P_{target,ij,t}^{k-1}$. The optimal tie-line active power exchange $P_{tie,ij,t}^k$ is determined and subsequently transmitted to the Coordinator.
 
 \textbf{Step 3: Coordinator Update.} Upon receiving the tie-line power schedules from all interacting MGs, the Coordinator updates the target variables, multipliers, and adaptive penalty parameters to enforce P2P consensus. 
-First, the primal residual $r_{ij,t}^k$ and dual residual $s_{ij,t}^k$ are calculated to measure the spatial mismatch and the algorithm's progress. Then, the target variable $P_{target,ij,t}^k$ is updated to drive the consensus. The Lagrange multipliers and adaptive penalty parameters ($\lambda_{ij,t}^{k+1}$ and $\rho_{ij,t}^{k+1}$) are sequentially updated according to the explicit rules defined in \eqref{eq:ATC_lambda_update} and \eqref{eq:ATC_rho_update}.
+First, the primal residual $r_{ij,t}^k$ and dual residual $s_{ij,t}^k$ are calculated to measure the spatial mismatch and the algorithm's progress. Then, the target variable $P_{target,ij,t}^k$ is updated to drive the consensus. The Lagrange multipliers and adaptive penalty parameters ($\lambda_{ij,t}^{k+1}$ and $\rho_{ij,t}^{k+1}$) are sequentially updated according to the explicit rules defined in \eqref{eq:ATC_lambda_update} and \eqref{eq:ATC_rho_update} \cite{Mavromatis2021_AdaptiveRho}.
 
 \textbf{Step 4: Convergence Check.} The iterative algorithm terminates when both the primal and dual residuals satisfy the convergence tolerance $\epsilon_{stop}$ (set to $10^{-4}$) for three consecutive iterations. If the criteria are met, the algorithm stops and the final optimal scheduling is achieved. Otherwise, the iteration counter is incremented ($k \leftarrow k+1$) and the process returns to Step 2.
 
@@ -161,7 +161,7 @@ First, the primal residual $r_{ij,t}^k$ and dual residual $s_{ij,t}^k$ are calcu
         \draw[arrow] (iter.north) |- (bcast.west);
         
     \end{tikzpicture}
-    \caption{Flowchart of the Decentralized ATC Algorithm.}
+    \caption{Flowchart of the Distributed ATC Algorithm.}
     \label{fig:atc_flowchart}
 \end{figure}
 

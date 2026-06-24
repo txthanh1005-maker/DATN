@@ -28,6 +28,8 @@
 \usepackage{xcolor}
 \usepackage[fontsize=13pt]{scrextend}
 \usepackage{indentfirst}
+\usepackage{setspace}
+\setstretch{1.3}
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{longtable}
@@ -79,10 +81,8 @@
     \vspace{24pt}
 
     % THESIS TITLE
-    \textbf{\fontsize{17pt}{22pt}\selectfont{}
-        A FAULT-ADAPTIVE PEER-TO-PEER ENERGY TRADING FRAMEWORK FOR \\
-        ENHANCING MULTI-MICROGRID RESILIENCE \\
-        VIA ATC AND MPC}
+    \textbf{\fontsize{15pt}{20pt}\selectfont{}
+        RESILIENCE-ORIENTED PEER-TO-PEER ENERGY TRADING IN MULTI-MICROGRIDS VIA NETWORK-CONSTRAINED\\ DISTRIBUTED PREDICTIVE CONTROL}
     \vspace{24pt}
 
     % STUDENT NAME
@@ -132,21 +132,20 @@
 \noindent Class: Renewable energy and power system 01 -- K67
 \vspace{0.5cm}
 
-\noindent Thesis title: \textit{A Fault-Adaptive Peer-to-Peer Energy Trading Framework for
-Enhancing Multi-Microgrid Resilience.}
+\noindent Thesis title: \textit{Resilience-Oriented Peer-to-Peer Energy Trading in Multi-Microgrids via Network-Constrained Distributed Predictive Control}
 
 \begin{sloppypar}
 \begin{enumerate}[label=\Roman*.]
     \item Review the state-of-the-art literature on microgrids and Peer-to-Peer (P2P) energy trading, identifying gaps in physical network constraints and resilient operations.
     \item Develop the system architecture and mathematical formulation for the multi-microgrid energy management problem, strictly considering physical grid constraints.
-    \item Design a decentralized spatial coordination framework to facilitate secure energy trading and sharing across interconnected microgrids without compromising individual operational privacy.
+    \item Design a distributed spatial coordination framework to facilitate secure energy trading and sharing across interconnected microgrids without compromising individual operational privacy.
     \item Propose a temporal dynamic scheduling strategy to proactively manage energy resources and mitigate the impacts of extreme fault events.
     \item Simulate and analyze the proposed framework on multi-microgrid testbeds, comprehensively evaluating economic efficiency, voltage stability, and overall system resilience.
 \end{enumerate}
 \end{sloppypar}
 
 \vspace{6pt}
-    \hspace{7cm} Hà Nội, \ldots\ldots / 06 / 2026
+    \hspace{7cm} Hà Nội, \ldots\ldots / 02 / 2026
 
     \hspace{8.6cm} Supervisor
 
@@ -203,12 +202,12 @@ welcome any constructive feedback from professors and readers.
 \section*{ABSTRACT}
     \thispagestyle{empty}
 
-The increasing severity of extreme weather events exposes the inherent vulnerability of traditional distribution grids, rendering centralized and linear energy management models inadequate. To enhance physical resilience and economic efficiency under severe disruptions, this thesis proposes a highly rigorous, bottom-up spatiotemporal energy management framework for MMG systems. The proposed architecture synergizes three core mechanisms: SOCP AC-OPF constraints for voltage security, ATC for decentralized, privacy-preserving multi-agent coordination, and MPC to robustly navigate system uncertainties through a rolling horizon. 
+The increasing severity of extreme weather events exposes the inherent vulnerability of traditional distribution grids, rendering centralized and linear energy management models inadequate. To enhance physical resilience and economic efficiency under severe disruptions, this thesis proposes a highly rigorous, bottom-up spatiotemporal energy management framework for MMG systems. The proposed architecture synergizes three core mechanisms: SOCP AC-OPF constraints for voltage security, ATC for distributed, privacy-preserving multi-agent coordination, and MPC to robustly navigate system uncertainties through a rolling horizon. 
 
-By stress-testing the architecture against severe islanding scenarios, the simulation reveals several significant findings. Most crucially, the framework guarantees a 100\% survival rate for Critical Loads during grid failures. Economically, routing P2P exchanges to liberate stranded renewable energy successfully manifests a Negative Premium, wherein post-fault operational costs are counterintuitively lower than normal pre-fault operations. Furthermore, the rigorous mathematical formulation exposes two key physical phenomena. First, the Tie-line Congestion Paradox demonstrates that physical transmission bounds inherently constrain the ATC consensus pricing ($\lambda$), decoupling it from extreme local VOLL escalations and preventing economic collapse. Second, the Voltage Paradox highlights the absolute necessity of AC-OPF integration; high transit currents induce severe $I^2X$ reactive power losses that threaten catastrophic voltage collapse, forcing the algorithm to proactively execute active power load shedding as a vital physical defense. Ultimately, this thesis establishes a computationally tractable, fault-adaptive, and physically secure P2P energy trading framework, forging a resilient paradigm for the next generation of decentralized power systems.
+By stress-testing the architecture against severe islanding scenarios, the simulation reveals several significant findings. Most crucially, the framework guarantees a 100\% survival rate for Critical Loads during grid failures. Economically, routing P2P exchanges to liberate stranded renewable energy successfully manifests a Negative Premium, wherein post-fault operational costs are counterintuitively lower than normal pre-fault operations. Furthermore, the rigorous mathematical formulation exposes two key physical phenomena. First, the Tie-line Congestion Paradox demonstrates that physical transmission bounds inherently constrain the ATC consensus pricing ($\lambda$), decoupling it from extreme local VOLL escalations and preventing economic collapse. Second, the Voltage Paradox highlights the absolute necessity of AC-OPF integration; high transit currents induce severe $I^2X$ reactive power losses that threaten catastrophic voltage collapse, forcing the algorithm to proactively execute active power load shedding as a vital physical defense. Ultimately, this thesis establishes a computationally tractable, fault-adaptive, and physically secure P2P energy trading framework, forging a resilient paradigm for the next generation of distributed power systems.
 
 \vspace{12pt}
-\noindent\textbf{Keywords:} \textit{Grid Resilience, Peer-to-Peer Energy Trading, Extreme Weather Events, Analytical Target Cascading, SOCP Convex Relaxation, Model Predictive Control, Multi-Microgrid Systems, Resilient Operations, Decentralized Energy Management.}
+\noindent\textbf{Keywords:} \textit{Grid Resilience, Peer-to-Peer Energy Trading, Extreme Weather Events, Analytical Target Cascading, SOCP Convex Relaxation, Model Predictive Control, Multi-Microgrid Systems, Resilient Operations, Distributed Energy Management.}
 
 \thispagestyle{empty}
     \clearpage
@@ -219,7 +218,7 @@ By stress-testing the architecture against severe islanding scenarios, the simul
 \section*{DECLARATION OF ORIGINALITY}
     \thispagestyle{empty}
 
-I am Trịnh Xuân Thành, Student ID 20222744, student of Class Renewable Energy and Power System 01 -- K67. My supervisor is Assoc. Prof. Nguyễn Đức Tuyên. I hereby declare that the entire content presented in the thesis entitled \textit{A Fault-Adaptive Peer-to-Peer Energy Trading Framework for Enhancing Multi-Microgrid Resilience via ATC and MPC} is the result of my own study and research process. The data reported in the thesis are completely truthful. All cited information complies with intellectual property regulations, and references are clearly listed. I take full responsibility for the contents written in this thesis.
+I am Trịnh Xuân Thành, Student ID 20222744, student of Class Renewable Energy and Power System 01 -- K67. My supervisor is Assoc. Prof. Nguyễn Đức Tuyên. I hereby declare that the entire content presented in the thesis entitled \textit{Resilience-Oriented Peer-to-Peer Energy Trading in Multi-Microgrids via Network-Constrained Distributed Predictive Control} is the result of my own study and research process. The data reported in the thesis are completely truthful. All cited information complies with intellectual property regulations, and references are clearly listed. I take full responsibility for the contents written in this thesis.
 
 \vspace{6pt}
     \hspace{9.5cm} The Author

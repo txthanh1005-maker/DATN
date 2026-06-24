@@ -17,7 +17,7 @@ In this phase, BESS operations are modeled using variables such as $P_{ch,i,t}$,
 
 \subsubsection{Real-Time Emergency MPC}
 
-To address immediate deviations, fault clearing, component isolation, and dynamic responses during emergencies, the Real-Time Emergency MPC is activated. This phase employs a rolling horizon of $h = 5$ hours. At each time step $t \in \mathcal{T}$, the system updates the latest measurements regarding renewable generation, actual load, and the current SOC of the BESS ($SOC_{i,t}$). The optimization problem is continuously re-evaluated over the sliding window from $t$ to $t + h - 1$.
+To address immediate deviations, fault clearing, component isolation, and dynamic responses during emergencies, the Real-Time Emergency MPC is activated. This phase employs a rolling horizon of $h = 5$ hours. At each time step $t \in \mathcal{T}$, the system updates the latest measurements regarding renewable generation, actual load, and the current SOC of the BESS ($SOC_{i,t}$). The optimization problem is continuously re-evaluated over the sliding window from $t$ to $t + h - 1$ \cite{Hermans2024_MPC}.
 
 During emergency conditions, the system dynamically re-evaluates the operational dispatch and activates load shedding or tie-line re-coordination (detailed mechanisms are formulated in Section 4.3).
 
@@ -171,7 +171,7 @@ Without the continuous inheritance of $SOC^{ini}$ and the rolling refresh of the
 \node (loop) [process, below=of start] {For each time step $t = 1$ to $24$};
 \node (decision) [decision, below=of loop] {Fault status at step $t$?};
 
-\node (mode2) [process, below=of decision, yshift=-0.5cm] {\textbf{Mode 2}\\(Emergency, $h=5$)\\\textit{Activate Constraints}\\\textit{Call Spatial ATC}};
+\node (mode2) [process, below=of decision, yshift=-0.5cm] {\textbf{Mode 2}\\(Emergency, $h=5\text{h}$)\\\textit{Activate Constraints}\\\textit{Call Spatial ATC}};
 \node (mode1) [process, left=of mode2, xshift=-0.5cm] {\textbf{Mode 1}\\(Normal)\\\textit{Apply DA Schedule}};
 \node (mode3) [process, right=of mode2, xshift=0.5cm] {\textbf{Mode 3}\\(Recovery, $h=25-t$)\\\textit{Call Spatial ATC}\\\textit{Update DA Baseline}};
 
@@ -228,7 +228,7 @@ By explicitly embedding the ATC SOCP solver within the outer MPC loop, the contr
 
 During emergency mode operations, available local generation and BESS discharge capacity may fail to cover the aggregated demand. Unconstrained optimization would aggressively discharge the BESS to meet immediate deficits, leading to terminal depletion ($SOC_{i,t}$ approaching $SOC^{min}$) and rendering the MMG defenseless for future intervals. 
 
-To enforce Graceful Degradation, load shedding is decoupled into normal and critical loads with hierarchical VOLL coefficients, and simultaneously, a terminal SOC penalty ($J_{SOC}$) is activated. 
+To enforce Graceful Degradation, load shedding is decoupled into normal and critical loads with hierarchical VOLL coefficients, and simultaneously, a terminal SOC penalty ($J_{SOC}$) is activated \cite{Palangari2025_MPC}. 
 
 The load shedding cost function incorporates a penalty cost for normal load shedding $C_{shed}^{normal}$ and a significantly higher penalty cost for critical load shedding $C_{shed}^{critical}$:
 \begin{equation} \label{eq:MPC_load_shedding}
@@ -252,7 +252,7 @@ Through this cohesive integration, the ATC SOCP algorithm resolves spatial power
 \Require Real-time network measurements, BESS characteristics, Forecast models.
 \State \textbf{DAY-AHEAD SCHEDULING PHASE}
 \State Fetch long-term 24-hour forecasts $\mathbf{P}_{load}^{DA}, \mathbf{P}_{PV}^{DA}, \mathbf{P}_{WT}^{DA}$
-\State Solve ATC Global Objective for the entire 24-hour horizon ($h=24$)
+\State Solve ATC Global Objective for the entire 24-hour horizon ($h=24\text{h}$)
 \State Establish Day-Ahead baseline schedule $\mathbf{u}^{DA}$ for $t \in [1, 24]$
 \State \textbf{REAL-TIME EMERGENCY MPC PHASE}
 \For{each time step $t = 1$ to $24$}
@@ -266,7 +266,7 @@ Through this cohesive integration, the ATC SOCP algorithm resolves spatial power
         \State Apply scheduled control signals for step $t$
     \ElsIf{Fault detected at current hour $t$}
         \State \textbf{Mode 2 (Emergency Mode):}
-        \State Horizon $h \gets 5$ \Comment{Note: Forecast vectors seamlessly extend beyond $t=24$ for late-day windows}
+        \State Horizon $h \gets 5$ \Comment{Note: Forecast vectors seamlessly extend beyond $t=24\text{h}$ for late-day windows}
         \State Fetch rolling forecast vectors $\mathbf{P}_{load,i}^{(t)}, \mathbf{Q}_{load,i}^{(t)}$ (Eq. \ref{eq:forecast_Pload}--\ref{eq:forecast_Qload}) 
         \State Fetch renewable potential $\mathbf{P}_{PV,i}^{(t)}, \mathbf{P}_{WT,i}^{(t)}$ (Eq. \ref{eq:forecast_P_PV}--\ref{eq:forecast_P_WT})
         \State \textbf{Physical Cause:} Isolate mathematically identified faulty components \eqref{eq:fault_generic}.

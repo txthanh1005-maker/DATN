@@ -21,20 +21,20 @@
 %	CLASS OPTIONS
 %----------------------------------------------------------------------------------------
 \renewcommand{\baselinestretch}{1.2} % Giãn dòng 1.2
-\setlength{\parskip}{3pt} % Spacing after
+\setlength{\parskip}{6pt} % Spacing after
 \setlength{\parindent}{1cm} % Set khoảng cách thụt đầu dòng mỗi đoạn
 \usepackage{titlesec} % Thư viện để set up các kiểu chữ
 \setcounter{secnumdepth}{4} % 4 Heading
-\titlespacing*{\section}{0pt}{0pt}{30pt} % Heading 1
-\titleformat*{\section}{\fontsize{13pt}{0pt}\selectfont \bfseries \centering}
+\titlespacing*{\section}{0pt}{0pt}{25pt} % Heading 1
+\titleformat*{\section}{\fontsize{13pt}{0pt} \setstretch{1.2} \selectfont \bfseries \centering}
 
-\titlespacing*{\subsection}{0pt}{6pt}{0pt} % Heading 2
+\titlespacing*{\subsection}{0pt}{18pt}{12pt} % Heading 2
 \titleformat*{\subsection}{\fontsize{13pt}{0pt}\selectfont \bfseries}
 
-\titlespacing*{\subsubsection}{0pt}{6pt}{0pt} % Heading 3
+\titlespacing*{\subsubsection}{0pt}{12pt}{12pt} % Heading 3
 \titleformat*{\subsubsection}{\fontsize{13pt}{0pt}\selectfont \bfseries \itshape}
 
-\titlespacing*{\paragraph}{0pt}{0pt}{0pt} % Heading 4
+\titlespacing*{\paragraph}{0pt}{12pt}{6pt} % Heading 4
 \titleformat*{\paragraph}{\fontsize{13pt}{0pt}\selectfont \itshape}
 \usepackage[font=it]{caption}
 \renewcommand{\figurename}{\itshape Figure}
@@ -81,9 +81,7 @@
 	inner=3cm, % Inner margin
 	outer=2cm, % Outer margin
 	bindingoffset=.5cm, % Binding offset
-	right=2cm,
-        left=3cm,
-        top=2cm, % Top margin
+	top=2cm, % Top margin
 	bottom=2cm, % Bottom margin
 	% oneside,
 	footnotesep=24pt plus 2pt minus 12pt

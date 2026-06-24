@@ -105,3 +105,41 @@
 - **Phản biện:** Việc áp dụng kết hợp MPC và các thuật toán tối ưu phân cấp (như ATC) hoàn toàn khả thi trong thời gian thực (Real-Time Feasibility). Thay vì giải bài toán từ đầu ở mỗi bước thời gian, mô hình MPC tái sử dụng kết quả từ chu kỳ ngay trước đó làm "điểm khởi tạo ấm" (Warm-start). Việc này kết hợp với giới hạn số lần lặp (limited iterations) của ATC đảm bảo tính toán xong trước khi chu kỳ điều khiển tiếp theo diễn ra, chống lại sự sụp đổ hệ thống.
 - **Trích dẫn (Support):** `\cite{RobustMPC2022ATC, MPC2023Review}` (Distributed Robust MPC và tính khả thi trong thời gian thực).
 
+## 5. BỌC THÉP PHƯƠNG TRÌNH TOÁN HỌC (Cập nhật Giai đoạn 2)
+Danh sách 5 bài báo Q1 (IEEE/Elsevier) được bổ sung để bảo vệ tuyệt đối các phương trình cốt lõi trong luận văn:
+
+### 5.1. Định giá Biên nút (LMP) & Điều kiện KKT (Chapter 5)
+- **Luận điểm:** Khi xảy ra nghẽn mạch trên đường dây liên kết, giá trị thỏa hiệp $\lambda$ giữa các Microgrid sẽ bị tách rời khỏi giá LMP nội bộ. Mối quan hệ toán học được xác định chặt chẽ bởi điều kiện KKT là $\lambda = LMP_{deficit} - \mu$, với $\mu$ là giá trị bóng (shadow price) của nghẽn mạch.
+- **Trích dẫn:** `\cite{Ullah2022_LMP}` (Applied Energy, 2022).
+
+### 5.2. Hàm Phạt Giữ Dung Lượng Pin (Terminal SOC Penalty) (Chapter 4)
+- **Luận điểm:** Để hệ thống có thể chống chọi qua các giai đoạn sự cố kéo dài (Graceful Degradation), thuật toán MPC phải tích hợp hàm phạt Terminal SOC ($J_{SOC}$) ở cuối mỗi chân trời cuốn để ngăn việc BESS bị xả kiệt hoàn toàn.
+- **Trích dẫn:** `\cite{Palangari2025_MPC}` (IEEE Transactions on Transportation Electrification, 2025).
+
+### 5.3. Giá Trị Tổn Thất Phụ Tải (VOLL) & Phân Cấp Tải (Chapter 2 & 4)
+- **Luận điểm:** Việc thiết lập hệ số VOLL cao khổng lồ (với $C_{shed}^{critical} \gg C_{shed}^{normal}$) trong hàm mục tiêu là yếu tố tiên quyết để hệ thống ưu tiên hi sinh tải thường, bảo vệ tuyệt đối tải quan trọng khi tách đảo khẩn cấp.
+- **Trích dẫn:** `\cite{Hamilton2023_VOLL}` (IEEE PECI, 2023).
+
+### 5.4. Tự Động Tinh Chỉnh Tham Số Phạt (Adaptive $\rho$) (Chapter 3)
+- **Luận điểm:** Trong điều phối phân tán (như ATC/ADMM), việc cập nhật linh hoạt tham số phạt $\rho$ dựa trên sự cân bằng giữa thặng dư nguyên thủy và đối ngẫu ($r$ và $s$) là chìa khóa để tăng tốc hội tụ và ổn định vòng lặp.
+- **Trích dẫn:** `\cite{Mavromatis2021_AdaptiveRho}` (IEEE Transactions on Power Systems, 2021).
+
+### 5.5. Ràng Buộc Vận Hành Toàn Diện Phần Cứng Microgrid (Chapter 2)
+- **Luận điểm:** Các phương trình giới hạn công suất cho Máy phát (DG), Pin lưu trữ (BESS), Năng lượng tái tạo (RE), và cơ chế cắt tải (Load Shedding) trong môi trường AC-OPF.
+- **Trích dẫn:** `\cite{Nakiganda2023_Microgrid}` (IEEE Transactions on Power Systems, 2023).
+
+### 5.6. Mô Hình Trào Lưu Công Suất Nhánh (DistFlow) (Chapter 2)
+- **Luận điểm:** Xây dựng hệ phương trình sụt áp và cân bằng công suất P-Q chính xác cho lưới phân phối hình tia (radial distribution networks).
+- **Trích dẫn:** `\cite{Chowdhury2023_SOCP_ThreePhase}` (IEEE Transactions on Smart Grid, 2023).
+
+### 5.7. Nới Lỏng Nón Bậc Hai (SOCP Relaxation) (Chapter 2)
+- **Luận điểm:** Chứng minh toán học cho việc chuyển đổi bài toán phi tuyến AC-OPF thành dạng lồi (convex) bằng nới lỏng nón bậc hai, đảm bảo tìm được nghiệm tối ưu toàn cục.
+- **Trích dẫn:** `\cite{Chowdhury2025_SOCP_Coopt}` (IEEE Transactions on Industry Applications, 2025).
+
+### 5.8. Hàm Phạt Mục Tiêu Phân Tán (ATC Augmented Lagrangian) (Chapter 3)
+- **Luận điểm:** Thiết lập hàm mục tiêu cục bộ bằng cách áp dụng phương pháp nhân tử Lagrange tăng cường (Augmented Lagrangian) để ép các Microgrid tuân thủ thỏa hiệp giao dịch năng lượng với lưới chính.
+- **Trích dẫn:** `\cite{ATC_Coopt_2025}` (Wang et al., IEEE Transactions on Power Systems, 2025).
+
+### 5.9. Cơ Chế Chân Trời Cuốn Trong MPC (Rolling Horizon) (Chapter 4)
+- **Luận điểm:** Sử dụng cửa sổ dự báo cuốn liên tục trong thời gian thực để tái tối ưu hóa lịch trình năng lượng và cập nhật trạng thái SOC của BESS, phản ứng tức thì với các sự cố bất ngờ.
+- **Trích dẫn:** `\cite{Hermans2024_MPC}` (Applied Energy, 2024).

@@ -8,12 +8,12 @@ Nâng cấp và chuyển đổi toàn bộ báo cáo Đồ án Tốt nghiệp (D
 
 ## Progress & Changelog
 **Các Tác Vụ Gần Đây (Compacted):**
-- **Deep Logic & Redundancy Audit (Chapter 5):** Đã thiết lập lại luồng logic của AC-OPF, tổn hao $I^2X$, và cạn kiệt $Q$. Nắn lại các đoạn chuyển tiếp mà không làm mất tính toàn vẹn đồ thị.
-- **Deep Logic & Redundancy Audit (DATN.tex - Mở bài & Kết bài):** Khắc phục lỗi đảo ngược luồng logic vật lý ở Voltage Paradox. Xén gọt lặp ý (Redundancy) ở Conclusion để biến nó thành bản đúc kết uy lực.
-- **Format Audit (Task 7):** Đã sửa lỗi tràn lề `Overfull \hbox` và lệch hàng (Misaligned) tại các hệ phương trình DistFlow, ATC, AC-OPF trong Chapter 2 và 3. Tối ưu hóa Inline math.
+- **Title & Terminology Upgrade:** Chốt tên luận văn mới "Resilience-Oriented Peer-to-Peer Energy Trading in Multi-Microgrids via Network-Constrained Distributed Predictive Control". Càn quét và thay thế toàn bộ thuật ngữ "Decentralized" thành "Distributed" trên toàn hệ thống để chuẩn hóa lý thuyết điều khiển phân tán.
+- **Academic Citation Search (Task 9):** Tác nhân Trinh sát (Researcher) đã dò tìm thành công 4 bài báo chất lượng cao (2023-2025) từ IEEE và ScienceDirect để làm bảo chứng toán học cho các công thức SOCP, ATC, MPC. Đang chờ Tư lệnh phê duyệt.
+- **Format Audit (Task 7):** Đã sửa lỗi tràn lề `Overfull \hbox` và lệch hàng tại các hệ phương trình DistFlow, ATC, AC-OPF trong Chapter 2 và 3. Tối ưu hóa Inline math.
 - **Chỉnh sửa Phần Kết quả Chapter 5 (Task 10.5):** Cập nhật Hình 5.5, 5.6 và 5.9. Thay thế văn bản Base Fault thành chuẩn IEEE (nhấn mạnh sự cách ly $P_{tie}=0$).
-- **Algorithm Flowcharts & Timeline (Task 9 & 9.5):** Hoàn thành vẽ Lưu đồ TikZ cho thuật toán 3-Mode State Machine (Chương 4) và sơ đồ trục thời gian Rolling Horizon (MPC).
-- **Academic Reviewer Panel (Task 11):** Triển khai đồng thời 5 tác nhân (EIC, Methodology, Domain, Perspective, DA) quét toàn bộ luận văn (`DATN.tex`, `chapter1.tex` - `chapter5.tex`). Tổng hợp 30 báo cáo review thành `need_update.md` với quyết định "Minor Revision", tập trung vào ATC Convergence, Communication Latency, và Transient Stability caveats.
+- **Algorithm Flowcharts & Timeline (Task 9 & 9.5):** Hoàn thành vẽ Lưu đồ TikZ cho thuật toán 3-Mode State Machine và sơ đồ trục thời gian Rolling Horizon (MPC).
+- **Academic Reviewer Panel (Task 11):** Triển khai đồng thời 5 tác nhân (EIC, Methodology, Domain, Perspective, DA) quét toàn bộ luận văn. Tổng hợp 30 báo cáo review thành `need_update.md` với quyết định "Minor Revision".
 
 ## Key Decisions
 1. **Kiến trúc Top-Down (Chapter 6):** Sử dụng `Transfer folder/Result_data/report_result` để viết kết quả.
@@ -21,10 +21,13 @@ Nâng cấp và chuyển đổi toàn bộ báo cáo Đồ án Tốt nghiệp (D
 3. **Nâng cấp Radar Kiểm duyệt:** Skill `deep-logic-audit` giờ đây là tiêu chuẩn vàng để ép buộc phân tích phải có nền tảng Toán học/Vật lý.
 4. **Hủy diệt "Trading Q":** Tuyệt đối không cho P2P mua bán công suất phản kháng. Q chỉ phục vụ "Local Support".
 5. **Bẻ lái sang Resilience:** Trong bối cảnh Extreme Events, hệ thống không chỉ tìm kiếm cực tiểu chi phí (FIT/P2P thông thường) mà còn đóng vai trò "Safety Net".
-6. **ATC Multiplier Standards:** Chốt sử dụng chuẩn $\lambda, \rho$ thay cho $\alpha, \beta$ cho biến phạt tuyến tính và bậc hai trong mô hình Augmented Lagrangian.
+6. **ATC Multiplier Standards:** Chốt sử dụng chuẩn $\lambda, \rho$ thay cho $\alpha, \beta$ cho biến phạt tuyến tính và bậc hai.
+7. **Terminological Precision:** Sử dụng thuật ngữ "Distributed" thay vì "Decentralized" cho hệ thống điều khiển có giao tiếp qua Coordinator (DSO), tránh vi phạm tiêu chuẩn nghiêm ngặt của giới hàn lâm.
 
 ## Next Steps
-- **Project Closure (Task 11):** Cập nhật danh sách Publications, thông tin trang bìa, và biên dịch lại PDF lần cuối. Báo cáo Tốt nghiệp đã hoàn thiện về mặt nội dung, hình ảnh và định dạng. Sẵn sàng nộp bài!
+- Chờ Tư lệnh phê duyệt (ACP) 4 bài báo hỗ trợ thuật toán để chèn vào danh mục trích dẫn (Task 9).
+- Quét các ảnh độ phân giải thấp và yêu cầu render lại theo DPI chuẩn (Task 4).
+- Cập nhật thuật ngữ tên lỗi (Task 6) và viết Conclusion/Discussion cho các chương (Task 7 & 8).
 
 ## Critical Context
 **Cấu hình mạng (Topology P2P):** 1 Utility Grid & 4 Microgrids.
