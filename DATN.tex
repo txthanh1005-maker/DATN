@@ -421,25 +421,44 @@ $s_{SOC}$ & Slack variable for end-of-horizon SOC penalty \\
 \setcounter{section}{6}
     \setcounter{subsection}{0}
 
-\subsection{Conclusion}
-This thesis resolves the ``Master Gap'' identified in smart grid literature by constructing a Tri-layer Cooperative Architecture. By synthesizing Second-Order Cone Programming (SOCP) for physical bounding, Analytical Target Cascading (ATC) for spatial decentralization, and Model Predictive Control (MPC) for temporal dynamism, this research develops a fault-adaptive, P2P energy trading framework capable of ensuring stable operation under fault conditions. The efficacy of this architecture is summarized by four key findings:
+\subsection{Overall Conclusion and Rationale of the Architecture}
+
+This thesis addresses the \textit{master gap} in smart grid literature by constructing and validating a tri-layer cooperative architecture. The rationale for segregating this architecture into distinct methodological layers lies in the strict mathematical dependencies required to guarantee both operational feasibility and scalable convergence. Specifically, the framework integrates three interconnected components:
+
 \begin{itemize}
-    \item \textbf{Algorithmic Architecture:} The proposed Bottom-up Distributed Dynamic 3-Mode State Machine achieves high computational tractability, reaching ATC convergence (max 91 seconds) during grid shocks to ensure real-time MPC feasibility.
-    \item \textbf{Physical Feasibility and AC-OPF Integration:} The study demonstrates that transit-induced reactive losses lead to voltage collapse, which is mitigated by proactive active power curtailment to strictly maintain the 0.90~p.u. boundary.
-    \item \textbf{Market Pricing and the Tie-line Congestion Paradox:} The study proves the Tie-line Congestion Paradox, wherein physical thermal limits activate KKT bounds to cap ATC consensus pricing ($\lambda$), preventing market collapse during localized VOLL escalations.
-    \item \textbf{System Security and Graceful Degradation:} During grid faults, stranded energy occurs; to resolve this, the framework synergizes a Graceful Degradation mechanism with P2P trading to liberate this energy, guaranteeing a 100\% Critical Load survival rate and achieving a Negative Premium.
+    \item \textbf{Physical Layer (Chapter 2):} The framework relies on second-order cone programming (SOCP) to establish a globally convex AC optimal power flow (AC-OPF) feasible region, serving as the mathematical prerequisite for consensus.
+    \item \textbf{Decentralization Layer (Chapter 3):} Building upon the convex foundation, analytical target cascading (ATC) is employed to structurally distribute the microgrid network, securing data privacy and eliminating single points of failure.
+    \item \textbf{Dynamic Layer (Chapter 4):} Finally, model predictive control (MPC) incorporates a rolling-horizon mechanism to resolve intertemporal constraints, delivering real-time proactive resilience against sudden disruptions.
 \end{itemize}
 
-Ultimately, this thesis establishes a paradigm shift in decentralized energy management. It proves that P2P trading platforms must transcend their conventional role as financial markets for economic optimization. Instead, they can be strategically repurposed as a physical safety net, harmonizing economic profitability under normal conditions with fault survivability during grid emergencies.
+\subsection{Pros and Cons of the Proposed Method}
 
-\subsection{Future Work}
-To address the physical and algorithmic limitations observed in this study, future research should focus on the following primary directions:
 \begin{itemize}
-    \item \textbf{Hardware-in-the-Loop (HIL) Real-Time Validation:} While the proposed Tri-layer Architecture demonstrated operational stability in simulation, deploying the algorithms into physical microcontrollers via HIL testbeds is a required next step to evaluate real-world communication latencies, sensor noise, and hardware-execution delays.
-    \item \textbf{Asynchronous ATC for Massive Scalability:} When scaling the framework from a small cluster of MGs to city-wide smart grids (100+ MGs), communication bottlenecks emerge that compromise the MPC rolling horizon. To mitigate this, future iterations must transition from synchronous ATC to asynchronous or event-triggered consensus algorithms.
-    \item \textbf{Overcoming Conservative BESS SOC Retention:} Strict end-of-horizon SOC penalty constraints drive conservative MPC BESS discharging behavior. To mitigate this, introducing a Reinforcement Learning (RL)-based adaptive SOC Penalty will encourage more proactive BESS utilization. Additionally, future iterations will employ Stochastic MPC to handle the uncertainty of renewable energy forecasting.
-    \item \textbf{Hardware and Reactive Power Support:} Currently, when handling high transit currents that threaten voltage stability, intermediary MGs are forced to shed active power. To resolve this limitation, future iterations will integrate dynamic reactive compensation devices (e.g., STATCOM, SVC) or Smart Inverters equipped with Volt-VAR control to independently supply the necessary reactive power ($Q$) support.
-    \item \textbf{Dynamic Topology Reconfiguration:} To autonomously isolate fault zones and establish backup routing paths, future work will integrate a Dynamic Switch Control mechanism for real-time network reconfiguration, optimizing power flow and enhancing structural integrity.
+    \item \textbf{Pros (Advantages):} The framework bridges financial P2P trading with physical security, guarantees non-linear feasibility via SOCP, ensures data privacy through decentralized ATC, and provides autonomous resilience against compounding faults.
+    \item \textbf{Cons (Limitations):} It requires synchronous ATC convergence which can cause communication bottlenecks in large networks, and the finite rolling horizon induces a conservative energy retention behavior in BESS dispatch due to rigid end-of-horizon constraints.
+\end{itemize}
+
+\subsection{Achieved Results and Quantitative Proofs}
+
+The qualitative paradigm shift from a purely economic market to a secure physical resilience backbone is substantiated by the following quantitative proofs:
+
+\begin{itemize}
+    \item \textbf{Algorithmic Tractability:} The architecture achieved rapid ATC convergence, requiring a maximum of 91 seconds during severe cascading faults, thereby ensuring real-time feasibility.
+    \item \textbf{Strict Physical Bounding:} The system autonomously curtailed active power to reduce branch currents and alleviate reactive power losses ($I^2X$), rigorously maintaining the system voltage above the absolute 0.90 p.u. statutory threshold.
+    \item \textbf{Market Pricing and the Tie-line Congestion Paradox:} Following KKT conditions, the distributed market successfully absorbed the extreme price discrepancy directly into the transmission congestion rent, capping the ATC consensus price ($\lambda$) at 13.3 even when local LMPs skyrocketed to 100,000 cents/MWh.
+    \item \textbf{Graceful Degradation and System Security:} The MPC engine achieved a 100\% survival rate for critical loads during islanding events, reducing total operational expenses to 179,007.53 cents and collapsing the true economic cost gap to a statistically negligible 1.69\%.
+\end{itemize}
+
+\subsection{Future Work and Targeted Improvements}
+
+To address the identified structural and algorithmic limitations, future research will target the following enhancements:
+
+\begin{itemize}
+    \item \textbf{Addressing Communication Bottlenecks:} Transition toward asynchronous or event-triggered consensus algorithms to exponentially reduce communication overhead in massive, interconnected smart grids.
+    \item \textbf{Overcoming Conservative BESS Dispatch:} Introduce a reinforcement learning (RL)-based adaptive SOC mechanism alongside stochastic MPC to robustly optimize BESS utilization and internalize renewable forecasting errors.
+    \item \textbf{Resolving Active Power Curtailment:} Integrate dynamic reactive compensation devices (e.g., STATCOM, SVC, smart inverters) to directly supply decentralized reactive power ($Q$) support at critical nodes.
+    \item \textbf{Hardware-in-the-Loop (HIL) Real-Time Validation:} Deploy the distributed algorithms onto physical microcontrollers via HIL testbeds to empirically evaluate robustness against non-ideal communication latencies and sensor noise.
+    \item \textbf{Dynamic Topology Reconfiguration:} Incorporate mixed-integer dynamic switch control into the SOCP framework, allowing the system to autonomously reconfigure its physical topology to isolate faults and establish optimal backup routing paths.
 \end{itemize}
 
 \newpage

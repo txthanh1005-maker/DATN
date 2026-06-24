@@ -1,5 +1,5 @@
-\section*{CHAPTER 4. TEMPORAL COORDINATION WITH MPC}
-\addcontentsline{toc}{section}{\numberline{}CHAPTER 4. TEMPORAL COORDINATION WITH MPC}
+\section*{CHAPTER 4.  DYNAMIC ADAPTATION WITH MPC}
+\addcontentsline{toc}{section}{\numberline{}CHAPTER 4. DYNAMIC ADAPTATION WITH MPC}
 \setcounter{section}{4}
 \setcounter{subsection}{0}
 \setcounter{equation}{0}
@@ -303,9 +303,6 @@ Through this cohesive integration, the ATC SOCP algorithm resolves network power
 \par\vspace{1em}
 
 \subsection{Summary of the Dynamic MPC Strategy}
-This chapter has established the final dimension of the proposed architecture by integrating a Model Predictive Control (MPC) rolling-horizon mechanism. While static day-ahead scheduling is inherently vulnerable to real-time physical disruptions and forecasting errors, the MPC framework continuously updates system states and recursively solves the distributed dispatch problem over a sliding predictive window. This temporal dynamism empowers the system to actively adapt to unexpected component failures and sudden fluctuations in renewable generation.
 
-A core contribution of this chapter is the mathematical formulation of proactive Graceful Degradation. By coupling a high Value of Lost Load (VOLL) penalty for critical demands with a strict end-of-horizon battery state-of-charge penalty, the MPC engine is mathematically forced to prioritize long-term survivability over short-term local supply. During extended outages, the system proactively sheds non-critical loads in the early stages to conserve energy storage capacity, thereby guaranteeing a continuous energy supply to critical infrastructure.
-
-Ultimately, this chapter unifies the exact physical modeling of SOCP, the secure spatial decoupling of ATC, and the temporal resilience of MPC. This synthesis establishes a robust, self-healing Cooperative Resilience Architecture, governed by a responsive three-mode state machine. Having finalized the theoretical and mathematical foundations, the subsequent chapter will deploy this unified framework into a complex Multi-Microgrid testbed to validate its economic efficiency and fault-survival capabilities through rigorous extreme-condition simulations.
+This chapter integrates a MPC rolling horizon mechanism to resolve intertemporal constraints and continuously adapt to physical disruptions. During severe storms or utility outages, the system executes a grid disconnection mechanism to safely isolate the network while triggering a responsive three-mode state machine to govern the dynamic dispatch. By mathematically coupling a high value of lost load penalty with strict SOC limits, the formulation enforces proactive graceful degradation to shed flexible loads early and prevent battery depletion. This temporal synthesis finalizes the self-healing cooperative resilience architecture, ensuring the sustained operation of critical infrastructure when the multi-microgrid system is fully isolated.
 

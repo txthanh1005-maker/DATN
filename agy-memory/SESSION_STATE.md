@@ -8,10 +8,14 @@ Nâng cấp và chuyển đổi toàn bộ báo cáo Đồ án Tốt nghiệp (D
 
 ## Progress & Changelog
 **Các Tác Vụ Gần Đây (Compacted):**
-- **Terminology Restructuring (Task 6):** Hoàn thành chuẩn hóa 100% tên kịch bản lỗi trong `chapter5.tex` (Base Fault $\rightarrow$ Islanded Fault, PF $\rightarrow$ Perfect Foresight, 2-MG/3-MG $\rightarrow$ Transient/Sustained/Cascading Fault). Đã tạo file hướng dẫn `image_label_fixes.md` cho Python và Reviewer Subagent đã xác nhận tất cả 10 ảnh đồ thị kết quả được xuất lại hoàn hảo, không còn nhãn cũ hay lỗi đè layout.
-- **Deep Logic Audit & Surgical Fixes (Task 12):** Hoàn thành rà soát logic chuyên sâu 3 bước bằng `logic_flow_checker`. Triển khai "phẫu thuật thẩm mỹ" an toàn: bổ sung chứng minh thuật toán cho ADMM, cô đọng Fluff phần SO/RO, và thắt chặt nguyên nhân vật lý $N-2$ cho Mode 2 MPC (Chapter 1 & 4). Rút gọn tiêu đề Chapter 2 thành "System Architecture and Modeling" để chống tràn lề.
-- **Academic Citation Search & Matrix (Task 9 & 9.1):** Trinh sát (Researcher) đã dò tìm và chèn trích dẫn toán học thành công vào các phương trình SOCP, ATC, MPC. Cập nhật Citation Matrix dạng Pseudo-code/Algorithm vào Chương 1.
-- **Format Audit & Visualizations (Task 7 & 9.5):** Sửa lỗi tràn lề `Overfull \hbox`. Hoàn thành vẽ Lưu đồ TikZ cho thuật toán 3-Mode State Machine và sơ đồ trục thời gian Rolling Horizon (MPC). Tất cả ảnh phân giải thấp đã được cập nhật bản nét.
+- **Conclusion Refinement & Chapter Summaries (Task 7 & 8):** Bổ sung thành công các tiểu mục Conclusion tổng kết sắc bén cho từng chương (1, 2, 3, 4). Viết lại hoàn toàn "General Conclusion" trong `DATN.tex` mang tầm vóc vĩ mô (Master Gap resolution, Paradigm Shift, Future Work/HIL).
+- **SOTA Matrix Update & Formatting:** Cập nhật bảng State-of-the-art ở Chương 1 thành 4 cột cốt lõi. Sửa đổi cây Dirtree để tạo cặp đối ngẫu học thuật mạnh mẽ (Limitation vs Solution).
+- **Chapter 1 Duplication Fix (Emergency Response):** Phẫu thuật cắt bỏ thành công khối u nhân bản 150 dòng trong `chapter1.tex`. Cấu trúc được khôi phục hoàn hảo (Dirtree -> Gap -> Contributions -> SOTA Matrix -> Thesis Organization) và đã được Reviewer chấm PASS.
+- **Chapter 2, 3, 4 Summaries Refinement (Task 7 & 8 Continuation):** Đã tinh chỉnh triệt để phần Summary của 3 chương lý thuyết theo đúng định dạng học thuật nghiêm ngặt (cô đọng, không phân tích thừa, ép chữ thường toàn bộ thuật ngữ chuyên ngành ở giữa câu, xóa bỏ ngoặc kép).
+  + *Chapter 2:* Bổ sung đầy đủ các nguồn (PV, Wind, DG, BESS), ràng buộc tải (VOLL), và 2 chế độ vận hành (normal/emergency mode).
+  + *Chapter 3:* Đưa thêm "dynamic penalty scaling" và "minimal information exchange mechanism" để làm nổi bật tốc độ hội tụ và tính bảo mật của thuật toán ATC.
+  + *Chapter 4:* Nhúng "rolling horizon", "grid disconnection mechanism", "3-mode state machine" và "SOC limits" để hoàn thiện cơ chế phòng thủ thời gian thực của MPC.
+- Tất cả các nhiệm vụ trong `ACTION_PLAN.md` đã được đánh dấu `[x] DONE` và Luận văn đã sẵn sàng cho bước Final Build.
 
 ## Key Decisions
 1. **Kiến trúc Top-Down (Chapter 6):** Sử dụng `Transfer folder/Result_data/report_result` để viết kết quả.
@@ -22,9 +26,8 @@ Nâng cấp và chuyển đổi toàn bộ báo cáo Đồ án Tốt nghiệp (D
 6. **Terminological Precision:** Sử dụng thuật ngữ "Distributed, Dynamic, Multi-period" thay vì "Spatial, Temporal", tránh vi phạm tiêu chuẩn nghiêm ngặt của giới hàn lâm (Electrical Engineering Context).
 
 ## Next Steps
-- Củng cố lập luận (Task 7 & 8 - HIGH): Viết tiểu mục "Conclusion/Discussion" ở cuối *từng chương* (Chương 1, 2, 3, 4) và mở rộng "General Conclusion".
-- Biên dịch PDF lần cuối để kiểm tra tổng thể.
-
+- Toàn bộ Action Plan đã hoàn tất 100%. 
+- Tiến hành biên dịch `DATN.tex` thành PDF (Final Build) và chuẩn bị nộp quyển.
 ## Critical Context
 **Cấu hình mạng (Topology P2P):** 1 Utility Grid & 4 Microgrids.
 - **MG1 (Nặng tải, 36 nodes):** Gã khổng lồ xuất khẩu (Surplus Island). Liên kết MG4, MG3.
