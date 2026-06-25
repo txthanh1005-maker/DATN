@@ -1,0 +1,3131 @@
+HANOI UNIVERSITY OF SCIENCE AND TECHNOLOGY
+SCHOOL OF ELECTRICAL AND ELECTRONIC ENGINEERING
+GRADUATION THESIS
+A FAULT-ADAPTIVE PEER-TO-PEER ENERGY
+TRADING FRAMEWORK FOR
+ENHANCING MULTI-MICROGRID RESILIENCE
+VIA ATC AND MPC
+TRINH XUAN THANH
+thanh.tx20222744@sis.hust.edu.vn
+Major: Electrical Engineering
+Supervisor:
+Assoc. Prof. Nguyen Duc Tuyen
+Supervisor’s signature
+Department:
+Electrical Engineering
+School:
+Electrical and Electronic Engineering
+Hanoi, June 2026
+
+THESIS ASSIGNMENT
+Full name: Trinh Xuan Thanh
+Student ID: 20222744
+Class: Renewable energy and power system 01 – K67
+Thesis title: A Fault-Adaptive Peer-to-Peer Energy Trading Framework for Enhancing
+Multi-Microgrid Resilience via ATC and MPC.
+I. Review the state-of-the-art literature on microgrids and Peer-to-Peer (P2P) en-
+ergy trading, identifying gaps in physical network constraints and resilient oper-
+ations.
+II. Develop the system architecture and mathematical formulation for microgrid en-
+ergy management, integrating Second-Order Cone Programming (SOCP) for ex-
+act AC power flow.
+III. Design a decentralized spatial coordination framework using Analytical Target
+Cascading (ATC) to facilitate secure P2P trading across interconnected micro-
+grids.
+IV. Implement a temporal coordination strategy utilizing Model Predictive Control
+(MPC) with a rolling horizon to proactively manage extreme fault events.
+V. Simulate and analyze the proposed framework on multi-microgrid testbeds, com-
+prehensively evaluating economic efficiency, voltage stability, and algorithmic
+convergence.
+Hanoi, . . . . . . / 06 / 2026
+Supervisor
+Assoc. Prof. Nguyen Duc Tuyen
+
+ACKNOWLEDGEMENTS
+First and foremost, I would like to express my sincere gratitude to Assoc. Prof.
+Nguyen Duc Tuyen for his dedicated supervision, invaluable guidance, and continu-
+ous encouragement throughout the entire course of this thesis. His insightful feedback
+and deep expertise in power systems have been the cornerstone of this work.
+I am deeply grateful to all faculty members of the Department of Electrical
+Engineering, School of Electrical and Electronic Engineering, Hanoi University of
+Science and Technology (HUST), for imparting knowledge and creating a stimulating
+academic environment over the past five years.
+My heartfelt thanks also go to the members of the 100RE Lab for their colle-
+giality, knowledge sharing, and moral support during the research process. Working
+alongside such a motivated group has been both a privilege and an inspiration.
+Finally, I owe my deepest appreciation to my family, whose unwavering support,
+trust, and encouragement have been my greatest source of strength and motivation
+throughout my academic journey.
+I acknowledge that the thesis may still contain shortcomings, and I sincerely
+welcome any constructive feedback from professors and readers.
+The Author
+Thanh
+Trinh Xuan Thanh
+
+ABSTRACT
+The increasing severity of extreme weather events exposes the inherent vulner-
+ability of traditional distribution grids, rendering centralized and linear energy man-
+agement models inadequate. To enhance physical resilience and economic efficiency
+under severe disruptions, this thesis proposes a highly rigorous, bottom-up spatiotem-
+poral energy management framework for MMG systems. The proposed architecture
+synergizes three core mechanisms: SOCP AC-OPF constraints for voltage security,
+ATC for decentralized, privacy-preserving multi-agent coordination, and MPC to ro-
+bustly navigate system uncertainties through a rolling horizon.
+By stress-testing the architecture against severe islanding scenarios, the simu-
+lation reveals several significant findings. Most crucially, the framework guarantees
+a 100% survival rate for Critical Loads during grid failures. Economically, rout-
+ing P2P exchanges to liberate stranded renewable energy successfully manifests a
+“Negative Premium”, wherein post-fault operational costs are counterintuitively lower
+than normal pre-fault operations. Furthermore, the rigorous mathematical formula-
+tion exposes two key physical phenomena. First, the Tie-line Congestion Paradox
+demonstrates that physical transmission bounds inherently constrain the ATC consen-
+sus pricing (λ), decoupling it from extreme local VOLL escalations and preventing
+economic collapse. Second, the Voltage Paradox highlights the absolute necessity of
+AC-OPF integration; high transit currents induce severe I2X reactive power losses that
+threaten catastrophic voltage collapse, forcing the algorithm to proactively execute ac-
+tive power load shedding as a vital physical defense. Ultimately, this thesis establishes
+a computationally tractable, fault-adaptive, and physically secure P2P energy trading
+framework, forging a resilient paradigm for the next generation of decentralized power
+systems.
+
+DECLARATION OF ORIGINALITY
+I am Trinh Xuan Thanh, Student ID 20222744, student of Class Renewable En-
+ergy and Power System 01 – K67. My supervisor is Assoc. Prof. Nguyen Duc Tuyen.
+I hereby declare that the entire content presented in the thesis entitled “A Fault-
+Adaptive Peer-to-Peer Energy Trading Framework for Enhancing Multi-Microgrid
+Resilience via ATC and MPC” is the result of my own study and research process.
+The data reported in the thesis are completely truthful. All cited information com-
+plies with intellectual property regulations, and references are clearly listed. I take
+full responsibility for the contents written in this thesis.
+The Author
+Trinh Xuan Thanh
+
+Contents
+LIST OF SYMBOLS AND ABBREVIATIONS
+i
+LIST OF FIGURES
+v
+LIST OF TABLES
+vi
+CHAPTER 1. INTRODUCTION AND LITERATURE REVIEW
+1
+1.1
+Macro View: The Evolution of Smart Grid and MMGs . . . . . . . .
+1
+1.2
+The Physical Layer: Power Flow Models and Network Constraints . .
+1
+1.3
+The Spatial Layer: Decentralization and Privacy . . . . . . . . . . . .
+3
+1.4
+The Temporal Layer: Temporal Dynamics and Grid Resilience . . . .
+4
+1.5
+Research Gap, Motivation, and Major Contributions . . . . . . . . . .
+6
+1.5.1
+The Master Gap and Motivation . . . . . . . . . . . . . . . .
+6
+1.5.2
+Major Contributions
+. . . . . . . . . . . . . . . . . . . . . .
+6
+1.6
+Thesis Organization . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7
+CHAPTER 2. SYSTEM ARCHITECTURE AND MATHEMATICAL
+FORMULATION
+8
+2.1
+System Parameters, Sets, and Indices . . . . . . . . . . . . . . . . . .
+8
+2.2
+Mathematical Modeling of Energy Components . . . . . . . . . . . .
+9
+2.2.1
+RESs and Loads
+. . . . . . . . . . . . . . . . . . . . . . . .
+9
+2.2.2
+BESS . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+10
+2.2.3
+DG
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+10
+2.3
+AC-OPF Formulation . . . . . . . . . . . . . . . . . . . . . . . . . .
+11
+2.3.1
+Economic and Loss Functions . . . . . . . . . . . . . . . . .
+11
+2.3.2
+Operational Modes and Fault Scenarios . . . . . . . . . . . .
+12
+2.3.3
+Distribution Power Flow Constraints . . . . . . . . . . . . . .
+13
+2.4
+SOCP Relaxation and Exactness . . . . . . . . . . . . . . . . . . . .
+14
+2.4.1
+Convexification and SOC Relaxation
+. . . . . . . . . . . . .
+14
+2.4.2
+Exactness in Normal Mode . . . . . . . . . . . . . . . . . . .
+15
+2.4.3
+Robustness against Inexactness in Emergency Mode
+. . . . .
+15
+2.5
+Final Local SOCP Optimization Model
+. . . . . . . . . . . . . . . .
+16
+2.5.1
+Formulation I: Normal Operation Mode (ΓE(t) = 0)
+. . . . .
+16
+2.5.2
+Formulation II: Emergency Mode (ΓE(t) = 1) . . . . . . . . .
+16
+CHAPTER 3. SPATIAL COORDINATION - ATC
+18
+3.1
+ATC Overview
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+18
+3.2
+The Coordinator Problem (Utility Grid) . . . . . . . . . . . . . . . .
+19
+
+3.3
+The Local MG Problem with ATC . . . . . . . . . . . . . . . . . . .
+20
+3.4
+ATC Iterative Algorithm and Convergence . . . . . . . . . . . . . . .
+21
+CHAPTER 4. TEMPORAL COORDINATION WITH MPC
+23
+4.1
+MPC Time Framework . . . . . . . . . . . . . . . . . . . . . . . . .
+23
+4.1.1
+Day-Ahead Scheduling . . . . . . . . . . . . . . . . . . . . .
+23
+4.1.2
+Real-Time Emergency MPC . . . . . . . . . . . . . . . . . .
+23
+4.2
+State Update and Forecasting Mechanism
+. . . . . . . . . . . . . . .
+24
+4.2.1
+SOC Inheritance . . . . . . . . . . . . . . . . . . . . . . . .
+24
+4.2.2
+Forecasting Data Update Mechanism
+. . . . . . . . . . . . .
+24
+4.3
+The 3-Mode Spatiotemporal Coordination Framework . . . . . . . . .
+25
+4.3.1
+Mode 1 and Mode 3: Normal Operation and Recovery . . . .
+25
+4.3.2
+Mode 2: Emergency Integration of Spatial and Temporal
+Control . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+27
+4.3.3
+Activation of Penalty Functions and Load Shedding Mechanism 27
+CHAPTER 5. RESULTS AND DISCUSSION
+30
+5.1
+System Configuration and Simulation Setup . . . . . . . . . . . . . .
+30
+5.1.1
+Network Topology and DER Allocation Parameters . . . . . .
+31
+5.1.2
+Simulation Scenarios and Baseline Models
+. . . . . . . . . .
+31
+5.1.3
+The 3D Evaluation Framework: Horizontal, Vertical, and
+Boundary Analysis . . . . . . . . . . . . . . . . . . . . . . .
+32
+5.2
+Horizontal Evaluation:
+System-Level Economic Assessment and
+Benchmarking . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+32
+5.2.1
+Critical Load Protection and Energy Security . . . . . . . . .
+33
+5.2.2
+Optimality Gap Analysis: The Denominator Effect . . . . . .
+34
+5.2.3
+Co-optimization Benefits of P2P Energy Trading . . . . . . .
+34
+5.2.4
+Comparative Analysis of MG Operational Dynamics . . . . .
+35
+5.3
+Vertical Evaluation: Operational Dynamics of the Proposed MPC-
+ATC Framework
+. . . . . . . . . . . . . . . . . . . . . . . . . . . .
+37
+5.3.1
+Active Power Routing and the Transit Corridor Effect . . . . .
+37
+5.3.2
+AC-OPF Constraint Satisfaction: Voltage Stability and Reac-
+tive Power Management
+. . . . . . . . . . . . . . . . . . . .
+38
+5.3.3
+Algorithmic Convergence and the Tie-line Congestion Paradox 40
+5.4
+Boundary Evaluation: Stress Testing and System Resilience . . . . . .
+43
+5.4.1
+The Spatiotemporal Stress Matrix . . . . . . . . . . . . . . .
+43
+5.4.2
+Active Power Routing Limits and Network Capacity
+. . . . .
+44
+5.4.3
+Voltage Stability Envelopes under Severe Grid Contingencies
+45
+5.4.4
+Graceful Degradation: Autonomous Load Prioritization vs.
+Economic Cost . . . . . . . . . . . . . . . . . . . . . . . . .
+46
+6
+
+CHAPTER 6. CONCLUSION
+49
+6.1
+Conclusion
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+49
+6.2
+Future Work . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+49
+LIST OF SCIENTIFIC PUBLICATIONS
+50
+REFERENCES
+51
+
+LIST OF SYMBOLS AND ABBREVIATIONS
+Abbreviation
+Full Form
+1. Methods & Algorithms
+ATC
+Analytical Target Cascading
+MPC
+Model Predictive Control
+OPF
+Optimal Power Flow
+AC-OPF
+Alternating Current Optimal Power Flow
+SOCP
+Second-Order Cone Programming
+KKT
+Karush-Kuhn-Tucker
+HILP
+High-Impact Low-Probability
+SO
+Stochastic Optimization
+RO
+Robust Optimization
+RL
+Reinforcement Learning
+ADMM
+Alternating Direction Method of Multipliers
+2. Energy Systems & Components
+MG
+Microgrid
+MMG
+Multi-Microgrid
+P2P
+Peer-to-Peer
+PV
+Photovoltaic
+WT
+Wind Turbine
+BESS
+Battery Energy Storage System
+DG
+Diesel Generator
+SOC
+State of Charge
+ESS
+Energy Storage System
+RES
+Renewable Energy Sources
+DER
+Distributed Energy Resource
+EMS
+Energy Management System
+DSO
+Distribution System Operator
+3. Metrics & Parameters
+VOLL
+Value of Lost Load
+DLMP
+Distribution Locational Marginal Price
+FIT
+Feed-in Tariff
+PDF
+Probability Density Function
+PF
+Perfect Foresight
+pu
+Per-unit
+MWh
+Megawatt-hour
+MW
+Megawatt
+Note: Subscripts i, j denote node or line indices, and t denotes the time interval. They
+are omitted in descriptions for brevity.
+
+Symbol
+Description
+1. Sets & Indices
+T
+Set of time scheduling intervals
+N ,M
+Sets of buses/nodes in the network, and Microgrids
+C ,E
+Sets of line configurations, and distribution lines
+N PV,N WT
+Sets of nodes equipped with PV and Wind Turbines
+N DG,N BESS
+Sets of nodes equipped with Diesel Generators and BESS
+N trade
+Set of nodes with P2P tie-lines
+Ω(i)
+Set of child nodes connected to node i
+2. Parameters
+Sbase,Ubase
+System base apparent power and voltage
+Zbase,Ibase
+System base impedance and current
+Rij,Xi j,Ci j
+Resistance, reactance, and capacitance of line (i, j)
+Pload,Qload
+Active and reactive power demand
+πbuy,πsell
+Electricity prices for purchasing/selling to the main grid
+Ppeak
+PV ,Ppeak
+WT
+Maximum active power generation of PV and WT
+QPV,QWT
+Reactive power output limits of PV and WT
+SPV,SWT
+Apparent power capacities of PV and WT
+πtrade
+P2P trading price between MGs
+λ,ρ
+Lagrange multiplier and penalty parameter for ADMM
+Ptarget
+Target active power trading amount provided by DSO
+αDG,βDG,γDG
+Fixed, linear, and quadratic cost coefficients of DG
+Cstart,DG
+Cold start cost of DG
+Pmin
+DG ,Pmax
+DG
+Minimum and maximum active power limits of DG
+Rramp
+DG
+Ramp rate limit of DG
+T DG
+up ,T DG
+down
+Minimum up and down time of DG
+CBESS,ηbess
+Degradation cost coefficient and round-trip efficiency of BESS
+Pmax
+bess
+Maximum charging/discharging power of BESS
+SOCmin,SOCmax
+Minimum and maximum State of Charge limits of BESS
+SOCini
+Initial State of Charge of BESS
+Capbess
+Energy capacity of BESS
+3. Decision Variables
+Pline,Qline
+Active and reactive power flow on line (i, j)
+V 2,I2
+Squared voltage magnitude and squared current magnitude
+PPV,PWT
+Scheduled active power generation of PV and WT
+PDG,QDG
+Active and reactive power generation of DG
+IDG,vDG
+ON/OFF status and startup binary variables of DG
+RDG
+Spinning reserve of DG
+Pchar
+bess ,Pdis
+bess
+Charging and discharging power of BESS
+SOC
+State of Charge of BESS
+Ichar
+bess,Idis
+bess
+Binary indicators for charging and discharging modes of BESS
+Pshed
+Total active power load shedding
+Pnormal
+shed
+,Pcritical
+shed
+Normal and critical load shedding amounts
+ii
+
+Ptie
+Active power traded via P2P tie-lines
+Pbuy
+grid,Psell
+grid
+Active power purchased from and sold to the main grid
+Ppaid
+grid ,P free
+grid
+Compensated and uncompensated active power sold to the grid
+sSOC
+Slack variable for end-of-horizon SOC penalty
+iii
+
+List of Figures
+Figure 1.1
+Trade-off comparison of Optimal Power Flow models high-
+lighting the optimal balance achieved by the SOCP relaxation.
+. . . .
+3
+Figure 1.2
+The proposed Tri-layer Cooperative Resilience Architecture . .
+7
+Figure 2.1
+Internal configuration of a typical Microgrid node. Source:
+Modern clean energy microgrid diagram. Image by AllahFoto, li-
+censed via Adobe Stock (Education License). . . . . . . . . . . . . .
+9
+Figure 2.2
+Evolution of Optimal Power Flow models and the justification
+for the SOCP approach. . . . . . . . . . . . . . . . . . . . . . . . . .
+14
+Figure 2.3
+Geometric visualization of the SOCP relaxation: The non-
+convex equality constraint (hollow surface) is relaxed into a convex
+inequality (solid feasible region), thereby transforming the problem
+space into a globally solvable convex cone. . . . . . . . . . . . . . . .
+15
+Figure 3.4
+Conceptual topology of the interconnected Multi-Microgrid
+system.
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+18
+Figure 3.5
+Ensuring data privacy and independent P2P trading. . . . . . .
+19
+Figure 3.6
+Flowchart of the Decentralized ATC Algorithm. . . . . . . . .
+22
+Figure 4.7
+MPC Rolling Horizon Framework
+. . . . . . . . . . . . . . .
+24
+Figure 4.8
+Flowchart of the 3-Mode State Machine Algorithm
+. . . . . .
+26
+Figure 5.1
+P2P interconnection topology of the MMG system.
+. . . . . .
+30
+Figure 5.2
+Timeline of the compounded emergency fault, illustrating the
+Main Grid and PV generation loss scenarios. . . . . . . . . . . . . . .
+32
+Figure 5.3
+Macro-economic comparison demonstrating the true eco-
+nomic cost versus total load shedding. . . . . . . . . . . . . . . . . .
+33
+Figure 5.4
+Energy mix distribution across the MMG system over a 24-
+hour horizon. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+34
+Figure 5.5
+Massive Load Shedding in Vulnerable MGs - Base Fault Sce-
+nario.
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+35
+Figure 5.6
+SOC Comparison. . . . . . . . . . . . . . . . . . . . . . . . .
+36
+Figure 5.7
+Active Power Flow - Proposed MPC Method.
+. . . . . . . . .
+38
+Figure 5.8
+Node-Level Voltage Profiles. . . . . . . . . . . . . . . . . . .
+39
+Figure 5.9
+Reactive Power Dispatch - Proposed MPC Method.
+. . . . . .
+39
+Figure 5.10 Load Shedding Profile (Confined exclusively to MG4).
+. . . .
+40
+Figure 5.11 Total and maximum CPU time comparison between PF and
+MPC.
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+41
+Figure 5.12 ATC Convergence Behavior Across All Hours. . . . . . . . . .
+42
+Figure 5.13 Dynamic ATC Pricing (λ). . . . . . . . . . . . . . . . . . . .
+43
+Figure 5.14 P2P active power exchange across four fault scenarios: Base
+Case (2-MG Short), 3-MG Short, 2-MG Long, and 3-MG Long. . . .
+45
+iv
+
+Figure 5.15 System-wide voltage envelope under varying spatiotemporal
+fault severities.
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+46
+Figure 5.16 Robustness test demonstrating True Economic Cost versus
+Load Shedding across fault depths. . . . . . . . . . . . . . . . . . . .
+47
+Figure 5.17 Temporal distribution of Total Shedding and Economic Cost. .
+47
+v
+
+List of Tables
+Table 5.1
+Placement of DERs across MGs . . . . . . . . . . . . . . . . .
+31
+Table 5.2
+Technical and Economic Parameters of DG and BESS
+. . . . .
+31
+Table 5.3
+Macro-Economic Benchmark of Simulation Models
+. . . . . .
+33
+vi
+
+CHAPTER 1. INTRODUCTION AND LITERATURE REVIEW
+1.1
+Macro View: The Evolution of Smart Grid and MMGs
+The global energy landscape is undergoing a profound paradigm shift driven by
+the massive integration of DERs [1,2]. The massive penetration of renewables has cat-
+alyzed the transformation of passive end-users into active prosumers. Consequently,
+this evolution introduces unprecedented challenges in two-way energy coordination
+and grid management [3].
+To manage the escalating complexity of this decentralized environment, MG has
+emerged as the fundamental cellular building block of the modern Smart Grid [4].
+Functioning as a localized energy system, a MG possesses the critical capability to
+operate seamlessly in both grid-connected and isolated (islanded) modes [5]. Further-
+more, BESS have become an indispensable component within these MGs, serving as
+a vital buffer to absorb the inherent stochasticity of renewable generation [6].
+In parallel with physical infrastructure advancements, the economic mecha-
+nisms governing energy exchange are fundamentally evolving. Rigid incentive struc-
+tures, such as Feed-in Tariffs (FIT), are being rapidly replaced by dynamic P2P energy
+trading frameworks [7, 8]. P2P trading facilitates direct active power transactions
+among localized prosumers [9], thereby maximizing community social welfare and
+significantly shortening investment payback periods [10, 11]. Ultimately, this culti-
+vates a high degree of regional energy autonomy [12]. Within this framework, P2P
+markets are restricted to the trading of active power (P), while reactive power (Q) is
+managed locally.
+More recently, the strategic focus of MG and P2P implementation has necessi-
+tated a critical pivot from pure economic efficiency toward grid resilience. Driven by
+the escalating frequency of extreme weather events, networked MGs are increasingly
+conceptualized as critical safety nets [13,14]. During severe grid disturbances, these
+systems must provide self-healing capabilities and facilitate emergency energy rout-
+ing to safeguard critical loads [15]. Consequently, the localized P2P trading platform
+transcends its conventional financial role, functioning fundamentally as the underly-
+ing decentralized control and communication framework that enables such emergency
+energy routing during autonomous islanding operations. This ensures that operational
+continuity and power system resilience are robustly maintained even under extreme
+adverse conditions [16].
+1.2
+The Physical Layer: Power Flow Models and Network Constraints
+Early literature frequently models distribution grids and P2P markets using a
+lumped-node (or copper-plate) abstraction. This oversimplified approach aggregates
+all local generations and loads into a single node, operating under the assumption
+of infinite transmission capacity and ignoring the physical network topology [17].
+By disregarding line impedances and thermal limits, the copper-plate model assumes
+that active power can be freely routed between any two prosumers without encoun-
+tering physical constraints. Consequently, such models obscure underlying voltage
+violations and often trigger severe localized congestion when deployed in real-world
+scenarios [18]. As demonstrated by recent studies, relying on lumped-node aggrega-
+tions creates a misleading perception of grid flexibility, which inevitably fails during
+1
+
+high-stress operating conditions [19,20].
+To incorporate network constraints, subsequent research adopted linearized
+models like DC OPF (DC-OPF) or LinDistFlow. These models operate by neglect-
+ing branch losses and transverse voltage drops, essentially dropping the non-linear
+terms from the branch flow equations [21]. While computationally efficient for bulk
+transmission systems, this mathematical simplification introduces significant errors
+in distribution networks characterized by high R/X ratios [22]. The inherent phys-
+ical characteristics of radial distribution grids dictate that active and reactive power
+(P-Q-V) are strongly coupled [23]. Any rapid fluctuation in active power (P)—such
+as those induced by aggressive decentralized P2P trading—immediately induces sub-
+stantial variations in nodal voltage magnitudes. Therefore, decoupling the economic
+dispatch of active power from the physical management of reactive power leads to
+severely underestimated voltage drops [24]. Under extreme weather events or emer-
+gency islanded modes, relying on such linear approximations frequently leads to volt-
+age collapse [25,26].
+AC-OPF problem, SOCP relaxation has emerged as a robust framework. The
+core conflict in AC-OPF arises from the non-linear coupling of voltage magnitudes
+and phase angles, which inherently creates a non-convex feasible region. SOCP de-
+constructs this conflict by defining auxiliary variables to represent voltage products—
+such as mapping Wi j = ViVj cos(θi j)—and applying exact convexification. Specif-
+ically, it relaxes the rigid non-linear equality constraints into a convex inequality
+cone, yielding relationships such as WiiWj j ≥|Wi j|2 [22, 27]. By transforming the
+non-convex domain into a convex space, this mathematical mechanism guarantees
+exactness and global optimality specifically under radial network topologies, while
+accelerating computational speed and inherently preserving the strict AC physics of
+the grid [28]1.
+More importantly, unlike linear approximations that ignore losses, the SOCP
+formulation accurately captures the exact quadratic power flow equations, longitu-
+dinal branch losses, and strict transverse voltage limits essential for resilient opera-
+tion [28,29]. This precise physical representation becomes critical during emergency
+islanding conditions, where the MG operates independently and is susceptible to volt-
+age collapse. The SOCP framework effectively encapsulates the unique islanding
+physics of MGs by tightly coupling the active power routing with the underlying volt-
+age profile. By respecting the true non-linear bounds of the network, the optimization
+ensures that the derived market clearing solutions remain strictly physically feasible
+under extreme conditions.
+Within this exact AC framework, the critical role of reactive power (Q) is explic-
+itly managed. Rather than commoditizing reactive power into the financial P2P mar-
+ket, the SOCP model mathematically ensures that local DERs provide autonomous
+Q generation. Specifically, DERs autonomously generate Q as an ancillary service
+utilizing their remaining inverter capacity (S2
+max ≥P2 +Q2) [30], thus preserving the
+1It is critical to acknowledge that the strict exactness of the SOCP formulation is theoretically
+maintained because the overarching objective function incorporates a VOLL penalty component. This
+mechanism, combined with the radial topology of the MG, mathematically penalizes load shedding,
+thereby implicitly forcing the system to tighten the SOC convergence boundary (SOC relaxation tight-
+ness) and ensuring physically realizable voltage bounds.
+2
+
+active power (P) trading limits [31]. This localized reactive support is dynamically
+dispatched to neutralize the voltage fluctuations induced by large-scale active power
+(P) trades. As demonstrated by Garrido-Arevalo et al., integrating this mechanism
+guarantees that local grid security is maintained, proving effective in supporting volt-
+age stability without requiring external financial transactions [32]. Furthermore, Men
+et al. explicitly established that deploying such SOCP-based autonomous reactive
+compensation enhances overall power system resilience, ensuring uninterrupted op-
+eration during severe disturbances and autonomous islanded transitions [33].
+Figure 1.1 Trade-off comparison of Optimal Power Flow models highlighting the op-
+timal balance achieved by the SOCP relaxation.
+1.3
+The Spatial Layer: Decentralization and Privacy
+Traditional EMS depend on a centralized architecture to coordinate dispatch
+and execute global optimization. However, these systems require the EMS to ag-
+gregate large volumes of high-resolution data, including local capacity bounds and
+operational states. This extensive data requirement creates a severe computational
+and communication bottleneck that degrades real-time dispatch efficiency [34]. Fur-
+thermore, in the P2P market, prosumers’ underlying load profiles and financial bids
+are strictly confidential. A centralized framework inherently compromises this pri-
+vacy by mandating full parameter exposure, thereby undermining market trust and
+disincentivizing participation [35]. Beyond computational and economic limitations,
+centralized coordination introduces a structural vulnerability that compromises grid
+resilience during extreme weather events. Operating a MMG network through a sin-
+gle computational hub establishes a critical single point of failure. If the central com-
+munication link is severed during a physical disaster, the entire MMG system loses
+coordination. This loss of centralized control triggers cascading failures across the
+network, disrupting the autonomous islanded resilience required to sustain critical
+loads during emergencies [36,37].
+To mitigate these vulnerabilities, distributed optimization frameworks, ADMM,
+have been widely adopted. ADMM establishes a flat decentralized structure that
+mathematically decomposes the global optimization problem [38]. This mechanism
+protects data privacy, as participants only exchange boundary coupling variables
+3
+
+rather than internal parameters [39]. Moreover, this flat consensus-based approach
+ensures resilience against centralized failures [40]. Concurrently, DLMP has been
+integrated into these models [41, 42]. These pricing signals accurately reflect local
+marginal costs and network congestion states [43]. Consequently, ADMM has proven
+effective for linearized, flat market clearings [44].
+However, modern power systems are inherently hierarchical rather than flat. A
+distribution network operator typically coordinates multiple autonomous MGs, form-
+ing a strict top-down operational topology. When ADMM is applied to solve such
+multi-level optimizations, particularly those involving exact SOCP formulations, its
+mathematical foundation exposes critical limitations. Fundamentally, ADMM en-
+forces “flat horizontal consensus”, which causes severe oscillation and algorithmic di-
+vergence in non-linear SOCP multi-level grids [45]. This inefficiency creates substan-
+tial communication overhead, rendering the method inadequate for dynamic, multi-
+level grid coordination [46].
+To resolve this structural mismatch, ATC provides a mathematically rigorous
+top-down coordination framework. Mathematically, ATC achieves this decoupling
+by formulating an Augmented Lagrangian penalty function to coordinate boundary
+coupling variables between hierarchical levels. Crucially, convexifying the physical
+grid via SOCP is a strict prerequisite condition for this process; without a globally
+convex feasible region at the physical layer, the ATC algorithm cannot theoretically
+guarantee convergence. Consequently, by enforcing a “vertical master-slave consen-
+sus” over these convexified domains, ATC securely decouples the hierarchical re-
+gions and ensures fast convergence [47]. In this paradigm, the upper level dictates
+optimal “Target” variables, while the lower levels compute and return corresponding
+“Response” variables [48, 49]. This strict target-response mechanism decouples the
+hierarchical optimization loops, allowing each layer to solve its mathematical prob-
+lem independently without violating data privacy. Importantly, this approach effec-
+tively calculates the DLMP, preserving economic pricing signals within a top-down
+structure. By eliminating the necessity for global flat consensus, ATC significantly
+reduces communication overhead and guarantees fast, stable convergence even when
+managing complex, non-linear SOCP models.
+1.4
+The Temporal Layer: Temporal Dynamics and Grid Resilience
+Traditional operational strategies predominantly rely on static optimization or
+pure day-ahead dispatch mechanisms governed by a deterministic mathematical for-
+mulation. This approach calculates an operational trajectory predicated entirely on a
+single day-ahead snapshot, denoted as ˆx [50, 51]. When the power system encoun-
+ters sudden physical disturbances, such as emergency islanding transitions, real-time
+grid conditions inevitably deviate from the initial snapshot ˆx [52, 53]. These devia-
+tions immediately cause voltage limit and capacity constraint violations, which can
+trigger severe cascading failures across the network. Because it lacks a continuous
+update loop, the mathematical model cannot dynamically adapt, rendering the control
+system fundamentally rigid. Consequently, enforcing this rigid schedule causes the
+pre-calculated dispatch bounds to be rapidly breached.
+To address the mathematical limitations of deterministic static models, SO has
+4
+
+been widely explored. SO formulates the dispatch problem by optimizing the ex-
+pected value of an objective function, typically expressed as E[f(x,ξ)] using estab-
+lished PDFs. While this approach mitigates minor forecasting errors under normal op-
+erations, it exhibits critical theoretical vulnerabilities when applied to grid resilience.
+Specifically, relying on established PDFs is often insufficient to capture HILP events
+or fat-tail risks. Because these extreme physical disruptions lack sufficient histori-
+cal data, synthesizing accurate statistical distributions is infeasible, rendering the SO
+approach inadequate for safeguarding critical infrastructure during severe blackouts.
+Alternatively, RO circumvents the reliance on precise statistical distributions
+by framing the control problem within a strict min-max formulation, represented
+as minmax f(x,u). This framework evaluates the worst-case scenario over a pre-
+defined uncertainty set U, guaranteeing operational feasibility under extreme con-
+ditions. However, mathematically preparing for the absolute worst-case creates ex-
+treme over-conservatism, forcing the MG to maintain substantial idle energy reserves
+and substantially degrading economic efficiency. Furthermore, constructing a rigor-
+ous two-stage RO model for complex MG networks inevitably leads to highly non-
+linear min-max-min mathematical structures. These structures are computationally
+intractable and cannot be solved efficiently enough for real-time applications, remain-
+ing inherently open-loop.
+Overcoming the structural vulnerabilities of both static and conservative
+paradigms, MPC introduces a dynamic, multi-temporal optimization framework
+centered on a rolling horizon mechanism. Mathematically, the MPC control loop
+solves an open-loop optimal dispatch problem over a predefined prediction horizon
+H. However, the core mechanism of this framework lies in its state-space feedback
+loop: the controller executes only the optimal control action for the immediate first
+time step, denoted as u∗
+k [54]. Following this execution, the algorithm continuously
+updates the actual system state xk+1 based on real-time sensor measurements and
+shifts the prediction window forward.
+This recursive mathematical adaptability
+effectively neutralizes both forecasting errors and sudden physical disturbances
+by continuously recalculating the optimal trajectory in real-time [55].
+Further-
+more, integrating real-time MPC with iterative ATC is computationally feasible
+because it leverages a “warm-start” mechanism—reusing the previous time-step’s
+optimum—which drastically reduces the required ATC iterations [56].
+Within this dynamic rolling framework, the MPC objective function is explic-
+itly formulated to enhance grid survivability during extreme events by incorporating
+a VOLL penalty, represented as CVOLL. By mathematically weighting this penalty ac-
+cording to load criticality, the MPC implements a physical execution strategy known
+as graceful degradation. As the MG’s battery SOC inevitably depletes during ex-
+tended blackouts, the algorithm utilizes the predictive foresight of the sliding window
+to evaluate future capacity limits. It then proactively sheds low-priority demands
+long before the battery is fully exhausted [57]. This proactive energy routing mathe-
+matically guarantees the survival of critical infrastructure throughout prolonged dis-
+ruptions, thereby minimizing the total VOLL penalty and maximizing physical grid
+resilience. It must be explicitly stated, however, that this MPC model manages opera-
+tions strictly at the energy scheduling level (Tertiary and Secondary Control). The in-
+stantaneous inter-step dynamic stability, occurring within the millisecond timeframe,
+5
+
+is assumed to be independently governed by the underlying Primary Control layer.
+1.5
+Research Gap, Motivation, and Major Contributions
+1.5.1
+The Master Gap and Motivation
+A critical review of the existing literature reveals that current methodologies
+overwhelmingly address physical constraints, spatial coordination, and temporal dy-
+namics in isolation. Specifically, three major limitations persist:
+• Neglect of Exact Physics: Distributed optimization techniques often rely on
+linearized power flow models, inherently ignoring the strict non-linear physical
+constraints of the network.
+• Privacy and Structural Vulnerabilities: Centralized solvers require aggregat-
+ing sensitive parameters, thereby compromising prosumer data privacy and op-
+erational security.
+• Static Temporal Rigidity: Many coordination frameworks operate as open-
+loop systems, rendering them mathematically rigid and incapable of dynamically
+adapting to contingencies.
+The master gap lies in the absence of a unified framework that guarantees exact
+physical feasibility, preserves strict decentralized privacy, and adapts dynamically to
+real-time disturbances. Consequently, the primary motivation of this thesis is to tran-
+sition P2P energy coordination from a purely financial construct into a “Cooperative
+Resilience” backbone to survive severe grid disturbances.
+1.5.2
+Major Contributions
+To address these critical limitations, this research proposes a fundamentally new
+operational paradigm for MMG networks. The major contributions of this thesis are:
+1. Guaranteeing Voltage Stability in Decentralized Trading: We establish a
+strict decoupling framework using SOCP. By limiting P2P trading to active
+power (P) and autonomously managing reactive power (Q) locally, the system
+guarantees exact non-linear physical feasibility and voltage stability.
+2. Enabling Secure and Scalable Coordination: We develop a hierarchical, de-
+centralized coordination strategy based on ATC. This securely facilitates com-
+plex energy routing without aggregating sensitive data.
+3. Achieving Proactive Resilience via Graceful Degradation: We introduce tem-
+poral foresight into the dispatch process using MPC, guaranteeing the sustained
+survival of critical infrastructure during prolonged outages.
+4. Transforming P2P Markets into a Resilience Backbone: We successfully syn-
+thesize the physical, spatial, and temporal dimensions into a cohesive tri-layer
+architecture. Comprehensive validation proves that this unified approach em-
+powers the P2P network to function as a highly robust, self-healing safety net.
+6
+
+Figure 1.2 The proposed Tri-layer Cooperative Resilience Architecture
+1.6
+Thesis Organization
+The remainder of this thesis is logically structured to systematically present the
+proposed framework, building from physical foundations to spatial coordination, and
+finally temporal resilience. The organization is as follows:
+• Chapter 2 - System Architecture and Mathematical Formulation: This chap-
+ter establishes the physical layer of the MMG network. It details the AC-OPF
+problem, explores the exact mathematical convexification via SOCP, and rig-
+orously defines the local operational constraints for generators, ESSs, and the
+distribution network.
+• Chapter 3 - Spatial Coordination - ATC: This chapter addresses the spatial
+scalability and data privacy of the system. It formulates the decentralized, hi-
+erarchical coordination mechanism using ATC, detailing the strictly decoupled
+target-response iterative process that clears P2P energy trades securely across the
+network.
+• Chapter 4 - Temporal Coordination with MPC: This chapter incorporates the
+temporal dimension to ensure fault resilience. It describes the integration of
+the MPC strategy, including the rolling-horizon dispatch mechanism and the im-
+plementation of the VOLL penalty to achieve proactive “Graceful Degradation”
+during emergency islanding.
+• Chapter 5 - Results and Discussion: This chapter presents comprehensive
+simulations of the unified SOCP-ATC-MPC architecture on a complex MMG
+testbed. It evaluates the system’s economic efficiency under normal conditions
+and extensively analyzes its extreme fault resilience during severe, compounded
+physical disturbances.
+• Chapter 6 - Conclusion: This chapter summarizes the primary findings and
+contributions of the thesis, specifically addressing the resolution of the master
+gap. Furthermore, it outlines potential avenues for future research to address
+identified algorithmic limitations and hardware integrations.
+7
+
+CHAPTER 2. SYSTEM ARCHITECTURE AND MATHEMATICAL
+FORMULATION
+2.1
+System Parameters, Sets, and Indices
+To ensure realistic simulations and validate the proposed mathematical models,
+the system parameters and input datasets are constructed based on physical config-
+urations. The foundational global parameters and component data specifications are
+detailed as follows:
+• Global System Settings: The MMG network is normalized using a system base
+apparent power (Sbase) of 1 MVA. The operational scheduling is performed over
+a day-ahead time horizon denoted by T , comprising 24 intervals with a discrete
+time step of ∆t = 1 hour.
+• P2P Trading Limits: To respect the physical thermal capacities of the intercon-
+nected cables, the active power exchanged via tie-lines (Ptie,i,t) between intercon-
+nected MGs is strictly bounded within a trading limit of ±1.5 MW (equivalent
+to 1.5 pu).
+• VOLL: In severe emergency scenarios, load shedding may be unavoidable.
+However, to guarantee the absolute protection of critical loads, VOLL associated
+with critical load shedding (Pcritical
+shed,i,t) is assigned a strict penalty (e.g., 100,000
+cents/MWh). This heavy penalty strictly forces the optimization engine to en-
+sure 100% continuous supply to critical demands.
+• Input Data Profiles and Network Attributes: The dynamic 24-hour profiles
+for active (Pload,i,t) and reactive (Qload,i,t) power demand, alongside the maximal
+generation capacities for renewable sources (Ppeak
+PV,i,t and Ppeak
+WT,i,t), are derived from
+physical load and source datasets. Furthermore, the structural network parame-
+ters, including the resistance (Ri j) and reactance (Xi j) of all internal distribution
+lines and tie-lines, are directly derived from detailed line configuration data to
+accurately reflect the real-world network topology.
+To formulate the mathematical models of the proposed MMG system, several
+key sets and indices are defined. The operational time horizon is discretized into a set
+of intervals denoted by T . Let M denote the set of all MGs in the network. Within
+the system, the distribution network is represented by a set of nodes N and a set of
+connecting distribution lines (branches) E . The specific sets of nodes equipped with
+DERs are defined as follows: N PV for PV systems, N WT for WTs, N DG for DGs,
+and N BESS for BESS.
+Furthermore, the set of boundary nodes that possess tie-lines enabling physical
+P2P active power trading with neighboring MGs is denoted by N trade. For the radial
+topology of the distribution network, Ω(i) represents the set of all child nodes directly
+connected to a parent node i, and C defines the set of available line configurations.
+Throughout the formulation, subscripts i and j refer to spatial node or branch indices,
+whereas the subscript t refers to the discrete time step.
+8
+
+2.2
+Mathematical Modeling of Energy Components
+This section details the mathematical formulation governing the operational
+constraints of the various energy components deployed within the MG network. Fig-
+ure 2.1 illustrates the internal configuration of a typical MG node, highlighting the
+integration of renewable sources, energy storage, dispatchable generators, and local
+loads.
+Figure 2.1 Internal configuration of a typical Microgrid node. Source: Modern clean
+energy microgrid diagram. Image by AllahFoto, licensed via Adobe Stock (Education
+License).
+2.2.1
+RESs and Loads
+The integration of RES, specifically PV systems and WT, alongside power loads,
+constitutes the primary non-dispatchable elements of the network. The active power
+output from PV and WT units is strictly bounded by their available forecasted genera-
+tion peaks at any given time step t. The active power limits are formulated as follows:
+0 ≤PPV,i,t ≤Ppeak
+PV,i,t,
+∀i ∈N PV,∀t
+(2.1a)
+0 ≤PWT,i,t ≤Ppeak
+WT,i,t,
+∀i ∈N WT,∀t
+(2.1b)
+where PPV,i,t and PWT,i,t denote the scheduled active power of the PV and WT at node
+i during time t, respectively. Ppeak
+PV,i,t and Ppeak
+WT,i,t represent their maximum available
+active power based on weather conditions.
+For the load demand, both active (PL,i,t) and reactive (QL,i,t) power are treated as
+fixed parameters unless load shedding is activated during emergency operations.
+9
+
+2.2.2
+BESS
+The BESS provides essential flexibility by charging during surplus periods and
+discharging during generation shortages. To prevent simultaneous charging and dis-
+charging, binary indicators uch,i,t and udis,i,t are introduced. The operational con-
+straints for the BESS are defined as:
+0 ≤Pch,i,t ≤uch,i,tPmax
+BESS,
+∀i ∈N BESS,∀t
+(2.2a)
+0 ≤Pdis,i,t ≤udis,i,tPmax
+BESS,
+∀i ∈N BESS,∀t
+(2.2b)
+uch,i,t +udis,i,t ≤1,
+∀i ∈N BESS,∀t
+(2.2c)
+where Pch,i,t and Pdis,i,t are the charging and discharging power, respectively, bounded
+by the maximum capacity Pmax
+BESS.
+The SOC (SOC) of the battery updates dynamically across consecutive time
+intervals, constrained by the energy capacity (EBESS) and the round-trip efficiency
+(ηBESS):
+SOCi,t = SOCi,t−1 + Pch,i,tηBESS −Pdis,i,t/ηBESS
+EBESS
+,
+∀t > 0
+(2.3a)
+SOCmin ≤SOCi,t ≤SOCmax,
+∀t
+(2.3b)
+SOCi,0 = SOCi,24 = SOCini
+(2.3c)
+Equation (2.3c) ensures the energy neutrality of the BESS over a 24-hour daily cycle,
+setting the initial and final SOC to a predefined level SOCini.
+2.2.3
+DG
+DGs operate as controllable power sources, governed by their minimum and
+maximum output boundaries. The operational status of the DG is indicated by a bi-
+nary variable uDG,i,t. To ensure the technical limits of the DGs, additional constraints
+including reactive power limits, startup status, minimum operating times, and spin-
+ning reserve are defined as follows:
+uDG,i,tPmin
+DG ≤PDG,i,t ≤uDG,i,tPmax
+DG ,
+∀i ∈N DG,∀t
+(2.4a)
+(PDG,i,t)2 +(QDG,i,t)2 ≤(Smax
+DG )2uDG,i,t,
+∀i ∈N DG,∀t
+(2.4b)
+uDG,i,tQmin
+DG ≤QDG,i,t ≤uDG,i,tQmax
+DG ,
+∀i ∈N DG,∀t
+(2.4c)
+vDG,i,t ≥uDG,i,t −uDG,i,t−1,
+∀i ∈N DG,∀t
+(2.4d)
+t+T DG
+up −1
+∑
+τ=t
+uDG,i,τ ≥T DG
+up vDG,i,t,
+∀i ∈N DG,∀t
+(2.4e)
+t+T DG
+down−1
+∑
+τ=t
+(1−uDG,i,τ) ≥T DG
+down(uDG,i,t−1 −uDG,i,t),
+∀i ∈N DG,∀t
+(2.4f)
+RDG,t = ∑
+i∈N DG
+(uDG,i,tPmax
+DG −PDG,i,t),
+∀t
+(2.4g)
+RDG,t ≥0.2 ∑
+i∈N DG
+Pmax
+DG ,
+∀t
+(2.4h)
+10
+
+where PDG,i,t and QDG,i,t are the active and reactive power of the DG, respectively,
+and Smax
+DG represents its maximum apparent power. vDG,i,t denotes the startup state,
+and RDG,t represents the spinning reserve. The minimum up and down times are
+defined by T DG
+up and T DG
+down.
+Additionally, the variation in the DG’s power output between consecutive time
+intervals is bounded by its ramp-up and ramp-down limits to prevent mechanical
+stress:
+−RDG ≤PDG,i,t −PDG,i,t−1 ≤RDG,
+∀t > 0
+(2.5)
+where RDG is the maximum allowable ramping rate.
+2.3
+AC-OPF Formulation
+AC-OPF model. Operating at the foundational level of the hierarchy, the lo-
+cal AC-OPF problem is formulated to robustly handle both standard operation and
+unexpected fault scenarios (such as generator failures, extreme renewable drops, or
+main grid blackouts). To manage this, the system utilizes a binary emergency indi-
+cator ΓE(t) ∈{0,1} to seamlessly toggle between normal operation (ΓE(t) = 0) and
+an emergency fault state (ΓE(t) = 1), ensuring operational continuity and optimal
+economic dispatch under any physical condition.
+2.3.1
+Economic and Loss Functions
+The primary objective of the local MG operator is to minimize the total oper-
+ational cost over the scheduling horizon T . To generalize the optimization problem
+across varying grid conditions, the fundamental objective function unifies standard
+economic costs and load shedding penalty costs.
+The total operational cost function F OPF is expressed as:
+F OPF = Fgrid +FDG +FBESS +Floss +Fshed
+(2.6)
+The individual economic and operational cost components are detailed as fol-
+lows:
+Fgrid = ∑
+t∈T
+
+πbuy,tPbuy
+grid,t +πsell,tPsell
+grid,t
+
+(2.7a)
+FDG = ∑
+t∈T ∑
+i∈N DG
+
+αDGuDG,i,t +(βDG +κDG)PDG,i,t
++γDG(PDG,i,t)2 +Cstart,DGvDG,i,t
+
+(2.7b)
+FBESS = ∑
+t∈T
+∑
+i∈N BESS
+CBESS
+
+ηBESSPch,i,t + Pdis,i,t
+ηBESS
+
+(2.7c)
+Floss = ∑
+t∈T ∑
+(i,j)∈E
+ωlossI2
+i j,t
+(2.7d)
+Fshed = ∑
+t∈T ∑
+i∈N
+
+Cnormal
+shed
+Pnormal
+shed,i,t +Ccritical
+shed
+Pcritical
+shed,i,t
+
+(2.7e)
+Here, Fgrid represents the cost of purchasing electricity and the revenue from
+11
+
+selling power to the main grid. FDG represents the operational cost of DGs, en-
+compassing fixed, linear, and quadratic fuel costs, linear Operation and Maintenance
+(O&M) costs (represented by coefficient κDG), and startup costs. FBESS calculates
+the degradation cost of the battery storage system proportional to its charging and
+discharging energy. To promote localized consumption and minimize distribution
+losses, Floss represents the active power losses along the distribution lines, weighted
+by a factor ωloss.
+Finally, Fshed leverages static, prohibitively high VOLL multipliers (Cnormal
+shed
+,
+Ccritical
+shed
+) to strictly penalize load curtailment and prioritize critical load preservation.
+2.3.2
+Operational Modes and Fault Scenarios
+Rather than embedding fault logic directly into the physical equations (such as
+the DistFlow boundaries), the system isolates unexpected events as explicit opera-
+tional constraints. Depending on the operational state, denoted by ΓE(t) (introduced
+in Section 2.3), specific mathematical conditions are enforced to reflect either stan-
+dard operation or component failures.
+To protect against severe power deficits during faults, the load shedding limits
+are strictly defined by their physical capacity. Additionally, to maintain a constant
+power factor, the reactive power shed is constrained to be strictly proportional to the
+active power shed:
+Pshed,j,t = Pnormal
+shed,j,t +Pcritical
+shed,j,t
+(2.8a)
+0 ≤Pnormal
+shed,j,t ≤0.8Pload,j,t
+(2.8b)
+0 ≤Pcritical
+shed,j,t ≤0.2Pload,j,t
+(2.8c)
+Qshed,j,t = Pshed,j,t
+Qload,j,t
+Pload,j,t
+(2.8d)
+The transition between modes is mathematically handled as follows:
+• Normal Mode (ΓE(t) = 0): The MG operates with all components fully avail-
+able. Due to the prohibitive VOLL penalties (Ccritical
+shed
+≫Cnormal
+shed
+≫costbuy) in
+the objective function (2.7e), the shedding variables are naturally forced to zero
+by the optimizer. The system maintains its standard security margins, including
+the required spinning reserve as defined in (2.4h).
+• Emergency Mode (ΓE(t) = 1): The system experiences a severe disruption,
+which could encompass a main grid blackout, a local generator trip, or an ex-
+treme drop in renewable generation. The failed component k is mathematically
+isolated by forcing its power output and exchange variables to zero:
+Pk,t = 0,
+Qk,t = 0
+∀k ∈Ωfault
+(2.9)
+where Ωfault represents the set of components experiencing an outage (e.g., the
+main grid interconnection, specific DGs, or PV units).
+To counteract the resulting power deficit, the standard spinning reserve constraint
+(2.4h) is intentionally relaxed. This relaxation allows the remaining dispatchable
+12
+
+generators to fully utilize their 20% locked reserve capacity to maintain grid sta-
+bility. If the internal generation remains insufficient, the solver is permitted to
+shed load according to (2.8b)-(2.8c), strongly guided by the economic prioritiza-
+tion in Fshed to preserve critical loads.
+2.3.3
+Distribution Power Flow Constraints
+The power flow within the radial network of the MGs is modeled using the
+original non-linear Branch Flow Model (DistFlow) equations. The active and reactive
+power balance, voltage drop, and branch current definitions are formulated as follows:
+Pline,i j,t −Ri jI2
+i j,t +PDG,j,t +PPV,j,t +PWT,j,t +Pdis,j,t −Pch,j,t
++Ptie,j,t +Pshed,j,t −Pload,j,t = ∑
+k∈Ω(j)
+Pline,jk,t
+∀j ∈N ,∀t ∈T
+(2.10a)
+Qline,i j,t −Xi jI2
+i j,t +QDG,j,t
++Qshed,j,t −Qload,j,t = ∑
+k∈Ω(j)
+Qline,jk,t
+∀j ∈N ,∀t ∈T
+(2.10b)
+V 2
+j,t = V 2
+i,t −2(Ri jPline,i j,t +Xi jQline,i j,t)+(R2
+i j +X2
+i j)I2
+i j,t
+∀(i, j) ∈E ,∀t ∈T
+(2.10c)
+I2
+ij,t =
+P2
+line,i j,t +Q2
+line,i j,t
+V 2
+i,t
+∀(i, j) ∈E ,∀t ∈T
+(2.10d)
+(V min)2 ≤V 2
+j,t ≤(V max)2
+∀j ∈N ,∀t ∈T
+(2.10e)
+0 ≤I2
+i j,t ≤(Imax)2
+∀(i, j) ∈E ,∀t ∈T
+(2.10f)
+To correctly model the interaction with the main grid, a boundary condition is
+enforced at the slack bus (denoted as node j = 0). The branch power injected into the
+root node from the external network explicitly represents the grid power exchange:
+Pline,0,t = Pbuy
+grid,t +Psell
+grid,t,
+∀t ∈T
+(2.11a)
+Qline,0,t = Qgrid,t,
+∀t ∈T
+(2.11b)
+Equations (2.10a) and (2.10b) delineate the active and reactive power balance
+at node j at time t, respectively. The sum of all active power injected into node
+j—including the incoming branch power (Pline,i j,t), distributed generation (PDG,j,t),
+renewable active power generation (PPV,j,t,PWT,j,t), BESS net discharge (Pdis,j,t −
+Pch,j,t), P2P trading (Ptie,j,t), and load shedding (Pshed,j,t)—must equal the sum of
+the power flowing out to child branches ∑Pline,jk,t, the local load demand (Pload,j,t),
+and the line active power losses (Ri jI2
+i j,t). By convention, active power sold to the grid
+(Psell
+grid,t) takes non-positive values.
+Similarly, the reactive power balance in (2.10b) accounts for branch flows
+(Qline,i j,t), DG reactive support (QDG,j,t), and reactive load shedding (Qshed,j,t). No-
+tably, the renewable energy inverters (PV and WT) are configured to operate at unity
+power factor, contributing zero reactive power to the system.
+13
+
+Equation (2.10c) governs the voltage drop along branch (i, j), considering the
+line impedance (Ri j,Xi j) and branch flows. Equation (2.10d) represents the non-linear
+definition of the squared branch current. Finally, inequalities (2.10e) and (2.10f) en-
+sure that the squared nodal voltages and branch currents remain within their secure
+operational limits. This exact DistFlow model is specifically chosen as it inherently
+captures the physical radial topology of the MGs, forming the strict prerequisite for
+subsequent global optimization. However, due to the non-linear and non-convex na-
+ture of the current definition in (2.10d), this problem requires convexification via
+SOCP to be mathematically tractable for optimization solvers.
+2.4
+SOCP Relaxation and Exactness
+The selection of an appropriate OPF model involves navigating the strict trade-
+off between physical accuracy and computational feasibility. As illustrated in Figure
+2.2, simplistic models like DC-OPF fail to capture reactive power and voltage dynam-
+ics, rendering them unsafe for distribution networks with high R/X ratios. Conversely,
+while the Full AC-OPF guarantees physical fidelity, its non-convex nature makes it
+computationally intractable for real-time emergency dispatch. Therefore, the SOCP
+relaxation is adopted as the optimal pathway, striking the perfect balance between
+global optimality and strict AC physics.
+Figure 2.2 Evolution of Optimal Power Flow models and the justification for the
+SOCP approach.
+2.4.1
+Convexification and SOC Relaxation
+The non-linear nature of the AC-OPF fundamentally stems from the current
+magnitude definition in the Branch Flow Model. As originally stated in Equation
+(2.10d), the squared branch current is formulated as:
+I2
+i j,t =
+P2
+line,i j,t +Q2
+line,i j,t
+V 2
+i,t
+14
+
+This equality constraint is highly non-convex. To achieve a computationally tractable
+convex model, the SOC relaxation transforms the non-convex feasible region into a
+convex cone by replacing the equality with an inequality:
+I2
+ij,tV 2
+i,t ≥P2
+line,i j,t +Q2
+line,i j,t
+(2.12)
+Figure 2.3 Geometric visualization of the SOCP relaxation: The non-convex equality
+constraint (hollow surface) is relaxed into a convex inequality (solid feasible region),
+thereby transforming the problem space into a globally solvable convex cone.
+2.4.2
+Exactness in Normal Mode
+The fundamental premise of substituting an equality with an inequality is predi-
+cated on the concept of exactness—the condition where the optimizer natively forces
+the inequality (2.12) to hold with equality. In the Normal Mode of operation, this
+exactness is inherently guaranteed. As defined in the objective function (2.6), the for-
+mulation incorporates a dedicated loss penalty component, Floss (2.7d). Because the
+primary objective of the solver is to minimize the total operational cost, it actively sup-
+presses the squared current variable I2
+i j,t, strictly driving it towards its theoretical lower
+bound. Consequently, the inequality holds with equality (I2
+i j,tV 2
+i,t = P2
+line,i j,t +Q2
+line,i j,t),
+thereby guaranteeing the exactness of the SOCP model and accurately reflecting the
+true physical state of the distribution grid.
+2.4.3
+Robustness against Inexactness in Emergency Mode
+While exactness is guaranteed under standard operations, the mathematical liter-
+ature suggests that significant challenges can arise during extreme Emergency Modes.
+A typical vulnerability occurs during islanded operations with a significant surplus of
+renewable energy generation. In standard models lacking curtailment mechanisms,
+if the MG cannot export this excess power, the system risks violating the exactness
+(I2
+ij,tV 2
+i,t > P2
+line,i j,t +Q2
+line,i j,t), which renders the optimization results physically mean-
+ingless. This breakdown occurs because the mathematical solver might erroneously
+exploit the SOCP relaxation gap, artificially inflating the current variable I2
+i j,t to burn
+the surplus energy as fictitious line losses.
+However, the proposed MG formulation is intrinsically designed to effectively
+15
+
+counteract this phenomenon. The renewable generation constraints natively allow
+for free active power curtailment (2.1a).
+Confronted with excess generation, the
+solver will preferentially curtail the renewable output at zero cost rather than inflating
+I2
+ij,t, which would incur a strict financial penalty via the Floss term scaled by ωloss.
+This dual mechanism—free curtailment capability combined with a strict virtual loss
+penalty—ensures that the solver is mathematically prevented from exploiting the re-
+laxation gap. As a result, the model robustly preserves the physical integrity and
+exactness of the network’s power flow equations even amidst extreme emergency and
+over-generation scenarios.
+2.5
+Final Local SOCP Optimization Model
+Integrating the operational cost components from Section 2.3.1 and the relaxed
+physical network constraints, the final SOCP model is formulated. Although the prob-
+lem is implemented and solved as a single unified code using the emergency indicator
+ΓE(t), from a mathematical presentation perspective, the active objective function and
+constraints can be categorized into two distinct formulations based on the operational
+state.
+2.5.1
+Formulation I: Normal Operation Mode (ΓE(t) = 0)
+In standard grid-connected mode, the load shedding penalty enforces zero cur-
+tailment (Fshed →0). The objective is purely focused on economic costs and loss
+minimization. The problem is defined as:
+min
+F OPF
+normal = Fgrid +FDG +FBESS +Floss
+s.t.
+Component Constraints (2.1a)−(2.5)
+Standard Spinning Reserve (2.4h)
+DistFlow Boundary Conditions (2.11)
+Power Balance & Voltage Constraints (2.10a)−(2.10c),(2.10e)−(2.10f)
+SOCP Relaxed Current Constraint (2.12)
+(2.13)
+2.5.2
+Formulation II: Emergency Mode (ΓE(t) = 1)
+When a generalized fault occurs, power generation or exchange with the affected
+components k ∈Ωfault completely ceases. Consequently, the operational costs associ-
+ated with these specific failed components are eliminated from the objective function
+(as their power outputs are forced to zero). The primary goal of the remaining MG
+transitions from pure economic profit to system resilience, leveraging the unlocked
+reserve capacity and prioritizing critical load preservation. The problem transitions
+16
+
+to:
+min
+F OPF
+emergency = Fgrid +FDG +FBESS +Floss +Fshed
+s.t.
+Component Constraints (2.1a)−(2.5)
+Load Shedding Limits (2.8a)−(2.8d)
+Operational Fault Constraints (2.9)
+DistFlow Boundary Conditions (2.11)
+Power Balance & Voltage Constraints (2.10a)−(2.10c),(2.10e)−(2.10f)
+SOCP Relaxed Current Constraint (2.12)
+(2.14)
+17
+
+CHAPTER 3. SPATIAL COORDINATION - ATC
+3.1
+ATC Overview
+The operation of MMG (Multi-MG) systems entails a complex spatial coordi-
+nation problem. Traditional centralized operations require MGs to transmit all their
+local, potentially sensitive information—such as load demand, renewable generation
+profiles, BESS constraints—to a central operator. This paradigm not only creates
+computational bottlenecks for large-scale systems but also severely compromises the
+privacy of independent MG operators.
+To resolve these physical and informational challenges, the ATC framework is
+introduced. ATC is a distributed optimization technique originally developed for mul-
+tidisciplinary design optimization, which perfectly aligns with the hierarchical struc-
+ture of modern distribution networks. Figure 3.4 illustrates the conceptual topology
+of this Multi-Microgrid (MMG) system, where individual MGs can seamlessly trade
+active power through physical tie-lines while coordinating with the Main Grid. By
+decomposing the global OPF problem, ATC divides the Multi-MG system into a two-
+level hierarchical architecture:
+Figure 3.4 Conceptual topology of the interconnected Multi-Microgrid system.
+• Coordinator Level (Upper Level): DSO or Utility Grid serves as the central co-
+ordinator. The DSO assigns the optimal target variables Ptarget,i j,t (conceptually
+acting as the ideal tie-line reference) to achieve P2P consensus.
+• Local MG Level (Lower Level): Each individual MG operates as an indepen-
+dent autonomous entity. Utilizing the target signals provided by the coordinator,
+each local MG solves an SOCP problem to determine its optimal internal asset
+dispatch and the scheduled tie-line power exchange Ptie,i j,t.
+18
+
+Through an iterative exchange of limited boundary variables (the target power
+Ptarget,i j,t and the tie-line response Ptie,i j,t) alongside penalty multipliers, the ATC al-
+gorithm guides the MMG system toward a globally optimal equilibrium without ex-
+posing any internal constraints or local asset states. For mathematical clarity regard-
+ing directional power flow, the active power traded via the tie-line connecting MG i
+to MG j at time t is denoted as Ptie,i j,t.
+Figure 3.5 Ensuring data privacy and independent P2P trading.
+3.2
+The Coordinator Problem (Utility Grid)
+At the top level of the ATC hierarchy, the Coordinator (Utility Grid) serves as the
+central authority to establish P2P consensus. The objective function of the coordinator
+is formulated to penalize the mismatch between the coordinator’s target Ptarget,i j,t and
+the previous iteration’s optimal tie-line scheduled power P∗,k
+tie,i j,t submitted by the local
+MGs, subject to strict reciprocity (Ptarget,i j,t +Ptarget,ji,t = 0). The optimizatiSOCPon
+problem is given by:
+min
+∑
+t∈T
+∑
+(i,j)∈L trade
+h
+λ k
+i j,t
+
+P∗,k
+tie,i j,t −Ptarget,i j,t
+
++
+ρk
+i j,t
+2
+
+Ptarget,i j,t −P∗,k
+tie,i j,t
+2
+#
+s.t.
+Ptarget,i j,t +Ptarget,ji,t = 0
+(3.1)
+By solving this optimization problem, the coordinator formulates the target variable
+Ptarget,i j,t that the lower-level MGs must track, yielding the optimal explicit target
+Ptarget,i j,t =
+
+P∗,k
+tie,i j,t −P∗,k
+tie,ji,t
+
+/2.
+where:
+• Ptarget,i j,t is the decision variable representing the optimal trading target deter-
+mined by the coordinator for the power flow from node i to node j at time t.
+• P∗,k
+tie,i j,t is the fixed local tie-line power exchange from i to j scheduled by the
+lower-level MG at the current iteration k.
+19
+
+• λ k
+i j,t is the linear Lagrange multiplier (shadow price) for active power trading at
+iteration k.
+• ρk
+i j,t is the quadratic penalty multiplier at iteration k, strictly penalizing the spatial
+deviation between the target and the local response.
+After solving the optimal target P∗,k
+target,i j,t and receiving the updated P∗,k
+tie,i j,t from
+the lower-level MGs, the coordinator updates the penalty multipliers for the next iter-
+ation to drive the deviation to zero. The update equations for the multipliers (λ and
+ρ) are defined as follows:
+λ k+1
+i j,t = λ k
+i j,t +ρk
+i j,t
+
+P∗,k
+tie,i j,t −P∗,k
+target,i j,t
+
+(3.2a)
+ρk+1
+i j,t =
+
+
+
+
+
+τρk
+i j,t
+if (rk
+i j,t)2 > µ(sk
+i j,t)2
+ρk
+i j,t/τ
+if (sk
+i j,t)2 > µ(rk
+i j,t)2
+ρk
+i j,t
+otherwise
+(3.2b)
+where the primal residual (mismatch) rk
+i j,t and the dual residual (speed) sk
+i j,t are ex-
+plicitly defined to measure the convergence as follows:
+rk
+i j,t = P∗,k
+tie,i j,t +P∗,k
+tie,ji,t
+(3.3a)
+sk
+ij,t = ρk
+i j,t
+P∗,k
+tie,i j,t −P∗,k−1
+tie,i j,t
+
+(3.3b)
+The balancing parameters are set as τ = 1.5 and µ = 10. These specific values are
+empirically tuned based on the network’s impedance characteristics and operating
+bounds to ensure the monotonic convergence of the dual gap. This Adaptive Residual
+Balancing approach dynamically adjusts the penalty parameter to maintain a balance
+between primal and dual feasibility, significantly accelerating the convergence of the
+ATC algorithm.
+3.3
+The Local MG Problem with ATC
+In the ATC architecture, MGs receive the updated penalty multipliers (λ k
+i j,t,ρk
+i j,t)
+and the optimal reference target (Pk−1
+target,i j,t) broadcasted by the central Coordinator
+(Utility Grid). To align their local schedules with the global consensus, each MG
+integrates an Augmented Lagrangian penalty function into its base optimization ob-
+jective.
+The base objectives of each MG, defined as F OPF
+normal for grid-connected modes
+and F OPF
+emergency for islanded states (as previously established in Chapter 2), are mathe-
+matically penalized for any spatial discrepancy. The Augmented Lagrangian penalty
+function corresponding to the active power deviation along the tie-lines is formulated
+as follows:
+FATC
+penalty,i = ∑
+t∈T ∑
+j∈Ni
+h
+λ k
+i j,t
+
+Ptie,i j,t −Pk−1
+target,i j,t
+
++
+ρk
+i j,t
+2
+
+Ptie,i j,t −Pk−1
+target,i j,t
+2
+#
+(3.4)
+where Ni represents the set of neighboring MGs directly connected to MG i.
+20
+
+The incorporation of this penalty effectively bridges the gap between the decen-
+tralized operation and the global targets. The newly modified local ATC objective
+function, which each MG i aims to minimize autonomously, is therefore defined as:
+F OPF
+ATC,i = F OPF
+i
++FATC
+penalty,i
+(3.5)
+where F OPF
+i
+represents either F OPF
+normal or F OPF
+emergency depending on the prevailing op-
+erational condition of the network for MG i.
+Consequently, the local problem is formulated as an SOCP model subject to its
+complete set of local operational and physical constraints defined in Chapter 2. Upon
+convergence of its local optimization, the MG transmits only the resulting scheduled
+tie-line active power exchange, Ptie,i j,t, back to the Utility Grid Coordinator for the
+subsequent ATC iteration.
+3.4
+ATC Iterative Algorithm and Convergence
+Algorithm 1 Decentralized ATC Algorithm
+1: Initialization: Set iteration counter k ←1.
+2: Initialize multipliers λ 1
+i j,t = 0, ρ1
+i j,t = ρ0 for all (i, j) ∈L trade,t ∈T .
+3: Initialize targets P0
+target,i j,t = 0 and schedules P0
+tie,i j,t = 0.
+4: repeat
+5:
+Lower Level: Local MG Optimization (Parallel Execution)
+6:
+for each MG i ∈M do
+7:
+Receive global signals Pk−1
+target,i j,t, λ k
+i j,t, ρk
+i j,t from the Coordinator.
+8:
+Solve the penalized local OPF minimizing F OPF
+ATC,i via (3.5).
+9:
+Extract optimal schedule Pk
+tie,i j,t and transmit to the Coordinator.
+10:
+end for
+11:
+Upper Level: Coordinator Update
+12:
+Calculate primal rk
+i j,t and dual sk
+i j,t residuals via (3.3).
+13:
+Update the optimal target Pk
+target,i j,t to enforce consensus.
+14:
+Update Lagrange multipliers λ k+1
+i j,t via (3.2a).
+15:
+Adjust penalty parameters ρk+1
+i j,t via Adaptive Residual Balancing (3.2b).
+16:
+k ←k +1
+17: until (rk−1
+i j,t )2 ≤εstop and (sk−1
+i j,t )2 ≤εstop for 3 consecutive steps.
+ATC algorithm is an iterative process that alternates between solving the lo-
+cal MG optimization problems and updating the coordinator’s target variables and
+penalty multipliers. The step-by-step procedure at iteration k is detailed as follows:
+Step 1: Initialization.
+Set the iteration counter k = 1.
+Initialize the La-
+grange multipliers λ 1
+i j,t = 0, the penalty parameters ρ1
+i j,t = ρ0, the initial tie-line power
+schedules P0
+tie,i j,t = 0, and the initial targets P0
+target,i j,t = 0 for all directional tie-lines
+(i, j) ∈L trade and time intervals t ∈T .
+Step 2: Local MG Optimization. Each MG autonomously solves its penalized
+OPF problem as defined in (3.5), utilizing the target variables from the previous iter-
+ation Pk−1
+target,i j,t. The optimal tie-line active power exchange Pk
+tie,i j,t is determined and
+21
+
+subsequently transmitted to the Coordinator.
+Step 3: Coordinator Update. Upon receiving the tie-line power schedules
+from all interacting MGs, the Coordinator updates the target variables, multipliers,
+and adaptive penalty parameters to enforce P2P consensus. First, the primal resid-
+ual rk
+ij,t and dual residual sk
+i j,t are calculated to measure the spatial mismatch and the
+algorithm’s progress. Then, the target variable Pk
+target,i j,t is updated to drive the con-
+sensus. The Lagrange multipliers and adaptive penalty parameters (λ k+1
+i j,t
+and ρk+1
+i j,t )
+are sequentially updated according to the explicit rules defined in (3.2a) and (3.2b).
+Step 4: Convergence Check. The iterative algorithm terminates when both the
+primal and dual residuals satisfy the convergence tolerance εstop (set to 10−4) for three
+consecutive iterations. If the criteria are met, the algorithm stops and the final optimal
+scheduling is achieved. Otherwise, the iteration counter is incremented (k ←k + 1)
+and the process returns to Step 2.
+Start ATC Algorithm
+Step 1: Initialization
+k = 1,λ = 0,ρ = ρ0,Ptarget = 0
+Broadcast global signals
+to all MGs
+Step 2: MG Optimization
+Solve local penalized SOCP
+Extract Pk
+tie
+Step 3: Coordinator Update
+Calculate residuals rk,sk
+Update Pk
+target,λ k+1,ρk+1
+Step 4: Converged?
+r2,s2 ≤εstop?
+Stop: Equilibrium Achieved
+Increment
+k ←k +1
+Yes
+No
+Figure 3.6 Flowchart of the Decentralized ATC Algorithm.
+22
+
+CHAPTER 4. TEMPORAL COORDINATION WITH MPC
+4.1
+MPC Time Framework
+In the operational context of MMG systems, independent optimization at a sin-
+gle time instance or a fixed time frame is often inadequate to cope with unpredictable
+fluctuations from load demand (Pload,i,t, Qload,i,t) and RESs (Ppeak
+PV,i,t, Ppeak
+WT,i,t), as well as
+unexpected events such as main grid disconnection. To address this challenge, MPC
+is implemented as the highest-level Temporal Coordination layer.
+To address unpredictable RES and load fluctuations, the system employs an
+MPC rolling horizon (h), where only the first optimal control step is applied to counter
+immediate physical deviations, inherently coupling the day-ahead economics with
+real-time stability. In this proposed architecture, the temporal framework is strictly
+divided into two primary phases: Day-Ahead Scheduling and Real-Time Emergency
+MPC.
+4.1.1
+Day-Ahead Scheduling
+During the Day-Ahead Scheduling phase, the optimization problem is formu-
+lated and solved for the entire 24-hour cycle of the upcoming day, meaning the pre-
+diction horizon is set to h = 24 hours. The primary objective is to establish an eco-
+nomically optimal operational plan based on long-term forecasts of renewable power
+generation (Ppeak
+PV,i,t, Ppeak
+WT,i,t) and load demand (Pload,i,t, Qload,i,t).
+In this phase, BESS operations are modeled using variables such as Pch,i,t, Pdis,i,t,
+uch,i,t, and udis,i,t. Furthermore, DG dispatch actions are represented by uDG,i,t and
+vDG,i,t, aiming to minimize the overall operational costs while ensuring sufficient
+spinning reserve capacity (RDG,t).
+4.1.2
+Real-Time Emergency MPC
+To address immediate deviations, fault clearing, component isolation, and dy-
+namic responses during emergencies, the Real-Time Emergency MPC is activated.
+This phase employs a rolling horizon of h = 5 hours. At each time step t ∈T , the
+system updates the latest measurements regarding renewable generation, actual load,
+and the current SOC of the BESS (SOCi,t). The optimization problem is continuously
+re-evaluated over the sliding window from t to t +h−1.
+During emergency conditions, the system dynamically re-evaluates the opera-
+tional dispatch and activates load shedding or tie-line re-coordination (detailed mech-
+anisms are formulated in Section 4.3).
+23
+
+Time
+Step
+t
+t+1
+t+2
+t+3
+t+4
+t+5
+t+6
+t+k
+t+k+1 t+k+2 t+k+3 t+k+4
+...
+t
+1-1
+1-2
+1-3
+1-4
+1-5
+t +1
+Past
+2-1
+2-2
+2-3
+2-4
+2-5
+t +2
+Past
+Past
+3-1
+3-2
+3-3
+3-4
+3-5
+...
+...
+...
+...
+...
+t +k
+Past
+Past
+Past
+...
+k-1
+k-2
+k-3
+k-4
+k-5
+Executed
+1-1
+2-1
+3-1
+...
+k-1
+Scheduled (Past)
+Applied Control
+Predicted Action
+Horizon
+Figure 4.7 MPC Rolling Horizon Framework
+4.2
+State Update and Forecasting Mechanism
+At each discrete time step t, before the optimization problem is formulated and
+solved for the upcoming prediction horizon h, the system must inherit the latest physi-
+cal states from the previous control action and integrate the newly acquired forecasting
+vectors.
+4.2.1
+SOC Inheritance
+In the context of the MMG system, maintaining the continuity of the BESS state
+of charge (SOC) is crucial. The SOC at the beginning of the new rolling horizon
+must accurately reflect the state resulting from the control actions implemented in the
+previous step.
+For a prediction horizon starting at the current time step t, the initial SOC pa-
+rameter, denoted as SOCini for the current optimization window, is directly updated
+by the realized SOC from the end of the previous time step t −1:
+SOCini = SOCi,t−1
+∀i ∈N BESS
+(4.1)
+where SOCi,t−1 represents the SOC of the BESS at node i evaluated at the prior inter-
+val. This value serves as the initial boundary condition for the BESS constraints over
+the new prediction horizon.
+Consequently, the SOC transition within the predictive window for any prospec-
+tive step τ ∈[t,t +h−1] is formulated based on the charging (Pch,i,τ) and discharging
+(Pdis,i,τ) power variables:
+SOCi,τ = SOCi,τ−1 + ηBESSPch,i,τ
+EBESS
+∆t −
+Pdis,i,τ
+ηBESSEBESS
+∆t
+∀i ∈N BESS
+(4.2)
+where ηBESS denotes the charging/discharging efficiency, and EBESS is the total en-
+ergy capacity of the BESS.
+4.2.2
+Forecasting Data Update Mechanism
+Beyond the state inheritance, the MPC architecture requires continuous refresh-
+ing of the anticipated uncontrollable variables, specifically the active and reactive
+24
+
+load demand, alongside the renewable energy generation capabilities.
+At each control iteration starting at time t, the EMS retrieves the most recent
+forecast profiles. These predictions are structured as vectors spanning the entire pre-
+diction horizon h. The forecasting vectors updated at step t are formally defined as
+follows:
+• Load Demand Forecasts: The active and reactive power demand vectors for
+each node i are updated as:
+P(t)
+load,i =
+
+Pload,i,t,Pload,i,t+1,...,Pload,i,t+h−1
+T
+(4.3)
+Q(t)
+load,i =
+
+Qload,i,t,Qload,i,t+1,...,Qload,i,t+h−1
+T
+(4.4)
+• Renewable Energy Forecasts: Similarly, PV and WT generation is integrated
+into the control model via vectors:
+P(t)
+PV,i =
+h
+Ppeak
+PV,i,t,Ppeak
+PV,i,t+1,...,Ppeak
+PV,i,t+h−1
+iT
+(4.5)
+P(t)
+WT,i =
+h
+Ppeak
+WT,i,t,Ppeak
+WT,i,t+1,...,Ppeak
+WT,i,t+h−1
+iT
+(4.6)
+Without the continuous inheritance of SOCini and the rolling refresh of these
+forecast vectors, the MPC would lack the foresight required to execute the inter-
+temporal spatial coupling critical for emergency operations (Mode 2).
+4.3
+The 3-Mode Spatiotemporal Coordination Framework
+MPC strategy inherently relies on a dynamic rolling mechanism that functions
+as a state machine. To efficiently manage computational resources while ensuring
+system resilience, the spatiotemporal coordination framework is explicitly structured
+into three distinct operating modes: Mode 1 (Normal Operation), Mode 2 (Emergency
+Mode), and Mode 3 (Recovery Mode).
+4.3.1
+Mode 1 and Mode 3: Normal Operation and Recovery
+Under normal operating conditions (Mode 1), where no faults are detected
+within the distribution network, the real-time dispatch simply tracks the established
+Day-Ahead schedule. In this state, the actual operational variables strictly follow
+the day-ahead baseline, meaning the system state xt and control actions ut satisfy
+ut = uDA
+t
+. This baseline schedule is derived from the 24-hour ATC SOCP optimiza-
+tion problem described in Chapter 4 (Eq. 3.5). Thus, the system operates securely
+without the need for iterative rolling horizon recalculations, thereby significantly con-
+serving computational resources.
+However, when a fault is cleared following an emergency event, the system tran-
+sitions into Mode 3 (Recovery Mode). Rather than immediately resuming the poten-
+tially outdated Day-Ahead schedule, the EMS recalculates a new optimal operational
+plan from the current time tend
+faults to the end of the 24-hour cycle, yielding a shrinking
+prediction horizon Hrec = {tend
+faults,tend
+faults + 1,...,24}. The updated forecast vectors
+(Eqs. 4.3–4.6) are integrated into the optimization engine, and the modified ATC
+25
+
+Start: Day-Ahead
+Scheduling
+For each time
+step t = 1 to 24
+Fault status
+at step t?
+Mode 2
+(Emergency, h = 5)
+Activate Constraints
+Call Spatial ATC
+Mode 1
+(Normal)
+Apply DA Schedule
+Mode 3
+(Recovery,
+h = 25 −t)
+Call Spatial ATC
+Update DA Baseline
+End of step t
+No Fault
+Fault Detected
+Fault Cleared
+Figure 4.8 Flowchart of the 3-Mode State Machine Algorithm
+26
+
+Global Objective is solved to establish a new operational baseline:
+min
+24
+∑
+τ=t ∑
+n∈NMG
+FMG,n(τ)
+(4.7)
+Once this new updated baseline schedule uDA∗
+τ
+is successfully deployed, the system
+securely reverts to Mode 1.
+4.3.2
+Mode 2: Emergency Integration of Spatial and Temporal Control
+In the face of extreme scenarios such as N −2 contingencies and main grid
+connection faults (resulting in complete islanding where Pbuy
+grid,t = 0 and Psell
+grid,t = 0),
+relying solely on independent spatial or temporal coordination is mathematically and
+physically insufficient. When multiple cascading line outages occur, the network
+topology is severely compromised. This physical deterioration forces instant updates
+to the dynamic topology and operational boundaries.
+To counteract this physical collapse, the system enters Mode 2 (Emergency
+Mode), employing a bottom-up integration strategy that intrinsically couples the ATC
+spatial algorithm with the MPC rolling horizon framework. This synergistic approach
+allows the MMG system to maintain rigorous operational resilience under critical
+conditions.
+The integration mechanism is formally structured such that the MPC layer acts
+as the primary temporal coordinator, dictating the rolling horizon scheduling. Within
+each time step t of the MPC’s sliding predictive window HMPC = {t,t +1,...,t +h−
+1}, the ATC spatial algorithm, formulated as a penalized SOCP problem, is iteratively
+invoked.
+For each prospective control interval τ ∈HMPC, the MPC provides the tem-
+poral coupling via the updated SOC inheritance SOCi,τ (Eq.
+4.2), alongside
+the most recent forecasting vectors for load demand and renewable generation
+(P(t)
+load,i,Q(t)
+load,i,P(t)
+PV,i,P(t)
+WT,i). The ATC algorithm then iteratively optimizes the spatial
+power distribution and active power traded via inter-MG tie-lines (Ptie,i j,τ) by mini-
+mizing the ATC Global Objective (Eq. 3.5). The distributed coordination mathemati-
+cally relies on updating the Augmented Lagrangian multiplier λi j,τ and the penalty pa-
+rameter ρi j,τ to reach an optimal consensus on the target traded active power Ptarget,i j,τ
+designated by the DSO. At each iteration k, the multiplier update step is executed as:
+λ (k+1)
+i j,τ
+= λ (k)
+i j,τ +ρ(k)
+i j,τ
+
+P(k)
+tie,i j,τ −P(k)
+target,i j,τ
+
+∀τ ∈HMPC
+(4.8)
+By explicitly embedding the ATC SOCP solver within the outer MPC loop, the control
+system mathematically guarantees that both the inter-temporal energy constraints and
+the spatial power flow limits—including the tightened apparent power flow bounds
+and nodal voltage magnitude constraints (V 2
+min ≤V 2
+i,τ ≤V 2
+max)—are strictly satisfied at
+every temporal stage.
+4.3.3
+Activation of Penalty Functions and Load Shedding Mechanism
+During emergency mode operations, available local generation and BESS dis-
+charge capacity may fail to cover the aggregated demand. Unconstrained optimization
+27
+
+would aggressively discharge the BESS to meet immediate deficits, leading to termi-
+nal depletion (SOCi,t approaching SOCmin) and rendering the MMG defenseless for
+future intervals.
+To enforce Graceful Degradation, load shedding is decoupled into normal and
+critical loads with hierarchical VOLL coefficients, and simultaneously, a terminal
+SOC penalty (JSOC) is activated.
+The load shedding cost function incorporates a penalty cost for normal load
+shedding Cnormal
+shed
+and a significantly higher penalty cost for critical load shedding
+Ccritical
+shed
+:
+Jshed,τ = ∑
+i∈N
+
+Cnormal
+shed
+Pnormal
+shed,i,τ +Ccritical
+shed
+Pcritical
+shed,i,τ
+
+(4.9)
+To physically prevent BESS depletion, a slack variable SSOC,i and a penalty co-
+efficient βSOC are introduced. The MPC strictly penalizes the deviation of the BESS
+SOC at the end of the predictive horizon from a secure reference level:
+JSOC =
+∑
+i∈N BESS
+βSOCS2
+SOC,i
+(4.10)
+By structuring the penalty weights such that Ccritical
+shed
+≫βSOC > Cnormal
+shed
+, the
+SOCP mathematically guarantees that flexible loads are curtailed early to preserve
+BESS reserves, ensuring the sustained operation of critical infrastructure. This tem-
+poral safeguard works in tandem with the spatial penalty coefficient for distribution
+network power losses ωloss, ensuring sustainable multi-interval resilience.
+Through this cohesive integration, the ATC SOCP algorithm resolves spatial
+power flow conflicts while the MPC framework optimizes the inter-temporal energy
+buffering and load shedding deployment, enabling the MMG system to navigate N −2
+contingencies and main grid disconnections seamlessly.
+Algorithm 2: Bottom-Up Spatiotemporal Coordination as a 3-Mode State Machine
+Require: Real-time network measurements, BESS characteristics, Forecast models.
+1: DAY-AHEAD SCHEDULING PHASE
+2: Fetch long-term 24-hour forecasts PDA
+load,PDA
+PV,PDA
+WT
+3: Solve ATC Global Objective for the entire 24-hour horizon (h = 24)
+4: Establish Day-Ahead baseline schedule uDA for t ∈[1,24]
+5: REAL-TIME EMERGENCY MPC PHASE
+6: for each time step t = 1 to 24 do
+7:
+STEP 1: STATE UPDATE
+8:
+Read current BESS status and inherit SOCini according to Eq. (4.1)
+9:
+STEP 2: MODE BRANCHING & EVENT DETECTION
+10:
+if No fault then
+11:
+Mode 1 (Normal Operation):
+12:
+Extract data and decisions from Day-Ahead baseline: ut = uDA
+t
+13:
+Apply scheduled control signals for step t
+14:
+else if Fault detected at current hour t then
+28
+
+15:
+Mode 2 (Emergency Mode):
+16:
+Horizon h ←5 ▷Note: Forecast vectors seamlessly extend beyond t = 24
+for late-day windows
+17:
+Fetch rolling forecast vectors P(t)
+load,i,Q(t)
+load,i (Eq. 4.3–4.4)
+18:
+Fetch renewable potential P(t)
+PV,i,P(t)
+WT,i (Eq. 4.5–4.6)
+19:
+Physical Cause: Isolate mathematically identified faulty components
+(2.9).
+20:
+Physical Effect: Enforce tightened nodal voltage bounds (2.10e)
+and activate load shedding allowance (2.8a)–(2.8c).
+21:
+Algorithmic Response: Activate Emergency Mode Constraints (ΓE(τ) =
+1).
+22:
+Update Objective Function: Switch to F OPF
+emergency (2.14)
+and add SOC penalty JSOC (4.10).
+23:
+STEP 3: ROLLING HORIZON OPTIMIZATION LOOP
+24:
+Call Spatial ATC Algorithm to optimize spatial power flow
+25:
+Compute SOC transitions simultaneously using Eq. (4.2)
+26:
+Iteratively solve ATC Global Objective (3.5) for period τ ∈[t,t +h−1].
+27:
+Enforce tie-line target exchange agreement ▷Solver intrinsically handles
+power deficits via shedding penalties
+28:
+STEP 4: CONTROL IMPLEMENTATION
+29:
+Extract optimized decision variables for the entire horizon τ ∈[t,t +h−1]
+30:
+Apply only the control signals for the first step τ = t to physical assets
+(BESS, DG, Loads)
+31:
+else if Fault cleared at current step t then
+32:
+Mode 3 (Recovery Mode):
+33:
+Horizon h ←25−t
+34:
+Physical Cause: Fetch forecast vectors and renewable potential
+(Eq. 4.3–4.6) to evaluate residual state divergence.
+35:
+Algorithmic Response: Iteratively solve ATC Global Objective
+(3.5) for period τ ∈[t,24].
+36:
+Physical Effect: Update Day-Ahead baseline schedule uDA
+with newly calculated decisions.
+37:
+Extract and apply control signals for step t from the new baseline.
+38:
+end if
+39: end for
+29
+
+CHAPTER 5. RESULTS AND DISCUSSION
+5.1
+System Configuration and Simulation Setup
+The physical architecture of the proposed EMS comprises one Main Grid (MG0) and
+four interconnected MGs (MG1, MG2, MG3, and MG4). These MGs are integrated
+into a P2P trading network, establishing a cooperative environment that facilitates
+active power exchange. This P2P interconnection is specifically designed to enhance
+system resilience, allowing the MGs to support one another through internal power
+transfers, especially when isolated from the Main Grid. To ensure grid stability and
+respect physical tie-line capacities, the power exchange between any connected MGs
+is strictly constrained within a trading limit of ±1.5 MW (1.5 pu, given a system base
+power of 1 MVA).
+The physical network topology (Figure 5.1) integrates four distinct MGs:
+Figure 5.1 P2P interconnection topology of the MMG system.
+• MG 1 (MG1): 36-node network with diverse generation (PV, WT, BESS, DG).
+Maintains physical P2P tie-lines with MG3 and MG4.
+• MG 2 (MG2): 30-node radial solar-only network with BESS and DG. Directly
+connected to MG3 and MG4.
+• MG 3 (MG3): 21-node network with excess generation capabilities. Intercon-
+nected with MG1, MG2, and MG4.
+30
+
+• MG 4 (MG4): 35-node complex with high consumption and PV capacity. Inter-
+connected with MG1, MG2, and MG3.
+5.1.1
+Network Topology and DER Allocation Parameters
+To ensure the mathematical models accurately reflect physical distribution networks,
+DERs across the four MGs—as structurally depicted in Figure 5.1—is systematically
+summarized in Table 5.1.
+Table 5.1 Placement of DERs across MGs
+MG
+Total Nodes
+PV Nodes
+WT Nodes
+BESS Node
+DG Node
+MG1
+36
+3, 10, 12, 14, 26, 36
+32
+19
+5
+MG2
+30
+14, 19, 28, 30
+-
+20
+10
+MG3
+21
+2, 8, 11, 15
+1
+12
+9
+MG4
+35
+18, 20, 27, 29
+-
+8
+22
+Furthermore, DG BESS are identically configured across all deployed units. These
+parameters form the foundational cost coefficients for the objective function and are
+summarized in Table 5.2.
+Table 5.2 Technical and Economic Parameters of DG and BESS
+Component
+Parameter
+Value (pu / nominal)
+Dispatchable
+Minimum / Maximum Output (Pmin
+DG / Pmax
+DG )
+0.2/1.3
+Generator
+Ramp Rate Limit (RDG)
+1.0
+(DG)
+Minimum Up/Down Time (T DG
+up , T DG
+down)
+2 hours
+Fixed Cost Coefficient (αDG)
+700
+Linear Cost Coefficient (βDG)
+16.06
+Quadratic Cost Coefficient (γDG)
+0.002
+O&M Cost Coefficient (κDG)
+1.258
+Hot / Cold Start Cost (Cstart,DG)
+660/1120
+Battery Energy
+Energy Capacity (EBESS)
+1.5
+Storage
+Maximum Power (Pmax
+BESS)
+0.75
+(BESS)
+Charge/Discharge Efficiency (ηBESS)
+0.90
+SOCmin / SOCmax / SOCini
+0.20/0.95/0.40
+Degradation Cost (CBESS)
+7.125
+5.1.2
+Simulation Scenarios and Baseline Models
+To rigorously evaluate the resilience of the proposed EMS, a compounded emergency
+fault is simulated based on realistic parameter bounds derived from the system’s gen-
+eration profiles and limits. The simulated emergency event is characterized by the
+simultaneous occurrence of two severe failures:
+• Main Grid Loss: A complete disconnection from the utility grid (MG0) oc-
+curs between t = 9 and t = 15, forcing the entire MMG network into islanded
+operation.
+• PV Generation Loss: A severe drop in solar power generation affects all PV
+units between t = 11 and t = 15, representing an extreme weather anomaly.
+31
+
+Figure 5.2 Timeline of the compounded emergency fault, illustrating the Main Grid
+and PV generation loss scenarios.
+Under these harsh operating conditions, three distinct comparison scenarios are de-
+fined to evaluate the proposed framework:
+• Base Fault: Isolated operation without P2P energy sharing during the emer-
+gency.
+• PF: Ideal centralized approach with perfect prediction of the entire horizon.
+• MPC: The proposed decentralized rolling-horizon MPC with limited foresight.
+5.1.3
+The 3D Evaluation Framework: Horizontal, Vertical, and Boundary Anal-
+ysis
+To comprehensively validate the proposed MPC-ATC framework, this chapter intro-
+duces a three-dimensional evaluation methodology:
+• Horizontal Evaluation (Cross-sectional Benchmarking): Fixes the environ-
+mental inputs to compare the proposed method against standard baselines (e.g.,
+Base Fault, PF), establishing its comparative economic and security superiority.
+• Vertical Evaluation (Temporal and Physical Dynamics): Fixes the model to
+the proposed framework, diving deep into its internal operations over time. This
+uncovers the underlying physical mechanics (e.g., active power routing, voltage
+constraints, algorithmic convergence) that enable its performance.
+• Boundary Evaluation (Stress Testing): Pushes both the economic and physical
+dimensions to their absolute limits through spatiotemporal compounding faults,
+evaluating the ultimate resilience and graceful degradation capacity of the sys-
+tem.
+5.2
+Horizontal Evaluation: System-Level Economic Assessment and Bench-
+marking
+This section evaluates the quantitative performance of the three defined simulation
+models based on true economic outcomes and global optimality. To ensure a rigorous
+comparison, BESS are strictly enforced, SOC at the end of the simulation horizon
+equals the initial SOC (SOC24 = SOC0). Furthermore, algorithmic penalties (such as
+SOC or cross-penalties) are excluded to formulate the True Economic Cost, which is
+defined strictly by pure fuel expenses and load shedding compensation.
+Table 5.3 summarizes the macro-economic benchmark results for the three scenarios.
+32
+
+Table 5.3 Macro-Economic Benchmark of Simulation Models
+Model
+Pure Cost (cents)
+Pure Gap
+True Eco Cost (cents)
+Eco Gap
+Shedding (MWh)
+Base Fault
+179,695.79
+5.02%
+1,722,260.04
+272.41%
+15.4260
+PF
+171,100.35
+Baseline
+462,462.02
+Baseline
+2.9138
+Current Method
+179,007.53
+4.62%
+470,294.90
+1.69%
+2.9129
+Note: The minute disparity in load shedding between PF (2.9138 MWh) and the Current
+Method (2.9129 MWh) is mathematically negligible and stems exclusively from numerical
+solver convergence tolerances rather than algorithmic inferiority.
+The benchmark analysis is visually supported by Figure 5.3:
+Figure 5.3 Macro-economic comparison demonstrating the true economic cost versus
+total load shedding.
+5.2.1
+Critical Load Protection and Energy Security
+The primary objective during emergency operation is the minimization of unserved
+energy, specifically shielding critical infrastructure. Under the isolated Base Fault
+scenario, P2P sharing forces the system to shed 15.4260 MWh of load due to local-
+ized power depletion. Implementing the decentralized MPC drastically reduces this
+shedding to merely 2.9129 MWh, closely mirroring the ideal performance of the PF
+model (2.9138 MWh).
+Mathematically, the financial data confirms the complete protection of critical loads.
+The shedding compensation incurred by the MPC is the difference between its true
+economic cost and pure cost (470,294.90−179,007.53 = 291,287.37 cents). Divid-
+ing this penalty by the curtailed energy (2.9129 MWh) yields an exact compensation
+rate of 100,000 cents/MWh, which perfectly matches the VOLL assigned strictly to
+Normal Loads. Consequently, this demonstrates that all curtailed power was exclu-
+sively non-essential, confirming that the framework successfully protected 100% of
+the Critical Load during severe compounded outages.
+33
+
+5.2.2
+Optimality Gap Analysis: The Denominator Effect
+Although the proposed MPC operates under a decentralized architecture with a lim-
+ited rolling horizon, its generation dispatch expenses (Pure Cost) stand at 179,007.53
+cents, maintaining an Optimality Gap of 4.62% relative to the centralized PF bench-
+mark (171,100.35 cents).
+More importantly, when evaluating the overarching system resilience through the True
+Economic Gap, the disparity collapses to a mere 1.69%. This performance gap high-
+lights a crucial operational phenomenon: The short-sightedness of the rolling horizon
+slightly compromises the optimal economic dispatch of generation resources, but it
+fundamentally does not degrade the system’s energy security capability. This behav-
+ior is mathematically driven by the objective function’s weighting. The penalty factor
+for load shedding (VOLL = 100,000 cents/MWh) is orders of magnitude higher than
+the marginal cost of standard generation (∼16 cents). Therefore, even with only a 1-
+hour look-ahead window, the objective gradient heavily prioritizes immediate BESS
+discharge and P2P sharing to avert shedding at all costs. The MPC’s myopic nature
+only leads to suboptimal fuel purchasing schedules, but it will never elect to shed load
+unless physical capacities are entirely exhausted.
+Figure 5.4 Energy mix distribution across the MMG system over a 24-hour horizon.
+5.2.3
+Co-optimization Benefits of P2P Energy Trading
+Cross-examining the Base Fault and MPC scenarios uncovers the synergistic ben-
+efits of the P2P architecture. Typically, enhancing system resilience to supply an
+additional 12.51 MWh (the difference in shedding between Base Fault and MPC) re-
+quires a Resilience Premium by ramping up expensive localized generation. However,
+the MPC achieves this while actually lowering the total generation cost (179,007.53
+cents) compared to the isolated Base Fault (179,695.79 cents).
+This capability to provide resilience at a Negative Premium stems from unblocking
+stranded renewable energy. As illustrated in Figure 5.4, excess PV and wind gener-
+ation from healthy nodes—which would otherwise be curtailed under isolated con-
+ditions—is effectively routed to deficit regions. The P2P network, dynamically reg-
+ulated by the MPC, forms a symbiotic ecosystem that simultaneously saves critical
+34
+
+loads and optimizes overall fuel expenditure.
+5.2.4
+Comparative Analysis of MG Operational Dynamics
+(a) MG2
+(b) MG4
+Figure 5.5 Massive Load Shedding in Vulnerable MGs - Base Fault Scenario.
+• Base Fault: The Vulnerability of Isolation: When extreme high-impact, low-
+probability (HILP) events induce a main grid blackout and PV outage, MMG
+system is forced into isolated operation. Under these conditions, tie-line power
+flows are constrained to zero (Ptie = 0), compelling each MG to maintain its inter-
+nal supply-demand balance using only local resources. This structural limitation
+exacerbates localized power mismatches. Specifically, the faulted MGs (MG2
+and MG4) experience severe energy deficits, whereas the healthy, independent
+MGs (MG1 and MG3) are forced to curtail surplus renewable generation. To
+maintain physical system stability and prevent voltage or frequency collapse, the
+local controllers in the faulted MGs must execute extensive load shedding, incur-
+ring substantial economic penalties. The severe load curtailment observed in the
+Base Case for MG2 and MG4 (see Figure 5.5) demonstrates that isolated local
+energy storage capacities are inadequate to sustain operation during prolonged
+disruptions. This underscores the technical necessity of relaxing the isolation
+constraint (Ptie = 0) by establishing a P2P trading framework to enhance overall
+system resilience and mitigating localized power deficits.
+35
+
+(a) MG1
+(b) MG2
+(c) MG3
+(d) MG4
+Figure 5.6 SOC Comparison.
+• PF: The Advantage of Absolute Knowledge: The PF model operates with ab-
+solute knowledge of the entire 24-hour horizon. This predictive supremacy mani-
+fests as a highly proactive energy management strategy, clearly visible in the SOC
+comparison charts (Figure 5.6). Rather than passively maintaining charge before
+the emergency, the PF model exhibits a sophisticated anticipatory discharge be-
+havior. Specifically, at t = 8, right before the main grid fault occurs, the PF model
+intentionally discharges the BESS down to its minimum limit (SOC = 0.2). This
+is not a random action, but a strategic clearing of energy headroom. Knowing
+that the main grid will fail at t = 9, but local solar generation will still be abun-
+dant during t = 9 and t = 10 before the PV outage at t = 11, the algorithm makes
+room to aggressively capture this free solar energy. Consequently, it rapidly
+charges the BESS from 0.2 to near-maximum capacity (∼0.95) within those two
+hours.
+During the darkest fault hours (t = 11 to t = 15), this strategically stored energy
+is deployed. By optimally manipulating its energy boundaries based on future
+knowledge, the PF model maximizes renewable energy utilization while avoid-
+ing unnecessary grid purchases. This flawless temporal energy shifting demon-
+strates the critical role of the BESS in economic optimization. By preemptively
+capturing free solar generation and strategically discharging it during the most
+severe deficit periods, the PF framework substantially minimizes the reliance on
+expensive emergency active power generation, thereby driving down the total
+system cost and achieving the theoretical minimum operational expenditure.
+36
+
+• Proposed MPC: The Hoarding Syndrome and P2P Rescue: In stark contrast,
+MPC operates under a limited rolling horizon, rendering it entirely blind to the
+true duration and severity of the impending emergency. This lack of long-term
+visibility fundamentally alters the battery dispatch behavior. Prior to the fault,
+the MPC maintains flat, standard economic SOC profiles, failing to proactively
+pre-charge. More importantly, when the fault suddenly hits at t = 9, the MPC
+adopts a conservative energy retention strategy. Because it cannot foresee the
+end of the outage, the algorithm becomes highly reluctant to fully discharge its
+limited BESS reserves, reserving them against future uncertainties. As seen in
+the SOC Comparison graphs (Figure 5.6), rather than smoothly depleting the
+batteries like the PF model, the MPC significantly restricts its BESS discharge
+rates.
+To manage the contingency and compensate for this conservative discharge ap-
+proach, the MPC is forced to rely almost exclusively on the P2P network as a
+primary support mechanism. The Active Power flow graphs (Figure 5.7) illus-
+trate this highly dynamic and spatially shifted support operation. During the
+initial phase of the grid isolation (t = 9,t = 10), the system relies heavily on two
+primary supporting units: MG2 (leveraging its dense solar capacity) and MG3
+(benefiting from its light industrial load). These two MGs actively export signifi-
+cant amounts of surplus power through the tie-lines to sustain the power-deficient
+MGs, MG1 and MG4.
+However, when the compounded severe PV loss strikes at t = 11, the entire inter-
+nal power flow topology undergoes a significant restructuring. MG2, suddenly
+stripped of its primary solar resource, rapidly depletes its limited local capacities
+and undergoes a complete parasitic shift, transforming into a massive power sink.
+Concurrently, MG1 (which possesses robust wind and PV generation) and MG3
+emerge as the dual powerhouses of the network. For the remainder of the fault
+(t = 11 to t = 15), MG1 and MG3 generate massive surpluses and aggressively
+export power to rescue the deficit regions.
+5.3
+Vertical Evaluation: Operational Dynamics of the Proposed MPC-ATC
+Framework
+5.3.1
+Active Power Routing and the Transit Corridor Effect
+This intense reliance on spatial P2P sharing causes highly volatile spikes in active
+power exchange. However, it is precisely this reactive, aggressive coordination that
+unblocks stranded renewable energy from the surviving units (MG1 and MG3), rout-
+ing it to where it is needed most. This massive active power transfer inevitably gen-
+erates large transmission currents (I), inducing severe voltage degradation due to I2X
+losses (which will be comprehensively linked and analyzed in Section 5.4.2). Conse-
+quently, the MPC effectively manages to protect 100% of the critical loads (as detailed
+in Section 5.4) and achieve a synergistic Negative Premium (refer to Section 5.2.3 for
+economic analysis), turning its short-sighted temporal limitation into a significant
+spatial advantage.
+Within this extreme power routing, MG4 is forced into the highly disadvantageous
+role of a Wheeling Hub. It imports massive amounts of active power from MG1 and
+MG3, only to wheel a significant portion of it directly to the collapsed MG2. This
+creates a critical operational challenge: MG4 is forced to execute active load shed-
+ding not because it lacks access to active power (P), but because the sheer volume of
+37
+
+(a) MG1
+(b) MG2
+(c) MG3
+(d) MG4
+Figure 5.7 Active Power Flow - Proposed MPC Method.
+power flowing through its distribution feeders to save MG2 induces massive currents
+(I). These transit currents exponentially inflate the local reactive power losses (I2X),
+dragging down MG4’s voltage profile and forcing it to shed its own local loads just
+to maintain the physical viability of the transmission path. MG4 essentially sacrifices
+its own normal loads to serve as a lifeline for MG2. By accurately modeling these
+AC network constraints, the proposed ATC-OPF framework autonomously identifies
+this physical bottleneck and sacrifices normal loads to prevent a complete corridor
+collapse.
+5.3.2
+AC-OPF Constraint Satisfaction:
+Voltage Stability and Reactive Power
+Management
+This section analyzes the local power quality, voltage stability, and load shedding
+behaviors at the nodal level to evaluate the physical feasibility of the proposed frame-
+work.
+The node-level voltage profiles, presented in Figure 5.8, demonstrate the system’s
+adaptive voltage regulation strategy. Under normal operating conditions, the bus volt-
+ages are maintained within predefined soft limits to ensure power quality. However,
+during the fault period, the proposed algorithm relaxes these boundaries to the statu-
+tory hard limits of [0.95,1.05] p.u. This relaxation serves to maximize the capacity
+of P2P power flows, enabling the energy transfers required to support the deficient
+regions.
+38
+
+(a) MG1
+(b) MG2
+(c) MG3
+(d) MG4
+Figure 5.8 Node-Level Voltage Profiles.
+Despite operating near the lower boundary due to heavy loading and wheeling ac-
+tivities, reactive power injection alone is fundamentally insufficient to stabilize the
+network.
+The AC-OPF algorithm executes a sophisticated, multi-layered defense
+mechanism to prevent voltage collapse. As depicted in Figure 5.9, there is a stark
+operational contrast between the microgrids during the first layer of defense. While
+MG2 maintains robust Q reserves and comfortably regulates its local voltage without
+reaching its generation limits, MG4 is entirely overwhelmed. The heavy active power
+wheeling passing through MG4 drags its voltage down, forcing its local dispatchable
+generators to rapidly exhaust their reactive power (Q) reserves.
+(a) MG2
+(b) MG4
+Figure 5.9 Reactive Power Dispatch - Proposed MPC Method.
+Once the generators in MG4 hit their strict Q-limits, any further active power transfer
+would inevitably drag the nodal voltages below the critical 0.95 p.u. threshold. Rec-
+ognizing this absolute physical limitation, the algorithm seamlessly transitions to its
+secondary defense exclusively within the overwhelmed region: strategic active power
+39
+
+(P) load shedding. By purposefully shedding active load, the algorithm not only re-
+moves the associated reactive load but, more crucially, reduces the magnitude of the
+localized current (I). Because reactive power losses on distribution feeders scale ex-
+ponentially with current (I2X), this reduction in I exponentially cuts down the reactive
+losses. It is this intricate synergy—exhausting local Q-injections followed by targeted
+P-shedding to alleviate I2X losses—that guarantees the voltage levels securely ride
+the 0.95 p.u. boundary, ultimately rescuing the vulnerable MG4 from a cascading
+voltage collapse.
+The load shedding profiles, depicted in Figure 5.10, demonstrate the prioritization
+mechanism of the energy management algorithm resulting from this secondary de-
+fense. As will be comprehensively analyzed in Section 5.4, critical load shedding
+remains at zero across all MGs, with curtailment confined entirely to normal loads
+within MG4. Furthermore, a deeper spatial analysis within MG4 reveals that the cur-
+tailed loads are predominantly located at the downstream, end-of-line nodes to relieve
+network congestion and stabilize local voltage profiles.
+Figure 5.10 Load Shedding Profile (Confined exclusively to MG4).
+5.3.3
+Algorithmic Convergence and the Tie-line Congestion Paradox
+As depicted in Figure 5.12, the decentralized algorithm determines the P2P power
+exchanges through an iterative negotiation process, achieving convergence when the
+maximum absolute residual falls below the predefined 0.01 threshold. During the ini-
+tial onset of the grid isolation (t = 9,t = 10) and the subsequent shock of the PV gen-
+eration loss (t = 11), the system experiences violent structural disruptions. When the
+main grid connection is severed, the entire mathematical topology of the optimization
+problem shifts; the system loses its infinite slack bus, forcing the distributed agents
+to autonomously re-establish power balance and voltage references. These sudden
+topological shifts induce massive initial discrepancies (residuals) between neighbor-
+ing MGs. Consequently, the algorithm requires up to 45 iteration steps to negotiate a
+new power-sharing consensus.
+It is precisely these iteration-heavy structural shocks that drive the maximum CPU
+time required for a single MPC step to peak at 91 seconds, as shown in Figure
+5.11. Although initialization shocks push the maximum CPU time to 91 seconds,
+this remains well within the 3600-second real-time dispatch interval (accounting for
+∼2.5%), ensuring real-time feasibility. Furthermore, this CPU spike is strictly a tran-
+sient phenomenon representing the absolute worst-case scenario during a structural
+40
+
+transition.
+Once the system adapts to the new islanded topology, the convergence speed accel-
+erates exponentially in the later fault hours (t = 12 to t = 15). This acceleration is
+heavily driven by the algorithm’s warm-start mechanism, which capitalizes on the
+temporal correlation of power systems. By seeding the negotiation process with the
+converged dual multipliers (λ) from the previous time step, the algorithm initiates
+the optimization extremely close to the true optimal solution. Because the network
+conditions stabilize after the initial shocks, these warm-started parameters are highly
+accurate, reducing the required iterations to single digits and dropping the CPU time
+to mere seconds. While the residual decay exhibits minor transient oscillations as
+agents dynamically adjust their boundary targets, the algorithm successfully forces
+the residuals below the convergence limit across all fault and recovery hours. This
+cohesive behavior unequivocally demonstrates the mathematical reliability, extreme
+computational efficiency, and real-time feasibility of the decentralized architecture
+under severe emergencies.
+This highlights the computational efficiency of the ATC algorithm. The monolithic
+PF model, which processes the entire 24-hour horizon simultaneously, incurs a high
+computational burden, requiring a total CPU time of 584 seconds. In contrast, the
+MPC approach distributes the computational load, resulting in a reduced total CPU
+time of 413 seconds.
+Figure 5.11 Total and maximum CPU time comparison between PF and MPC.
+41
+
+Figure 5.12 ATC Convergence Behavior Across All Hours.
+The internal economic mechanism of the P2P network is governed by the dynamic
+trading price λ, which acts as the primary market signal. As illustrated in Figure
+5.13, the pricing dynamics exhibit a distinct behavior during the compounded fault
+window. While the ATC algorithm mathematically maintains an independent λ vari-
+able for each individual tie-line, the graph demonstrates that these prices successfully
+reach a uniform consensus across the entire network. Under normal grid-connected
+conditions, this consensus price generally fluctuates between 15 and 16, though it
+climbs to approximately 16.9 just before the fault due to local peak demand. How-
+ever, when the system enters isolated operation between t = 9 and t = 15, the uniform
+trading price λ abruptly drops and stabilizes at a lower floor of approximately 13.3.
+This sustained low price during a severe emergency reveals a profound AC-OPF phe-
+nomenon: the Tie-line Congestion Paradox. Despite extreme, system-wide power
+shortages—which eventually force MG4 to execute active load shedding (a condition
+where the local marginal price theoretically skyrockets to the VOLL)—the consensus
+trading price λ remains remarkably decoupled from these high-priced deficit nodes.
+This counterintuitive pricing behavior is a direct consequence of the physical network
+constraints. The critical tie-lines connecting the MGs have finite thermal capacities
+(1.5 MW limit). As the surplus exporters, MG1 and MG3 aggressively push power to
+rescue MG2 and MG4 until these tie-lines reach their absolute physical transmission
+limits. Once multi-path congestion occurs, the network functionally fractures into two
+distinct zones: a Surplus Island (MG1, MG3) and a Deficit Island (MG2, MG4).
+Because no additional power can physically cross the congested boundary to further
+alleviate the shortages in the Deficit Island, the decentralized ATC market algorithm
+correctly identifies that any further increase in the consensus price λ would not yield
+any additional transacted energy. Consequently, the uniform consensus price λ com-
+pletely severs its connection from the astronomical deficit prices (VOLL) of the shed-
+ding MGs.
+This market fracturing is not an arbitrary algorithmic behavior, but a direct conse-
+quence of the KKT optimality conditions. When a tie-line flow reaches its upper limit
+42
+
+(Ptie ≤Pmax), the corresponding dual variable µ (the shadow price of transmission ca-
+pacity) becomes strictly positive (µ > 0). In the Lagrangian formulation, the trading
+consensus multiplier λ negotiated at the boundary is mathematically defined as the
+internal marginal price minus this congestion shadow price (λ = LMPde ficit −µ).
+Therefore, λ remains decoupled and strictly reflects the marginal cost of the "trapped
+surplus" generation stranded within the Surplus Island. The astronomical price spike
+at the deficit nodes is entirely absorbed by the transmission rent µ. 2
+This price decoupling represents a massive advantage of the AC-OPF-based decen-
+tralized market: it proves that the trading mechanism is not a purely financial con-
+struct, but is fundamentally anchored to the physical physics of AC power flows. It
+shields the broader network from localized price explosions while guaranteeing that
+energy routing is maximized right up to the strict thermal limits. Immediately after
+the fault clears at t = 16, the depleted BESS units and accumulated demand trigger
+a massive recovery surge, removing the congestion and causing the internal price to
+immediately spike to its peak (∼18.0) as the system reconnects to the main grid.
+Figure 5.13 Dynamic ATC Pricing (λ).
+5.4
+Boundary Evaluation: Stress Testing and System Resilience
+5.4.1
+The Spatiotemporal Stress Matrix
+This section evaluates the resilience of the proposed system under conditions beyond
+the standard emergency fault. To assess the system against AC-OPF physical lim-
+its, a three-dimensional stress matrix tests the network across temporal, spatial, and
+spatiotemporal dimensions.
+Using the fault scenario from Sections 5.2 and 5.3 as the baseline, the network is
+subjected to increasingly severe structural stress. While the utility grid disconnection
+isolates the entire MMG system, the “2-MG” and “3-MG” designations specify the
+number of MGs suffering from compounded severe PV losses, which transform them
+into significant power sinks:
+2Note: λ represents the ATC boundary negotiation multiplier (the unconstrained trading signal),
+not the internal LMPs. While λ synchronizes across the network, the internal LMPs within MG4
+implicitly skyrocket to VOLL, reflecting the physical reality of the localized deficit.
+43
+
+• 2-MG Deficit (Short Fault - Standard Baseline): The default emergency sce-
+nario where MG2 and MG4 suffer significant internal power deficits over a 7-
+hour window (t = 9 to t = 15), relying on MG1 and MG3 as surplus power
+providers.
+• 2-MG Deficit (Long Fault - Temporal Depth): The system-wide outage is ex-
+tended to an 11-hour window (t = 9 to t = 19). Due to BESS hoarding (a rec-
+ognized algorithmic limitation established in Section 5.2.4), this prolonged sce-
+nario specifically tests the continuous endurance of the P2P active power routing
+network rather than local battery capacities.
+• 3-MG Deficit (Short Fault - Spatial Depth): The compounded PV failure
+expands spatially to MG1 over the standard 7-hour window. This removes a
+primary energy exporter, transforming MG1 into a third significant power sink
+alongside MG2 and MG4.
+• 3-MG Deficit (Long Fault - Spatiotemporal Extreme): The expanded 3-MG
+deficit footprint is prolonged across the entire 11-hour window (t = 9 to t = 19).
+This maximizes spatial and temporal stress, leaving MG3 as the sole surplus
+provider for the entire network.
+By evaluating the network under these extreme conditions, this analysis demonstrates
+the algorithm’s Autonomous Critical Load Prioritization mechanism. Under severe
+energy scarcity, the decentralized algorithm deliberately curtails normal loads and
+sacrifices global economic optimality to mathematically guarantee the uninterrupted
+supply of all critical infrastructure.
+5.4.2
+Active Power Routing Limits and Network Capacity
+The primary source of system stress originates at the network layer, specifically within
+the P2P active power routing mechanism. As the compounded disturbance expands,
+localized power deficits require the MMG network to increasingly rely on spatial
+power transfers to maintain load balance. Figure 5.14 illustrates the dynamic expan-
+sion of these P2P active power flows across the four evaluated stress configurations.
+A cross-panel comparison highlights the substantial load placed on the transmis-
+sion infrastructure. In the Base Case (representing the standard 2-MG Short Fault),
+the active power exchange exhibits a notable increase during the primary fault win-
+dow. However, as the deficit expands spatially—transforming MG1 into an additional
+power sink in the 3-MG configurations—the network reaches its transfer saturation
+point. The active power flows originating from the sole remaining surplus provider
+(MG3) expand to their maximum physical constraints. The network routing algorithm
+maximizes power transfers through the distribution corridors to support the deficient
+MGs.
+In the Long Fault scenarios (2-MG Long and 3-MG Long), the severe energy deficit
+is sustained over an 11-hour window (t = 9 to t = 19). This extended disturbance
+necessitates massive active power transfer across the physical tie-lines, pushing them
+toward their thermal limits. This high magnitude of active power transferred leads
+to a proportional rise in transmission currents (I). These elevated currents contribute
+directly to severe reactive power losses (I2X) and the subsequent voltage degrada-
+tion analyzed in Section 5.4.3. To navigate this physical strain, the decentralized
+44
+
+Figure 5.14 P2P active power exchange across four fault scenarios: Base Case (2-
+MG Short), 3-MG Short, 2-MG Long, and 3-MG Long.
+algorithm strictly manages this maximized active power routing, utilizing it as the
+primary mechanism for load preservation while safely delivering available renewable
+generation to deficit nodes.
+5.4.3
+Voltage Stability Envelopes under Severe Grid Contingencies
+As established in Sections 5.3.1 and 5.4.2, the intensive routing of active power in-
+herently induces substantial transmission currents (I), generating significant voltage
+drops due to the impedance relationship (I×Z) and I2X reactive losses. Consequently,
+the system’s global voltage envelope undergoes significant degradation during the
+contingency windows. As illustrated in Figure 5.15, this physical strain forces the
+voltage trajectories to exceed the predefined soft operational boundaries. However,
+the AC-OPF algorithm enforces a strict mathematical containment, constraining the
+minimum nodal voltages to the strict statutory lower bound of 0.90 p.u., thereby pre-
+venting cascading voltage collapse under all tested extreme conditions.
+A comparative analysis of the voltage trajectories reveals the precise impact of spa-
+tiotemporal stress. The 2-MG Long Fault configuration imposes the most sustained
+thermal stress on the tie-lines, resulting in the deepest voltage sags (the lowest point)
+among all scenarios. This phenomenon illustrates a counterintuitive AC-OPF char-
+acteristic: the less severe 2-MG scenario possesses sufficient residual generation to
+sustain high transfer currents across the tie-lines, leading to significant voltage drops
+due to line impedance. In contrast, the generation-deficient 3-MG scenario lacks the
+capacity to drive such currents, resulting in shallower voltage sags but forcing the
+45
+
+Figure 5.15 System-wide voltage envelope under varying spatiotemporal fault severi-
+ties.
+algorithm to initiate active load shedding. This behavior demonstrates the neces-
+sity of the AC-OPF framework: the algorithm executes a dynamic binding constraint
+pivot, autonomously shifting from enforcing network constraints (V ≥0.90 p.u.) in
+the 2-MG case to enforcing generation limits (Pgen ≤Pmax) in the 3-MG case with-
+out requiring heuristic switching logic. Conversely, the voltage profiles of the 3-MG
+Short and 3-MG Long configurations closely track each other during the initial core
+fault window from t = 9 to t = 15. This identical tracking is a direct consequence of
+the rolling-horizon MPC algorithm’s limited foresight. Lacking the ability to predict
+whether the fault will resolve at t = 15 or extend to t = 19, the algorithm executes the
+same conservative response. The temporal divergence occurs sharply after hour 15:
+immediately following the conclusion of the Short fault, the corresponding voltage
+trajectory exhibits immediate recovery as normal operation resumes. In contrast, the
+Long fault trajectory remains suppressed near the critical boundary for the remainder
+of the extended outage.
+This strict adherence to the 0.90 p.u. threshold highlights the fundamental constraint
+of the physical network. Once local reactive power capacities are exhausted, the al-
+gorithm is mathematically constrained to execute targeted active load shedding to
+alleviate the current burden and maintain system reliability, a mechanism critically
+analyzed in Section 5.4.4.
+5.4.4
+Graceful Degradation: Autonomous Load Prioritization vs. Economic Cost
+As established in Section 5.4.1 and Section 5.4.3, the active load shedding ob-
+served across the stress matrix is driven by a dual-mechanism (voltage-induced and
+generation-induced). Figure 5.16 illustrates the significant escalation in True Eco-
+nomic Cost and Normal Load Shedding as the contingency expands spatiotemporally,
+46
+
+confirming that the algorithm autonomously curtails normal loads to serve as an op-
+erational buffer.
+Figure 5.16 Robustness test demonstrating True Economic Cost versus Load Shedding
+across fault depths.
+The temporal dynamics of this shedding behavior demonstrate the system’s opera-
+tional hierarchy, as depicted in Figure 5.17. As previously introduced in Section 5.4.1,
+the algorithm guarantees the uninterrupted supply of all critical infrastructure, with
+the critical load shedding trajectory remaining at 0.0 MWh across all evaluated ex-
+treme scenarios.
+Figure 5.17 Temporal distribution of Total Shedding and Economic Cost.
+In conclusion, the analysis in Section 5.4 establishes that the MMG energy manage-
+ment framework executes a strategy of "Graceful Degradation." Under compound-
+ing extreme fault conditions, the algorithm incurs maximum economic penalty, uti-
+lizing normal loads as operational buffers.
+This controlled degradation protects
+47
+
+the core network, guaranteeing the 100% protection of critical loads.
+This phe-
+nomenon is a direct mathematical consequence of the objective function gradient:
+because the VOLL penalty for critical infrastructure strictly dominates normal loads
+(VOLLcritical ≫VOLLnormal), the solver is mathematically constrained to fully ex-
+haust locally available normal load shedding variables before violating critical load
+constraints, validating the system’s strict prioritization of power security over eco-
+nomic optimality.
+48
+
+CHAPTER 6. CONCLUSION
+6.1
+Conclusion
+This thesis successfully developed a fault-adaptive, P2P energy trading framework to
+enhance MMG resilience, summarized by four key findings:
+• Algorithmic Architecture: The proposed “Bottom-up Spatiotemporal 3-Mode
+State Machine” achieved high computational tractability, reaching rapid ATC
+convergence (max 91 seconds) during severe structural grid shocks to ensure
+real-time MPC feasibility.
+• Physical Resilience and AC-OPF Necessity: The absolute necessity of AC-OPF
+was validated by demonstrating that proactive active power curtailment effec-
+tively mitigates catastrophic voltage collapse caused by transit-induced reactive
+losses, strictly maintaining the 0.90 p.u. boundary.
+• Market Pricing and the Tie-line Congestion Paradox: The study mathemati-
+cally proved the “Tie-line Congestion Paradox”, wherein physical thermal limits
+inherently activate KKT bounds to forcefully cap ATC consensus pricing (λ),
+completely preventing market collapse during extreme localized VOLL escala-
+tions.
+• System Security and Graceful Degradation: The framework synergizes a
+“Graceful Degradation” mechanism with P2P trading to guarantee a 100% Criti-
+cal Load survival rate while achieving a “Negative Premium”—a dual economic-
+resilience benefit that liberates stranded energy during severe disruptions.
+6.2
+Future Work
+To fundamentally address the physical and algorithmic limitations observed in this
+study, future research should focus on three primary directions:
+• Overcoming Conservative BESS SOC Retention: To mitigate the conserva-
+tive MPC BESS discharging behavior (driven by the strict end-of-horizon SOC
+penalty constraints), introducing an RL-based SOC Penalty will encourage more
+proactive BESS discharging. Additionally, to address the inherent uncertainty
+of renewable energy generation, future iterations will employ Stochastic MPC to
+provide robust operational scheduling.
+• Hardware and Reactive Power Support: Currently, when handling massive
+transit currents that threaten voltage stability, intermediary MGs are forced to
+suboptimally shed active power.
+To resolve this limitation, future iterations
+will integrate dynamic reactive compensation devices (e.g., STATCOM, SVC)
+or Smart Inverters equipped with Volt-VAR control to independently supply the
+necessary reactive power (Q) support.
+• Dynamic Topology Reconfiguration: To autonomously isolate physical fault
+zones and establish backup routing paths, future work will integrate a Dynamic
+Switch Control mechanism for real-time network reconfiguration, thereby opti-
+mizing power flow and further enhancing the structural resilience of the MMG
+network.
+49
+
+LIST OF SCIENTIFIC PUBLICATIONS
+• Trinh Xuan Thanh, [Co-author(s)], “[Paper Title]”, [Journal/Conference
+Name], 06/2026 (Under Review / Published).
+50
+
+References
+[1] A. Muhtadi, D. Pandit, N. Nguyen, and J. Mitra, “Distributed energy resources
+based microgrid: Review of architecture, control, and reliability,” IEEE Trans-
+actions on Industry Applications, 2021.
+[2] A. Dagar, P. Gupta, and V. Niranjan, “Microgrid protection: A comprehensive
+review,” Renewable and Sustainable Energy Reviews, 2021.
+[3] S. Ahmad, M. Shafiullah, C. B. Ahmed, and M. Alowaifeer, “A review of mi-
+crogrid energy management and control strategies,” IEEE Access, 2023.
+[4] B. She, F. Li, H. Cui, J. Zhang, and R. Bo, “Fusion of microgrid control with
+model-free reinforcement learning: Review and vision,” IEEE Transactions on
+Smart Grid, 2022.
+[5] R. Trivedi and S. Khadem, “Implementation of artificial intelligence techniques
+in microgrid control environment: Current progress and future scopes,” Energy
+and AI, 2022.
+[6] S. Choudhury, “Review of energy storage system technologies integration to mi-
+crogrid: Types, control strategies, issues, and future prospects,” Journal of En-
+ergy Storage, 2022.
+[7] C. Zhang, J. Wu, Y. Zhou, M. Cheng, and C. Long, “Peer-to-peer energy trading
+in a microgrid,” Applied Energy, vol. 220, pp. 1–12, 2018.
+[8] M. Karami and R. Madlener, “Business models for peer-to-peer energy trading in
+germany based on households’ beliefs and preferences,” Applied Energy, 2021.
+[9] L. Ali, M. I. Azim, J. Peters, V. Bhandari, A. Menon, V. Tiwari, J. Green, and
+S. M. Muyeen, “Blockchain-based local energy market enabling p2p trading:
+An australian collated case study on energy users, retailers and utilities,” IEEE
+Access, 2022.
+[10] J.-S. Park, S. W. Kim, and J. W. Lee, “P2p credit auction vs. net metering: Bene-
+fit analysis for prosumers under incremental block rate electricity tariff,” Applied
+Energy, 2024.
+[11] W. Tushar, C. Yuen, H. Mohsenian-Rad, T. Saha, H. V. Poor, and K. L. Wood,
+“Peer-to-peer trading in electricity networks: An overview,” IEEE Transactions
+on Smart Grid, vol. 11, no. 4, pp. 3185–3200, 2020.
+[12] M. F. Zia, M. Benbouzid, E. Elbouchikhi, S. M. Muyeen, K. Techato, and J. M.
+Guerrero, “Microgrid transactive energy: Review, architectures, distributed
+ledger technologies, and market analysis,” IEEE Access, 2020.
+[13] Z. Li, M. Shahidehpour, F. Aminifar, A. Alabdulwahab, and Y. Al-Turki, “Net-
+worked microgrids for enhancing the power system resilience,” Proceedings of
+the IEEE, vol. 105, no. 7, pp. 1289–1310, 2017.
+51
+
+[14] Y. Hu, Z. He, G. Huang, L. Wang, C. Guo, and Z. Li, “Region-based resilience
+evaluation and quantification method for networked microgrids under extreme
+weather,” IEEE Transactions on Industry Applications, 2026.
+[15] B. Chen, J. Wang, X. Lu, C. Chen, and S. Zhao, “Networked microgrids for grid
+resilience, robustness, and efficiency: A review,” IEEE Transactions on Smart
+Grid, vol. 12, no. 1, pp. 18–32, 2020.
+[16] N. Bhusal, M. Abdelmalak, M. Kamruzzaman, and M. Benidris, “Power system
+resilience: Current practices, challenges, and future directions,” IEEE Access,
+vol. 8, pp. 18 064–18 086, 2020.
+[17] J. Guerrero, A. Chapman, and G. Verbiˇc, “Impact of peer-to-peer energy trading
+on distribution networks,” Applied Energy, vol. 304, p. 117800, 2021.
+[18] J. Guerrero, A. C. Chapman, and G. Verbiˇc, “Decentralized p2p energy trad-
+ing under network constraints in a low-voltage network,” IEEE Transactions on
+Smart Grid, vol. 10, no. 5, pp. 5163–5173, 2018.
+[19] E. Lannoye, D. Flynn, and M. O’Malley, “Evaluation of power system flexibil-
+ity,” IEEE Transactions on Power Systems, vol. 27, no. 2, pp. 922–931, 2012.
+[20] A. H. Javed et al., “Analyzing impact of network constraints on feasible op-
+eration region of the radial distribution networks,” Electric Power Systems Re-
+search, vol. 234, p. 110799, 2024.
+[21] A. Paudel, L. P. M. I. Sampath, J. Yang, and H. B. Gooi, “Peer-to-peer energy
+trading in smart grid considering power losses and network fees,” IEEE Trans-
+actions on Smart Grid, vol. 11, no. 6, pp. 4727–4737, 2020.
+[22] N. Patari, V. Venkataramanan, A. K. Srivastava, D. K. Molzahn, N. Li, and
+A. M. Annaswamy, “Distributed optimization in distribution systems: Use cases,
+limitations, and research needs,” IEEE Transactions on Power Systems, 2021.
+[23] M. U. Hashmi, D. Deka, A. Buˇsi´c, L. Pereira, and S. Backhaus, “Arbitrage with
+power factor correction using energy storage,” IEEE Transactions on Power Sys-
+tems, 2020.
+[24] P. Pareek, Y. Weng, and H. D. Nguyen, “Optimal steady-state voltage control
+using gaussian process learning,” IEEE Transactions on Industrial Informatics,
+2020.
+[25] S. Polat, E. Bıyık, and H. S¸ekerci ¨Oztura, “Optimal active and reactive power
+scheduling for inverter-integrated pv and bess under inverter current constraints,”
+Electric Power Systems Research, 2025.
+[26] A. A. Eajal, A. H. Yazdavar, E. F. El-Saadany, and K. Ponnambalam, “On the
+existence of voltage collapse in islanded microgrids,” in 2018 IEEE Electrical
+Power and Energy Conference (EPEC).
+IEEE, 2018, pp. 1–6.
+52
+
+[27] M. Farivar and S. H. Low, “Branch flow model: Relaxations and convexifica-
+tion—part i,” IEEE Transactions on Power Systems, vol. 28, no. 3, pp. 2554–
+2564, 2013.
+[28] S. H. Low, “Convex relaxation of optimal power flow—part ii: Exactness,” IEEE
+Transactions on Control of Network Systems, vol. 1, no. 2, pp. 177–189, 2014.
+[29] P. Srivastava, R. Haider, V. J. Nair, V. Venkataramanan, A. M. Annaswamy, and
+A. K. Srivastava, “Voltage regulation in distribution grids: A survey,” Annual
+Reviews in Control, 2023.
+[30] O. D. Montoya et al., “A mixed-integer convex model for the optimal placement
+and sizing of distributed generators in power distribution networks,” Applied
+Sciences, vol. 11, no. 2, 2021.
+[31] M. M.-U.-T. Chowdhury and S. Kamalasadan, “An angle included optimal power
+flow (opf) model for power distribution network using second order cone pro-
+gramming (socp),” in 2020 IEEE Industry Applications Society Annual Meeting.
+IEEE, 2020.
+[32] V. M. Garrido-Arévalo, W. Gil-González, O. D. Montoya, L. F. Grisales-Nore˜na,
+and J. C. Hernández, “Optimal dispatch of ders and battery-based ess in dis-
+tribution grids while considering reactive power capabilities and uncertainties:
+A second-order cone programming formulation,” IEEE Access, vol. 12, pp.
+48 497–48 510, 2024.
+[33] Y. Men, L. Ding, J. Zhang, and X. Lu, “Secondary control fusion in inverter
+intensive dynamic microgrids for distribution system resiliency enhancement,”
+iEnergy, vol. 2, no. 1, pp. 9–13, 2023.
+[34] Y. Chen, W. Wei, H. Wang, Q. Zhou, and J. P. S. Catalào, “An energy sharing
+mechanism achieving the same flexibility as centralized dispatch,” IEEE Trans-
+actions on Smart Grid, 2021.
+[35] H. Liu, T. L¨u, Y. Yang, Y. Guo, Q. Wu, X. Xu, and H. Zeng, “Blockchain-based
+optimization of operation and trading among multiple microgrids considering
+market fairness,” International Journal of Electrical Power & Energy Systems,
+2025.
+[36] M. Panteli, D. N. Trakas, P. Mancarella, and N. D. Hatziargyriou, “Power system
+resilience to extreme weather: Fragility modeling, probabilistic impact assess-
+ment, and adaptation measures,” IEEE Transactions on Power Systems, vol. 32,
+no. 5, pp. 3747–3757, 2016.
+[37] K. Zuo and L. Wu, “A review of decentralized and distributed control approaches
+for islanded microgrids: Novel designs, current trends, and emerging chal-
+lenges,” The Electricity Journal, 2022.
+[38] D. Zhao, C. Zhang, X. Cao, C. Peng, B. Sun, K. Li, and Y. Li, “Differential
+privacy energy management for islanded microgrids with distributed consensus-
+based admm algorithm,” IEEE Transactions on Control Systems Technology,
+2022.
+53
+
+[39] T. Erseghe, “Distributed optimal power flow using admm,” IEEE Transactions
+on Power Systems, vol. 29, no. 5, pp. 2370–2380, 2014.
+[40] Z. Zhang et al., “Distributed consensus-based algorithm for economic dispatch
+in a microgrid,” IEEE Transactions on Smart Grid, 2019.
+[41] M. H. Ullah and J.-D. Park, “Dlmp integrated p2p2g energy trading in
+distribution-level grid-interactive transactive energy systems,” Applied Energy,
+2022.
+[42] N. Nasiri, S. Zeynali, S. N. Ravadanegh, and S. Kubler, “Moment-based dis-
+tributionally robust peer-to-peer transactive energy trading framework between
+networked microgrids, smart parking lots and electricity distribution network,”
+IEEE Transactions on Smart Grid, 2023.
+[43] Y. Xia, Q. Xu, Y. Ding, L. Shi, and F. Wu, “Generalized nash equilibrium analy-
+sis for peer-to-peer transactive energy market considering coupling distribution
+network constraints,” IEEE Transactions on Industrial Informatics, 2024.
+[44] M. Mishra, A. Singh, R. Misra, and D. Singh, “Two-tier peer-to-peer transactive
+energy market,” IEEE Transactions on Industry Applications, 2024.
+[45] A. Rajaei, S. Fattaheian-Dehkordi, M. Fotuhi-Firuzabad, and M. Moeini-
+Aghtaie, “Decentralized transactive energy management of multi-microgrid dis-
+tribution systems based on admm,” International Journal of Electrical Power &
+Energy Systems, 2021.
+[46] K. Sun and X. A. Sun, “A two-level distributed algorithm for nonconvex
+constrained optimization,”
+Computational Optimization and Applications,
+vol.
+84,
+no.
+2,
+p.
+609–649,
+Nov
+2022.
+[Online].
+Available:
+http:
+//dx.doi.org/10.1007/s10589-022-00433-4
+[47] A. Mohammadi and A. Kargarian, “Accelerated and robust analytical target cas-
+cading for distributed optimal power flow,” IEEE Transactions on Industrial In-
+formatics, vol. 16, no. 12, pp. 7521–7531, 2020.
+[48] J. Zhao, W. Wang, and C. Guo, “Hierarchical optimal configuration of multi-
+energy microgrids system considering energy management in electricity mar-
+ket environment,” International Journal of Electrical Power & Energy Systems,
+2022.
+[49] X. Kong, D. Liu, C. Wang, F. Sun, and S. Li, “Optimal operation strategy for
+interconnected microgrids in market environment considering uncertainty,” Ap-
+plied Energy, 2020.
+[50] Y. Liu, Y. Ye, X. Chen, H. Li, and Y. Huang, “Robust day-ahead dispatch for in-
+tegrated power-heat-gas microgrid considering wind power uncertainty,” Math-
+ematical Problems in Engineering, 2020.
+[51] D. C. Huynh, L. D. Ho, H. M. Pham, M. W. Dunnigan, and C. Barbalata, “Water
+wave optimization algorithm-based dynamic optimal dispatch considering a day-
+ahead load forecasting in a microgrid,” IEEE Access, 2024.
+54
+
+[52] J. Zhang, D. Qin, Y. Ye, Y. He, X. Fu, J. Yang, G. Shi, and H. Zhang, “Multi-
+time scale economic scheduling method based on day-ahead robust optimization
+and intraday mpc rolling optimization for microgrid,” IEEE Access, vol. 9, pp.
+140 315–140 324, 2021.
+[53] C. Wu, S. Gao, Y. Liu, T. E. Song, and H. Han, “A model predictive control
+approach in microgrid considering multi-uncertainty of electric vehicles,” Re-
+newable Energy, vol. 163, pp. 1385–1396, 2021.
+[54] M. Elkazaz, M. Sumner, and D. Thomas, “Energy management system for hy-
+brid pv-wind-battery microgrid using convex programming, model predictive
+and rolling horizon predictive control with experimental validation,” Interna-
+tional Journal of Electrical Power & Energy Systems, 2019.
+[55] A. Parisio, E. Rikos, and L. Glielmo, “A model predictive control approach to
+microgrid operation optimization,” IEEE Transactions on Control Systems Tech-
+nology, vol. 22, no. 5, pp. 1813–1827, 2014.
+[56] W. Zheng, H. Lu, M. Zhang, Q. Wu, Y. Hou, and J. Zhu, “Distributed energy
+management of multi-entity integrated electricity and heat systems: A review
+of architectures, optimization algorithms, and prospects,” IEEE Transactions on
+Smart Grid, 2023.
+[57] Y. Zhou, A. S. Zamzam, and A. Bernstein, “Networked microgrid topology re-
+configuration to promote fairness in proactive load shedding,” Electric Power
+Systems Research, vol. 241, p. 112557, 2025.
+55
