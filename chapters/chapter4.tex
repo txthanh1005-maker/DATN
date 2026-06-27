@@ -159,6 +159,7 @@ Without the continuous inheritance of $SOC^{ini}$ and the rolling refresh of the
 
 \begin{figure}[htbp]
 \centering
+\resizebox{\textwidth}{!}{
 \begin{tikzpicture}[
     node distance=1.5cm and 1cm,
     process/.style={rectangle, draw, fill=blue!10, rounded corners, text width=3.8cm, text centered, minimum height=1.5cm},
@@ -194,6 +195,7 @@ Without the continuous inheritance of $SOC^{ini}$ and the rolling refresh of the
 \draw [arrow] (merge.south) -- ++(0,-0.5) -| (left_edge) |- (loop.west);
 
 \end{tikzpicture}
+}
 \caption{Flowchart of the 3-Mode State Machine Algorithm}
 \label{fig:3mode_flowchart}
 \end{figure}
@@ -202,7 +204,7 @@ MPC strategy inherently relies on a dynamic rolling mechanism that functions as 
 
 \subsubsection{Mode 1 and Mode 3: Normal Operation and Recovery}
 
-Under normal operating conditions (Mode 1), where no faults are detected within the distribution network, the real-time dispatch simply tracks the established Day-Ahead schedule. In this state, the actual operational variables strictly follow the day-ahead baseline, meaning the system state $\mathbf{x}_t$ and control actions $\mathbf{u}_t$ satisfy $\mathbf{u}_t = \mathbf{u}_t^{DA}$. This baseline schedule is derived from the 24-hour ATC SOCP optimization problem described in Chapter 4 (Eq. \ref{eq:ATC_Global_Objective}). Thus, the system operates securely without the need for iterative rolling horizon recalculations, thereby significantly conserving computational resources.
+Under normal operating conditions (Mode 1), where no faults are detected within the distribution network, the real-time dispatch simply tracks the established Day-Ahead schedule. In this state, the actual operational variables strictly follow the day-ahead baseline, meaning the system state $\mathbf{x}_t$ and control actions $\mathbf{u}_t$ satisfy $\mathbf{u}_t = \mathbf{u}_t^{DA}$. This baseline schedule is derived from the 24-hour ATC SOCP optimization problem described in Chapter 3 (Eq. \ref{eq:ATC_Global_Objective}). Thus, the system operates securely without the need for iterative rolling horizon recalculations, thereby significantly conserving computational resources.
 
 However, when a fault is cleared following an emergency event, the system transitions into Mode 3 (Recovery Mode). Rather than immediately resuming the potentially outdated Day-Ahead schedule, the EMS recalculates a new optimal operational plan from the current time $t^{end}_{faults}$ to the end of the 24-hour cycle, yielding a shrinking prediction horizon $\mathcal{H}_{rec} = \{t^{end}_{faults}, t^{end}_{faults}+1, \dots, 24\}$. The updated forecast vectors (Eqs. \ref{eq:forecast_Pload}--\ref{eq:forecast_P_WT}) are integrated into the optimization engine, and the modified ATC Global Objective is solved to establish a new operational baseline:
 \begin{equation} \label{eq:Recovery_Objective}

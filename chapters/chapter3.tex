@@ -11,7 +11,7 @@ To resolve these physical and informational challenges, the ATC framework is int
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{chapters/Imagine/microgrid connetion.png}
+    \includegraphics[width=0.9\textwidth]{chapters/Imagine/microgrid_connection.png}
     \caption{Conceptual topology of the interconnected Multi-Microgrid system.}
     \label{fig:mmg_conceptual}
 \end{figure}
@@ -30,7 +30,7 @@ Through an iterative exchange of limited boundary variables (the target power $P
 \end{figure}
 
 \subsection{The Coordinator Problem (Utility Grid)}
-At the top level of the ATC hierarchy, the Coordinator (Utility Grid) serves as the central authority to establish P2P consensus. The objective function of the coordinator is formulated to penalize the mismatch between the coordinator's target $P_{target,ij,t}$ and the previous iteration's optimal tie-line scheduled power $P_{tie,ij,t}^{*,k}$ submitted by the local MGs, subject to strict reciprocity ($P_{target,ij,t} + P_{target,ji,t} = 0$). The optimization SOCP problem is given by:
+At the top level of the ATC hierarchy, the Coordinator (Utility Grid) serves as the central authority to establish P2P consensus. The objective function of the coordinator is formulated to penalize the mismatch between the coordinator's target $P_{target,ij,t}$ and the previous iteration's optimal tie-line scheduled power $P_{tie,ij,t}^{*,k}$ submitted by the local MGs, subject to strict reciprocity ($P_{target,ij,t} + P_{target,ji,t} = 0$). The Lagrange ATC problem is given by:
 \begin{equation} \label{eq:ATC_Utility_Grid_Obj}
 \begin{aligned}
 \min \quad & \sum_{t \in \mathcal{T}} \sum_{(i,j) \in \mathcal{L}^{trade}} \left[ \lambda_{ij,t}^k \left( P_{tie,ij,t}^{*,k} - P_{target,ij,t} \right) \right. \\
@@ -125,7 +125,7 @@ First, the primal residual $r_{ij,t}^k$ and dual residual $s_{ij,t}^k$ are calcu
 
 \textbf{Step 4: Convergence Check.} The iterative algorithm terminates when both the primal and dual residuals satisfy the convergence tolerance $\epsilon_{stop}$ (set to $10^{-4}$) for three consecutive iterations. If the criteria are met, the algorithm stops and the final optimal scheduling is achieved. Otherwise, the iteration counter is incremented ($k \leftarrow k+1$) and the process returns to Step 2.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
     \centering
     \begin{tikzpicture}[
         box/.style={draw, rectangle, align=center, minimum width=4.5cm, minimum height=1cm, fill=blue!5},

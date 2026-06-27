@@ -8,14 +8,10 @@ Nâng cấp và chuyển đổi toàn bộ báo cáo Đồ án Tốt nghiệp (D
 
 ## Progress & Changelog
 **Các Tác Vụ Gần Đây (Compacted):**
-- **Conclusion Refinement & Chapter Summaries (Task 7 & 8):** Bổ sung thành công các tiểu mục Conclusion tổng kết sắc bén cho từng chương (1, 2, 3, 4). Viết lại hoàn toàn "General Conclusion" trong `DATN.tex` mang tầm vóc vĩ mô (Master Gap resolution, Paradigm Shift, Future Work/HIL).
-- **SOTA Matrix Update & Formatting:** Cập nhật bảng State-of-the-art ở Chương 1 thành 4 cột cốt lõi. Sửa đổi cây Dirtree để tạo cặp đối ngẫu học thuật mạnh mẽ (Limitation vs Solution).
-- **Chapter 1 Duplication Fix (Emergency Response):** Phẫu thuật cắt bỏ thành công khối u nhân bản 150 dòng trong `chapter1.tex`. Cấu trúc được khôi phục hoàn hảo (Dirtree -> Gap -> Contributions -> SOTA Matrix -> Thesis Organization) và đã được Reviewer chấm PASS.
-- **Chapter 2, 3, 4 Summaries Refinement (Task 7 & 8 Continuation):** Đã tinh chỉnh triệt để phần Summary của 3 chương lý thuyết theo đúng định dạng học thuật nghiêm ngặt (cô đọng, không phân tích thừa, ép chữ thường toàn bộ thuật ngữ chuyên ngành ở giữa câu, xóa bỏ ngoặc kép).
-  + *Chapter 2:* Bổ sung đầy đủ các nguồn (PV, Wind, DG, BESS), ràng buộc tải (VOLL), và 2 chế độ vận hành (normal/emergency mode).
-  + *Chapter 3:* Đưa thêm "dynamic penalty scaling" và "minimal information exchange mechanism" để làm nổi bật tốc độ hội tụ và tính bảo mật của thuật toán ATC.
-  + *Chapter 4:* Nhúng "rolling horizon", "grid disconnection mechanism", "3-mode state machine" và "SOC limits" để hoàn thiện cơ chế phòng thủ thời gian thực của MPC.
-- Tất cả các nhiệm vụ trong `ACTION_PLAN.md` đã được đánh dấu `[x] DONE` và Luận văn đã sẵn sàng cho bước Final Build.
+- **Thesis Review Bug Fixes (HUST Examiner Simulation):** Hoàn thành 100% Kế hoạch tác chiến 6 mục tiêu. Sửa các lỗi nguy hiểm bao gồm: Thuật ngữ SOCP thành ACP, tham chiếu chéo "Chapter 3" thay vì "Chapter 4", thêm `\resizebox` chống tràn lề TikZ, sửa lỗi chính tả tên file ảnh, và làm rõ ranh giới điện áp Normal (0.95 p.u.) vs Emergency (0.90 p.u.).
+- **Alignment with Thesis Assignment:** Bổ sung xuất sắc phần đối chiếu mục tiêu ở Chapter 6, chứng minh mạch lạc ĐATN đã đạt 100% 5 mục tiêu nghiên cứu (Review literature, Architecture, ATC, MPC, Simulation).
+- **Hallucination Detection:** Bắt được 2 lỗi ảo giác của Reviewer Subagent (N-01 và N-03) qua việc cross-check trực tiếp với mã nguồn.
+- Tất cả các nhiệm vụ trong `ACTION_PLAN.md` đã được đánh dấu `[x] DONE` và Luận văn đã sạch lỗi logic để ra Hội đồng.
 
 ## Key Decisions
 1. **Kiến trúc Top-Down (Chapter 6):** Sử dụng `Transfer folder/Result_data/report_result` để viết kết quả.
@@ -23,11 +19,12 @@ Nâng cấp và chuyển đổi toàn bộ báo cáo Đồ án Tốt nghiệp (D
 3. **Nâng cấp Radar Kiểm duyệt:** Skill `deep-logic-audit` giờ đây là tiêu chuẩn vàng để ép buộc phân tích phải có nền tảng Toán học/Vật lý.
 4. **Hủy diệt "Trading Q":** Tuyệt đối không cho P2P mua bán công suất phản kháng. Q chỉ phục vụ "Local Support".
 5. **Bẻ lái sang Resilience:** Trong bối cảnh Extreme Events, hệ thống không chỉ tìm kiếm cực tiểu chi phí (FIT/P2P thông thường) mà còn đóng vai trò "Safety Net".
-6. **Terminological Precision:** Sử dụng thuật ngữ "Distributed, Dynamic, Multi-period" thay vì "Spatial, Temporal", tránh vi phạm tiêu chuẩn nghiêm ngặt của giới hàn lâm (Electrical Engineering Context).
+6. **Terminological Precision:** Sử dụng thuật ngữ "Distributed, Dynamic, Multi-period" thay vì "Spatial, Temporal", tránh vi phạm tiêu chuẩn nghiêm ngặt của giới hàn lâm.
 
 ## Next Steps
-- Toàn bộ Action Plan đã hoàn tất 100%. 
-- Tiến hành biên dịch `DATN.tex` thành PDF (Final Build) và chuẩn bị nộp quyển.
+- Toàn bộ Action Plan từ đợt Review đã hoàn tất 100%. 
+- Tiến hành chạy Fast Build `pdflatex -> bibtex -> pdflatex*2` để ra file PDF hoàn chỉnh.
+- Đề xuất dọn dẹp các file cache trung gian. Đợi lệnh nộp quyển từ Tư lệnh!
 ## Critical Context
 **Cấu hình mạng (Topology P2P):** 1 Utility Grid & 4 Microgrids.
 - **MG1 (Nặng tải, 36 nodes):** Gã khổng lồ xuất khẩu (Surplus Island). Liên kết MG4, MG3.

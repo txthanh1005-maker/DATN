@@ -165,7 +165,7 @@ More importantly, when evaluating the overarching system resilience through the 
 \subsubsection{Co-optimization Benefits of P2P Energy Trading}
 Cross-examining the Islanded Fault and MPC scenarios uncovers the synergistic benefits of the P2P architecture. Typically, enhancing system resilience to supply an additional $12.51$ MWh (the difference in shedding between Islanded Fault and MPC) requires a Resilience Premium by ramping up expensive localized generation. However, the MPC achieves this while actually lowering the total generation cost ($179,007.53$ cents) compared to the Islanded Fault scenario ($179,695.79$ cents).
 
-This capability to provide resilience at a Negative Premium stems from unblocking stranded renewable energy. As illustrated in Figure \ref{fig:energy_mix}, excess PV and wind generation from healthy nodes—which would otherwise be curtailed under isolated conditions—is effectively routed to deficit regions. The P2P network, dynamically regulated by the MPC, forms a symbiotic ecosystem that simultaneously saves critical loads and optimizes overall fuel expenditure.
+This capability to provide resilience while lowering operational costs stems from the co-optimization of stranded renewable energy. As illustrated in Figure \ref{fig:energy_mix}, excess PV and wind generation from healthy nodes—which would otherwise be curtailed under isolated conditions—is effectively routed to deficit regions. The P2P network, dynamically regulated by the MPC, forms a symbiotic ecosystem that simultaneously saves critical loads and optimizes overall fuel expenditure.
 
 \subsubsection{Comparative Analysis of MG Operational Dynamics}
 
@@ -226,7 +226,7 @@ However, when the compounded severe PV loss strikes at $t=11\text{h}$, the entir
     \label{fig:mpc_active_power}
 \end{figure}
 
-This intense reliance on network-wide P2P sharing causes highly volatile spikes in active power exchange. However, it is precisely this reactive, aggressive coordination that unblocks stranded renewable energy from the surviving units (MG1 and MG3), routing it to where it is needed most. This massive active power transfer inevitably generates large transmission currents ($I$), inducing severe voltage degradation due to $I^2X$ losses (which will be comprehensively linked and analyzed in Section 5.4.2). Consequently, the MPC effectively manages to protect 100\% of the critical loads (as detailed in Section 5.4) and achieve a synergistic Negative Premium (refer to Section 5.2.3 for economic analysis), turning its short-sighted myopic limitation into a significant topological advantage.
+This intense reliance on network-wide P2P sharing causes highly volatile spikes in active power exchange. However, it is precisely this reactive, aggressive coordination that unblocks stranded renewable energy from the surviving units (MG1 and MG3), routing it to where it is needed most. This massive active power transfer inevitably generates large transmission currents ($I$), inducing severe voltage degradation due to $I^2X$ losses (which will be comprehensively linked and analyzed in Section 5.4.2). Consequently, the MPC effectively manages to protect 100\% of the critical loads (as detailed in Section 5.4) and achieve a dual economic-resilience benefit (refer to Section 5.2.3 for economic analysis), turning its short-sighted myopic limitation into a significant topological advantage.
 
 Within this extreme power routing, MG4 is forced into the highly disadvantageous role of a Wheeling Hub. It imports massive amounts of active power from MG1 and MG3, only to wheel a significant portion of it directly to the collapsed MG2. 
 
@@ -236,7 +236,7 @@ This creates a critical operational challenge: MG4 is forced to execute active l
 
 This section analyzes the local power quality, voltage stability, and load shedding behaviors at the nodal level to evaluate the physical feasibility of the proposed framework.
 
-The node-level voltage profiles, presented in Figure \ref{fig:voltage_profiles}, demonstrate the system's adaptive voltage regulation strategy. Under normal operating conditions, the bus voltages are maintained within predefined soft limits to ensure power quality. However, during the fault period, the proposed algorithm relaxes these boundaries to the statutory hard limits of $[0.95, 1.05]$ p.u. This relaxation serves to maximize the capacity of P2P power flows, enabling the energy transfers required to support the deficient regions. 
+The node-level voltage profiles, presented in Figure \ref{fig:voltage_profiles}, demonstrate the system's adaptive voltage regulation strategy. Under normal operating conditions, the bus voltages are maintained within predefined soft limits of $[0.95, 1.05]$ p.u. to optimize power quality. However, during the fault period (Emergency Mode), the proposed algorithm relaxes these boundaries down to the extreme hard statutory limit of $0.90$ p.u. This lower threshold is activated by the defense system to maximize the capacity of P2P power flows, enabling the energy transfers required to support the deficient regions while strictly preventing voltage collapse.
 
 \begin{figure}[H]
     \centering
